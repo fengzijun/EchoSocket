@@ -69,7 +69,7 @@ namespace EchoCryptService
             //----- Using pfx/p12 certificate!
             X509Certificate2 certificate;
 
-            if (connection.Context.Host.HostType == HostType.htClient)
+            if (connection.Context.Host.Context.HostType == HostType.htClient)
             {
                 certificate = new X509Certificate2(@"..\..\..\..\CertificateCreation\cert.crt");
 

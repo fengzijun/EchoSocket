@@ -18,14 +18,14 @@ namespace Main
 
             SocketServer echoServer = new SocketServer(CallbackThreadType.ctWorkerThread, new EchoSocketService.EchoSocketService(FEvent));
 
-            echoServer.Delimiter = new byte[] { 0xFF, 0x00, 0xFE, 0x01, 0xFD, 0x02 };
-            echoServer.DelimiterType = DelimiterType.dtMessageTailExcludeOnReceive;
+            echoServer.Context.Delimiter = new byte[] { 0xFF, 0x00, 0xFE, 0x01, 0xFD, 0x02 };
+            echoServer.Context.DelimiterType = DelimiterType.dtMessageTailExcludeOnReceive;
 
-            echoServer.SocketBufferSize = 1024;
-            echoServer.MessageBufferSize = 2048;
+            echoServer.Context.SocketBufferSize = 1024;
+            echoServer.Context.MessageBufferSize = 2048;
 
-            echoServer.IdleCheckInterval = 60000;
-            echoServer.IdleTimeOutValue = 120000;
+            echoServer.Context.IdleCheckInterval = 60000;
+            echoServer.Context.IdleTimeOutValue = 120000;
 
             //----- Socket Listener!
             SocketListener listener = echoServer.AddListener("Commom Port - 8090", new IPEndPoint(IPAddress.Any, 8090));
@@ -33,8 +33,8 @@ namespace Main
             listener.AcceptThreads = 3;
             listener.BackLog = 100;
 
-            listener.EncryptType = EncryptType.etNone;
-            listener.CompressionType = CompressionType.ctNone;
+            listener.Context.EncryptType = EncryptType.etNone;
+            listener.Context.CompressionType = CompressionType.ctNone;
             listener.CryptoService = new EchoCryptService.EchoCryptService();
 
             echoServer.Start();

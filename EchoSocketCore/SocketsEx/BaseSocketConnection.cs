@@ -255,7 +255,7 @@ namespace EchoSocketCore.SocketsEx
                 {
                     case EventProcessing.epUser:
 
-                        return Context.Host.Delimiter;
+                        return Context.Host.Context.Delimiter;
 
                     case EventProcessing.epEncrypt:
 
@@ -280,7 +280,7 @@ namespace EchoSocketCore.SocketsEx
                 {
                     case EventProcessing.epUser:
 
-                        return Context.Host.DelimiterType;
+                        return Context.Host.Context.DelimiterType;
 
                     case EventProcessing.epEncrypt:
 
@@ -299,17 +299,17 @@ namespace EchoSocketCore.SocketsEx
 
         internal EncryptType EncryptType
         {
-            get { return Context.Creator.EncryptType; }
+            get { return Context.Creator.Context.EncryptType; }
         }
 
         internal CompressionType CompressionType
         {
-            get { return Context.Creator.CompressionType; }
+            get { return Context.Creator.Context.CompressionType; }
         }
 
         internal HostType HostType
         {
-            get { return Context.Host.HostType; }
+            get { return Context.Host.Context.HostType; }
         }
 
         internal BaseSocketConnectionCreator BaseCreator

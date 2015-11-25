@@ -24,14 +24,10 @@ namespace EchoSocketCore.SocketsEx
         private bool FActive;
         private object FSyncActive;
 
-        private HostType FHostType;
+     
         private long FConnectionId;
 
-        private DelimiterType FDelimiterType;
         private CallbackThreadType FCallbackThreadType;
-
-        private int FMessageBufferSize;
-        private int FSocketBufferSize;
 
         //----- Enumerates the connections and creators!
         private ReaderWriterLockSlim FSocketConnectionsSync;
@@ -53,13 +49,9 @@ namespace EchoSocketCore.SocketsEx
         //----- Check idle timer!
         private Timer FIdleTimer;
 
-        private int FIdleCheckInterval;
-        private int FIdleTimeOutValue;
-
-        //----- Socket delimiter and buffer size!
-        private byte[] FDelimiter;
-
         private byte[] FDelimiterEncrypt;
+        //----- Socket delimiter and buffer size!
+
 
         #endregion Fields
 
@@ -67,7 +59,10 @@ namespace EchoSocketCore.SocketsEx
 
         public BaseSocketConnectionHost(HostType hostType, CallbackThreadType callbackThreadtype, ISocketService socketService, DelimiterType delimiterType, byte[] delimiter, int socketBufferSize, int messageBufferSize, int idleCheckInterval, int idleTimeOutValue)
         {
-            FHostType = hostType;
+            if (Context == null)
+                Context = new SocketHostContext();
+            Context.HostType = hostType;
+
             FConnectionId = 1000;
 
             FSocketConnectionsSync = new ReaderWriterLockSlim();
@@ -81,17 +76,17 @@ namespace EchoSocketCore.SocketsEx
             FWaitConnectionsDisposing = new ManualResetEvent(false);
             FWaitThreadsDisposing = new ManualResetEvent(false);
 
-            FIdleCheckInterval = idleCheckInterval;
-            FIdleTimeOutValue = idleTimeOutValue;
+            Context.IdleCheckInterval = idleCheckInterval;
+            Context.IdleTimeOutValue = idleTimeOutValue;
 
             FCallbackThreadType = callbackThreadtype;
-            FDelimiterType = delimiterType;
+            Context.DelimiterType = delimiterType;
 
-            FDelimiter = delimiter;
+            Context.Delimiter = delimiter;
             FDelimiterEncrypt = new byte[] { 0xFE, 0xDC, 0xBA, 0x98, 0xBA, 0xDC, 0xFE };
 
-            FMessageBufferSize = messageBufferSize;
-            FSocketBufferSize = socketBufferSize;
+            Context.MessageBufferSize = messageBufferSize;
+            Context.SocketBufferSize = socketBufferSize;
 
             FActive = false;
             FSyncActive = new Object();
@@ -151,7 +146,7 @@ namespace EchoSocketCore.SocketsEx
 
             FSocketConnectionsSync = null;
             FSocketService = null;
-            FDelimiter = null;
+
             FDelimiterEncrypt = null;
 
             base.Free(canAccessFinalizable);
@@ -181,14 +176,14 @@ namespace EchoSocketCore.SocketsEx
                     ThreadEx.LoopSleep(ref loopSleep);
                 }
 
-                if ((FIdleCheckInterval > 0) && (FIdleTimeOutValue > 0))
+                if ((Context.IdleCheckInterval > 0) && (Context.IdleTimeOutValue > 0))
                 {
                     FIdleTimer = new Timer(new TimerCallback(CheckSocketConnections));
                 }
 
                 if (FIdleTimer != null)
                 {
-                    FIdleTimer.Change(FIdleCheckInterval, FIdleCheckInterval);
+                    FIdleTimer.Change(Context.IdleCheckInterval, Context.IdleCheckInterval);
                 }
 
                 Active = true;
@@ -467,7 +462,7 @@ namespace EchoSocketCore.SocketsEx
                 {
                     if (connection.Active)
                     {
-                        if ((connection.EventProcessing == EventProcessing.epUser) && (buffer.Length > FMessageBufferSize))
+                        if ((connection.EventProcessing == EventProcessing.epUser) && (buffer.Length > Context.MessageBufferSize))
                         {
                             throw new MessageLengthException("Message length is greater than Host maximum message length.");
                         }
@@ -784,7 +779,7 @@ namespace EchoSocketCore.SocketsEx
                                 //----- if the connection is not receiving, start the receive!
                                 if (connection.EventProcessing == EventProcessing.epUser)
                                 {
-                                    readMessage = FBufferManager.TakeBuffer(FMessageBufferSize);
+                                    readMessage = FBufferManager.TakeBuffer(Context.MessageBufferSize);
                                 }
                                 else
                                 {
@@ -1024,7 +1019,7 @@ namespace EchoSocketCore.SocketsEx
                 }
                 else
                 {
-                    byte[] readMessage = connection.BaseHost.BufferManager.TakeBuffer(FMessageBufferSize);
+                    byte[] readMessage = connection.BaseHost.BufferManager.TakeBuffer(Context.MessageBufferSize);
                     Buffer.BlockCopy(e.Buffer, e.Offset, readMessage, 0, remainingBytes);
 
                     connection.BaseHost.BufferManager.ReturnBuffer(e.Buffer);
@@ -1139,7 +1134,7 @@ namespace EchoSocketCore.SocketsEx
                     onePacketFound = true;
 
                     rawBuffer = BufferUtils.GetRawBufferWithTail(connection, e, offsetToFind, delimiterSize);
-                    rawBuffer = CryptUtils.DecryptData(connection, rawBuffer, FMessageBufferSize);
+                    rawBuffer = CryptUtils.DecryptData(connection, rawBuffer, Context.MessageBufferSize);
 
                     offsetToFind += 1;
                     remainingBytes -= (offsetToFind - e.Offset);
@@ -1589,7 +1584,7 @@ namespace EchoSocketCore.SocketsEx
                                 if (cnn != null)
                                 {
                                     //----- Check the idle timeout!
-                                    if (DateTime.Now > (cnn.Context.LastAction.AddMilliseconds(FIdleTimeOutValue)))
+                                    if (DateTime.Now > (cnn.Context.LastAction.AddMilliseconds(Context.IdleTimeOutValue)))
                                     {
                                         cnn.BeginDisconnect();
                                     }
@@ -1607,7 +1602,7 @@ namespace EchoSocketCore.SocketsEx
                     if (!Disposed)
                     {
                         //----- Restart the timer event!
-                        FIdleTimer.Change(FIdleCheckInterval, FIdleCheckInterval);
+                        FIdleTimer.Change(Context.IdleCheckInterval, Context.IdleCheckInterval);
                     }
                 }
 
@@ -1698,7 +1693,7 @@ namespace EchoSocketCore.SocketsEx
                                 {
                                     case EncryptType.etRijndael:
 
-                                        if (connection.Context.Host.HostType == HostType.htClient)
+                                        if (connection.Context.Host.Context.HostType == HostType.htClient)
                                         {
                                             #region Client
 
@@ -1768,7 +1763,7 @@ namespace EchoSocketCore.SocketsEx
 
                                     case EncryptType.etSSL:
 
-                                        if (connection.Context.Host.HostType == HostType.htClient)
+                                        if (connection.Context.Host.Context.HostType == HostType.htClient)
                                         {
                                             #region Client
 
@@ -1851,7 +1846,7 @@ namespace EchoSocketCore.SocketsEx
                         {
                             case EventProcessing.epEncrypt:
 
-                                if (connection.Context.Host.HostType == HostType.htServer)
+                                if (connection.Context.Host.Context.HostType == HostType.htServer)
                                 {
                                     connection.EventProcessing = EventProcessing.epUser;
                                     FireOnConnected(connection);
@@ -1893,7 +1888,7 @@ namespace EchoSocketCore.SocketsEx
                         {
                             case EventProcessing.epEncrypt:
 
-                                if (connection.Context.Host.HostType == HostType.htServer)
+                                if (connection.Context.Host.Context.HostType == HostType.htServer)
                                 {
                                     #region Server
 
@@ -1922,7 +1917,7 @@ namespace EchoSocketCore.SocketsEx
                                         connection.BaseCreator.CryptoService.OnSymmetricAuthenticate(connection, out serverPrivateKey);
 
                                         //----- Decrypt session Key and session IV with server private key
-                                        SymmetricAlgorithm sa = CryptUtils.CreateSymmetricAlgoritm(connection.Context.Creator.EncryptType);
+                                        SymmetricAlgorithm sa = CryptUtils.CreateSymmetricAlgoritm(connection.Context.Creator.Context.EncryptType);
                                         sa.Key = serverPrivateKey.Decrypt(am.SessionKey, true);
                                         sa.IV = serverPrivateKey.Decrypt(am.SessionIV, true);
 
@@ -2120,40 +2115,20 @@ namespace EchoSocketCore.SocketsEx
 
         #region Properties
 
+        public SocketHostContext Context { get; set; }
+
+        public byte[] DelimiterEncrypt 
+        { 
+            get { return FDelimiterEncrypt; }
+            set { FDelimiterEncrypt = value; } 
+        }
+
         internal BufferManager BufferManager
         {
             get { return FBufferManager; }
         }
 
-        public int SocketBufferSize
-        {
-            get { return FSocketBufferSize; }
-            set { FSocketBufferSize = value; }
-        }
 
-        public int MessageBufferSize
-        {
-            get { return FMessageBufferSize; }
-            set { FMessageBufferSize = value; }
-        }
-
-        public byte[] DelimiterEncrypt
-        {
-            get { return FDelimiterEncrypt; }
-            set { FDelimiterEncrypt = value; }
-        }
-
-        public byte[] Delimiter
-        {
-            get { return FDelimiter; }
-            set { FDelimiter = value; }
-        }
-
-        public DelimiterType DelimiterType
-        {
-            get { return FDelimiterType; }
-            set { FDelimiterType = value; }
-        }
 
         public ISocketService SocketService
         {
@@ -2165,23 +2140,8 @@ namespace EchoSocketCore.SocketsEx
             get { return CheckTimeOutTimer; }
         }
 
-        public int IdleCheckInterval
-        {
-            get { return FIdleCheckInterval; }
-            set { FIdleCheckInterval = value; }
-        }
-
-        public int IdleTimeOutValue
-        {
-            get { return FIdleTimeOutValue; }
-            set { FIdleTimeOutValue = value; }
-        }
-
-        public HostType HostType
-        {
-            get { return FHostType; }
-        }
-
+      
+       
         public bool Active
         {
             get

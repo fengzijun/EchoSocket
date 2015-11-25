@@ -11,16 +11,6 @@ namespace EchoSocketCore.SocketsEx
     {
         #region Fields
 
-        //----- Local endpoint of creator!
-        private IPEndPoint FLocalEndPoint;
-
-        //----- Host!
-        private BaseSocketConnectionHost FHost;
-
-        private string FName;
-
-        private EncryptType FEncryptType;
-        private CompressionType FCompressionType;
 
         private ICryptoService FCryptoService;
 
@@ -30,13 +20,14 @@ namespace EchoSocketCore.SocketsEx
 
         public BaseSocketConnectionCreator(BaseSocketConnectionHost host, string name, IPEndPoint localEndPoint, EncryptType encryptType, CompressionType compressionType, ICryptoService cryptoService)
         {
+            if (Context == null)
+                Context = new SocketCreatorContext();
 
-
-            FHost = host;
-            FName = name;
-            FLocalEndPoint = localEndPoint;
-            FCompressionType = compressionType;
-            FEncryptType = encryptType;
+            Context.Host = host;
+            Context.Name = name;
+            Context.localEndPoint = localEndPoint;
+            Context.CompressionType = compressionType;
+            Context.EncryptType = encryptType;
 
             FCryptoService = cryptoService;
         }
@@ -47,9 +38,9 @@ namespace EchoSocketCore.SocketsEx
 
         protected override void Free(bool canAccessFinalizable)
         {
-            FLocalEndPoint = null;
+          
             FCryptoService = null;
-            FHost = null;
+            Context = null;
 
             base.Free(canAccessFinalizable);
         }
@@ -82,15 +73,6 @@ namespace EchoSocketCore.SocketsEx
 
         #region Properties
 
-        internal BaseSocketConnectionHost Host
-        {
-            get { return FHost; }
-        }
-
-        public string Name
-        {
-            get { return FName; }
-        }
 
         public ICryptoService CryptoService
         {
@@ -98,23 +80,6 @@ namespace EchoSocketCore.SocketsEx
             set { FCryptoService = value; }
         }
 
-        public EncryptType EncryptType
-        {
-            get { return FEncryptType; }
-            set { FEncryptType = value; }
-        }
-
-        internal IPEndPoint InternalLocalEndPoint
-        {
-            get { return FLocalEndPoint; }
-            set { FLocalEndPoint = value; }
-        }
-
-        public CompressionType CompressionType
-        {
-            get { return FCompressionType; }
-            set { FCompressionType = value; }
-        }
 
         public SocketCreatorContext Context { get; set; }
 

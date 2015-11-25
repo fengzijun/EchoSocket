@@ -24,6 +24,7 @@ namespace EchoSocketCore.SocketsEx
 
         public int IdleTimeOutValue { get; set; }
 
+
         public HostType HostType { get; set; }
 
     }

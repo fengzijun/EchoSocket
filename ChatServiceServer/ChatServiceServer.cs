@@ -17,11 +17,11 @@ namespace ChatServiceServer
         {
             chatServer = new SocketServer(CallbackThreadType.ctWorkerThread, new ChatSocketService.ChatSocketService());
 
-            chatServer.Delimiter = new byte[] { 0xAA, 0xFF, 0xAA };
-            chatServer.DelimiterType = DelimiterType.dtMessageTailExcludeOnReceive;
+            chatServer.Context.Delimiter = new byte[] { 0xAA, 0xFF, 0xAA };
+            chatServer.Context.DelimiterType = DelimiterType.dtMessageTailExcludeOnReceive;
 
-            chatServer.SocketBufferSize = 1024;
-            chatServer.MessageBufferSize = 512;
+            chatServer.Context.SocketBufferSize = 1024;
+            chatServer.Context.MessageBufferSize = 512;
 
             //----- Socket Listener!
             SocketListener listener = chatServer.AddListener("Char Server", new IPEndPoint(IPAddress.Any, 8090));
@@ -29,8 +29,8 @@ namespace ChatServiceServer
             listener.AcceptThreads = 3;
             listener.BackLog = 50;
 
-            listener.CompressionType = CompressionType.ctNone;
-            listener.EncryptType = EncryptType.etRijndael;
+            listener.Context.CompressionType = CompressionType.ctNone;
+            listener.Context.EncryptType = EncryptType.etRijndael;
             listener.CryptoService = new ChatCryptService.ChatCryptService();
 
             chatServer.Start();

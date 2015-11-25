@@ -134,25 +134,25 @@ namespace EchoSocketCore.SocketsEx
                         acceptedSocket = e.AcceptSocket;
 
                         //----- Adjust buffer size!
-                        acceptedSocket.ReceiveBufferSize = Host.SocketBufferSize;
-                        acceptedSocket.SendBufferSize = Host.SocketBufferSize;
+                        acceptedSocket.ReceiveBufferSize = Context.Host.Context.SocketBufferSize;
+                        acceptedSocket.SendBufferSize = Context.Host.Context.SocketBufferSize;
 
-                        connection = new ServerSocketConnection(Host, listener, acceptedSocket);
+                        connection = new ServerSocketConnection(Context.Host, listener, acceptedSocket);
 
                         //----- Initialize!
-                        Host.AddSocketConnection(connection);
+                        Context.Host.AddSocketConnection(connection);
                         connection.Active = true;
 
-                        Host.InitializeConnection(connection);
+                        Context.Host.InitializeConnection(connection);
                     }
                     catch
                     {
                         if (connection != null)
                         {
-                            if (Host != null)
+                            if (Context.Host != null)
                             {
-                                Host.DisposeConnection(connection);
-                                Host.RemoveSocketConnection(connection);
+                                Context.Host.DisposeConnection(connection);
+                                Context.Host.RemoveSocketConnection(connection);
                             }
 
                             connection = null;
@@ -193,7 +193,7 @@ namespace EchoSocketCore.SocketsEx
 
         public IPEndPoint LocalEndPoint
         {
-            get { return InternalLocalEndPoint; }
+            get { return Context.localEndPoint; }
         }
 
         public byte BackLog

@@ -59,13 +59,13 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ALAZ.SystemEx.NetEx\EchoSocketCore.csproj">
-      <Project>{25162422-3B32-4FB3-8A99-6BCFBE30D9AE}</Project>
-      <Name>EchoSocketCore</Name>
-    </ProjectReference>
     <ProjectReference Include="..\EchoCryptService\EchoCryptService.csproj">
       <Project>{6F3E0292-6C57-4AE8-B653-D8671A4D14E6}</Project>
       <Name>EchoCryptService</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\EchoSocketCore\EchoSocketCore.csproj">
+      <Project>{25162422-3b32-4fb3-8a99-6bcfbe30d9ae}</Project>
+      <Name>EchoSocketCore</Name>
     </ProjectReference>
     <ProjectReference Include="..\EchoSocketService\EchoSocketService.csproj">
       <Project>{5A92571E-8466-48F3-AB25-F8D095FA5B31}</Project>

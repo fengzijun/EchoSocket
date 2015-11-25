@@ -212,8 +212,8 @@ namespace EchoSocketCore.SocketsEx
 
                     SocketConnector connector = FSocketClient.AddConnector("SocketClientSync", FRemoteEndPoint);
 
-                    connector.EncryptType = FEncryptType;
-                    connector.CompressionType = FCompressionType;
+                    connector.Context.EncryptType = FEncryptType;
+                    connector.Context.CompressionType = FCompressionType;
                     connector.CryptoService = FCryptClientEvents;
                     connector.ProxyInfo = FProxyInfo;
 

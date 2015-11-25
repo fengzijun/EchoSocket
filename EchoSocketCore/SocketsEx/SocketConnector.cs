@@ -121,9 +121,9 @@ namespace EchoSocketCore.SocketsEx
             {
                 //----- Create Socket!
                 FSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-                FSocket.Bind(InternalLocalEndPoint);
-                FSocket.ReceiveBufferSize = Host.SocketBufferSize;
-                FSocket.SendBufferSize = Host.SocketBufferSize;
+                FSocket.Bind(Context.localEndPoint);
+                FSocket.ReceiveBufferSize = Context.Host.Context.SocketBufferSize;
+                FSocket.SendBufferSize = Context.Host.Context.SocketBufferSize;
 
                 FReconnectTimer.Change(Timeout.Infinite, Timeout.Infinite);
 
@@ -172,17 +172,17 @@ namespace EchoSocketCore.SocketsEx
                     {
                         connector = (SocketConnector)e.UserToken;
 
-                        connection = new ClientSocketConnection(Host, connector, connector.Socket);
+                        connection = new ClientSocketConnection(Context.Host, connector, connector.Socket);
 
                         //----- Adjust buffer size!
-                        connector.Socket.ReceiveBufferSize = Host.SocketBufferSize;
-                        connector.Socket.SendBufferSize = Host.SocketBufferSize;
+                        connector.Socket.ReceiveBufferSize = Context.Host.Context.SocketBufferSize;
+                        connector.Socket.SendBufferSize = Context.Host.Context.SocketBufferSize; ;
 
                         //----- Initialize!
-                        Host.AddSocketConnection(connection);
+                        Context.Host.AddSocketConnection(connection);
                         connection.Active = true;
 
-                        Host.InitializeConnection(connection);
+                        Context.Host.InitializeConnection(connection);
                     }
                     catch (Exception ex)
                     {
@@ -190,8 +190,8 @@ namespace EchoSocketCore.SocketsEx
 
                         if (connection != null)
                         {
-                            Host.DisposeConnection(connection);
-                            Host.RemoveSocketConnection(connection);
+                            Context.Host.DisposeConnection(connection);
+                            Context.Host.RemoveSocketConnection(connection);
 
                             connection = null;
                         }
@@ -235,17 +235,17 @@ namespace EchoSocketCore.SocketsEx
                     {
                         if (FReconnectAttempted < FReconnectAttempts)
                         {
-                            Host.FireOnException(null, new ReconnectAttemptException("Reconnect attempt", this, ex, FReconnectAttempted, false));
+                            Context.Host.FireOnException(null, new ReconnectAttemptException("Reconnect attempt", this, ex, FReconnectAttempted, false));
                             FReconnectTimer.Change(FReconnectAttemptInterval, FReconnectAttemptInterval);
                         }
                         else
                         {
-                            Host.FireOnException(null, new ReconnectAttemptException("Reconnect attempt", this, ex, FReconnectAttempted, true));
+                            Context.Host.FireOnException(null, new ReconnectAttemptException("Reconnect attempt", this, ex, FReconnectAttempted, true));
                         }
                     }
                     else
                     {
-                        Host.FireOnException(null, new ReconnectAttemptException("Reconnect attempt", this, ex, FReconnectAttempted, true));
+                        Context.Host.FireOnException(null, new ReconnectAttemptException("Reconnect attempt", this, ex, FReconnectAttempted, true));
                     }
                 }
             }
@@ -284,8 +284,8 @@ namespace EchoSocketCore.SocketsEx
 
         public IPEndPoint LocalEndPoint
         {
-            get { return InternalLocalEndPoint; }
-            set { InternalLocalEndPoint = value; }
+            get { return Context.localEndPoint; }
+            set { Context.localEndPoint = value; }
         }
 
         public IPEndPoint RemoteEndPoint

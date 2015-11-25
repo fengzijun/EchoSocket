@@ -37,14 +37,14 @@ namespace Main
 
             SocketClient echoClient = new SocketClient(CallbackThreadType.ctWorkerThread, new EchoSocketService.EchoSocketService(FEvent));
 
-            echoClient.Delimiter = new byte[] { 0xFF, 0x00, 0xFE, 0x01, 0xFD, 0x02 };
-            echoClient.DelimiterType = DelimiterType.dtMessageTailExcludeOnReceive;
+            echoClient.Context.Delimiter = new byte[] { 0xFF, 0x00, 0xFE, 0x01, 0xFD, 0x02 };
+            echoClient.Context.DelimiterType = DelimiterType.dtMessageTailExcludeOnReceive;
 
-            echoClient.SocketBufferSize = 1024;
-            echoClient.MessageBufferSize = 2048;
+            echoClient.Context.SocketBufferSize = 1024;
+            echoClient.Context.MessageBufferSize = 2048;
 
-            echoClient.IdleCheckInterval = 60000;
-            echoClient.IdleTimeOutValue = 120000;
+            echoClient.Context.IdleCheckInterval = 60000;
+            echoClient.Context.IdleTimeOutValue = 120000;
 
             //----- Socket Connectors!
             SocketConnector connector = null;
@@ -61,8 +61,8 @@ namespace Main
                 */
 
                 connector.CryptoService = new EchoCryptService.EchoCryptService();
-                connector.CompressionType = ct;
-                connector.EncryptType = et;
+                connector.Context.CompressionType = ct;
+                connector.Context.EncryptType = et;
 
                 connector.ReconnectAttempts = 10;
                 connector.ReconnectAttemptInterval = 5000;

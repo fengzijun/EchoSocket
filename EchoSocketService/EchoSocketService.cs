@@ -93,10 +93,10 @@ namespace EchoSocketService
 
             s.Append("------------------------------------------------" + "\r\n");
             s.Append("Connected - " + e.Connection.Context.ConnectionId + "\r\n");
-            s.Append(e.Connection.Context.Host.HostType.ToString() + "\r\n");
-            s.Append(e.Connection.Context.Creator.Name + "\r\n");
-            s.Append(e.Connection.Context.Creator.EncryptType.ToString() + "\r\n");
-            s.Append(e.Connection.Context.Creator.CompressionType.ToString() + "\r\n");
+            s.Append(e.Connection.Context.Host.Context.HostType.ToString() + "\r\n");
+            s.Append(e.Connection.Context.Creator.Context.Name + "\r\n");
+            s.Append(e.Connection.Context.Creator.Context.EncryptType.ToString() + "\r\n");
+            s.Append(e.Connection.Context.Creator.Context.CompressionType.ToString() + "\r\n");
             s.Append("------------------------------------------------" + "\r\n");
 
             Event(s.ToString());
@@ -105,7 +105,7 @@ namespace EchoSocketService
 
             Thread.Sleep(123);
 
-            if (e.Connection.Context.Host.HostType == HostType.htServer)
+            if (e.Connection.Context.Host.Context.HostType == HostType.htServer)
             {
                 e.Connection.BeginReceive();
             }
@@ -136,7 +136,7 @@ namespace EchoSocketService
                 s.Length = 0;
             }
 
-            if (e.Connection.Context.Host.HostType == HostType.htServer)
+            if (e.Connection.Context.Host.Context.HostType == HostType.htServer)
             {
                 if (!e.SentByServer)
                 {
@@ -165,9 +165,9 @@ namespace EchoSocketService
             Event(s.ToString());
             s.Length = 0;
 
-            SleepRandom(e.Connection.Context.Host.HostType);
+            SleepRandom(e.Connection.Context.Host.Context.HostType);
 
-            if (e.Connection.Context.Host.HostType == HostType.htServer)
+            if (e.Connection.Context.Host.Context.HostType == HostType.htServer)
             {
                 e.Connection.BeginSend(e.Buffer);
             }
@@ -193,7 +193,7 @@ namespace EchoSocketService
             Event(s.ToString());
             s.Length = 0;
 
-            if (e.Connection.Context.Host.HostType == HostType.htServer)
+            if (e.Connection.Context.Host.Context.HostType == HostType.htServer)
             {
                 //------
             }
@@ -222,9 +222,9 @@ namespace EchoSocketService
                 s.Append("------------------------------------------------" + "\r\n");
                 s.Append("Inner Error - " + ((SocketException)e.Exception.InnerException).ErrorCode.ToString() + "\r\n");
                 s.Append("------------------------------------------------" + "\r\n");
-                s.Append("Creator - " + ((ReconnectAttemptException)e.Exception).Creator.Name + "\r\n");
-                s.Append("Creator - " + ((ReconnectAttemptException)e.Exception).Creator.EncryptType.ToString() + "\r\n");
-                s.Append("Creator - " + ((ReconnectAttemptException)e.Exception).Creator.CompressionType.ToString() + "\r\n");
+                s.Append("Creator - " + ((ReconnectAttemptException)e.Exception).Creator.Context.Name + "\r\n");
+                s.Append("Creator - " + ((ReconnectAttemptException)e.Exception).Creator.Context.EncryptType.ToString() + "\r\n");
+                s.Append("Creator - " + ((ReconnectAttemptException)e.Exception).Creator.Context.CompressionType.ToString() + "\r\n");
             }
 
             if (e.Exception is SocketException)
