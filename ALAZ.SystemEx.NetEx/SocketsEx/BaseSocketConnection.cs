@@ -46,7 +46,7 @@ using System.Collections.Specialized;
 using System.Collections.Generic;
 using System.Reflection;
 
-namespace ALAZ.SystemEx.NetEx.SocketsEx
+namespace EchoSocketCore.SocketsEx
 {
 
     /// <summary>

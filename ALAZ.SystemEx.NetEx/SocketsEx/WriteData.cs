@@ -39,7 +39,7 @@
 
 using System;
 
-namespace ALAZ.SystemEx.NetEx.SocketsEx
+namespace EchoSocketCore.SocketsEx
 {
 
     internal class WriteData

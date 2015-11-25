@@ -6,8 +6,8 @@ using System.Text;
 using System.Windows.Forms;
 using System.Net;
 
-using ALAZ.SystemEx.NetEx;
-using ALAZ.SystemEx.NetEx.SocketsEx;
+using EchoSocketCore;
+using EchoSocketCore.SocketsEx;
 
 namespace EchoFormClient
 {

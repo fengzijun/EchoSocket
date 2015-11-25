@@ -54,9 +54,9 @@ using System.Text;
 using System.ServiceModel.Channels;
 using System.Runtime.Serialization.Formatters.Binary;
 
-using ALAZ.SystemEx.ThreadingEx;
+using EchoSocketCore.ThreadingEx;
 
-namespace ALAZ.SystemEx.NetEx.SocketsEx
+namespace EchoSocketCore.SocketsEx
 {
 
     /// <summary>

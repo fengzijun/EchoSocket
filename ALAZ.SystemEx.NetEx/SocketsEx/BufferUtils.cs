@@ -40,7 +40,7 @@
 using System;
 using System.Net.Sockets;
 
-namespace ALAZ.SystemEx.NetEx.SocketsEx
+namespace EchoSocketCore.SocketsEx
 {
 
     internal class BufferUtils

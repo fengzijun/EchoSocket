@@ -8,9 +8,9 @@ using System.Threading;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 
-using ALAZ.SystemEx;
-using ALAZ.SystemEx.NetEx.SocketsEx;
-using ALAZ.SystemEx.ThreadingEx;
+using EchoSocketCore;
+using EchoSocketCore.SocketsEx;
+using EchoSocketCore.ThreadingEx;
 
 namespace ChatSocketService
 {

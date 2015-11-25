@@ -39,40 +39,60 @@
 
 using System;
 
-namespace EchoSocketCore.SocketsEx
+namespace EchoSocketCore
 {
 
+  /// <summary>
+  /// Base class for finalizable objects.
+  /// </summary>
+  public abstract class BaseFinalizable : BaseDisposable
+  {
+
+    #region Destructor
+
+    ~BaseFinalizable()
+    {
+      Free(false);
+    }
+
+    #endregion
+
+    #region Methods
+    
+    #region Dispose
+
     /// <summary>
-    /// Exception event arguments for exception event.
+    /// Disposes object resources.
     /// </summary>
-    public class ExceptionEventArgs : ConnectionEventArgs
+    public new void Dispose()
     {
 
-        #region Fields
+      lock (this)
+      {
 
-        private Exception FException;
-
-        #endregion
-
-        #region Constructor
-
-        public ExceptionEventArgs(ISocketConnection connection, Exception exception)
-            : base(connection)
+        if (!Disposed)
         {
-            FException = exception;
+
+          try
+          {
+            Free(true);
+          }
+          finally
+          {
+            Disposed = true;
+            GC.SuppressFinalize(this);
+          }
+
         }
 
-        #endregion
-
-        #region Properties
-
-        public Exception Exception
-        {
-            get { return FException; }
-        }
-
-        #endregion
+      }
 
     }
+    #endregion
+
+    #endregion
+
+}
+
 
 }

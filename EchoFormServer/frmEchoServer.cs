@@ -10,7 +10,7 @@ using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using System.Security.Cryptography;
 
-using ALAZ.SystemEx.NetEx.SocketsEx;
+using EchoSocketCore.SocketsEx;
 
 namespace EchoFormServer
 {

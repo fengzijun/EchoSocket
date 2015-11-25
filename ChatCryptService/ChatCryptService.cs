@@ -3,8 +3,8 @@ using System.Net.Security;
 using System.Security.Cryptography.X509Certificates;
 using System.Security.Cryptography;
 
-using ALAZ.SystemEx;
-using ALAZ.SystemEx.NetEx.SocketsEx;
+using EchoSocketCore;
+using EchoSocketCore.SocketsEx;
 
 namespace ChatCryptService
 {

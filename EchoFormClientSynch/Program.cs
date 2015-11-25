@@ -7,8 +7,8 @@ using System.Text;
 using System.Security.Cryptography.X509Certificates;
 using System.Security.Cryptography;
 
-using ALAZ.SystemEx;
-using ALAZ.SystemEx.NetEx.SocketsEx;
+using EchoSocketCore;
+using EchoSocketCore.SocketsEx;
 
 using System.Windows.Forms;
 

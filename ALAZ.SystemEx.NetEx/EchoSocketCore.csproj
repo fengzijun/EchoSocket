@@ -8,8 +8,8 @@
     <ProjectGuid>{25162422-3B32-4FB3-8A99-6BCFBE30D9AE}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ALAZ.SystemEx.NetEx</RootNamespace>
-    <AssemblyName>ALAZ.SystemEx.NetEx</AssemblyName>
+    <RootNamespace>EchoSocketCore</RootNamespace>
+    <AssemblyName>EchoSocketCore</AssemblyName>
     <SignAssembly>false</SignAssembly>
     <AssemblyOriginatorKeyFile>
     </AssemblyOriginatorKeyFile>
@@ -18,7 +18,8 @@
     <OldToolsVersion>3.5</OldToolsVersion>
     <UpgradeBackupLocation>
     </UpgradeBackupLocation>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -53,7 +54,10 @@
     <Reference Include="System.XML" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BaseDisposable.cs" />
+    <Compile Include="BaseFinalizable.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RuntTimeEx\InteropServicesEx\MarshalEx.cs" />
     <Compile Include="SocketsEx\AuthenticateCallbackData.cs" />
     <Compile Include="SocketsEx\BaseSocketConnection.cs" />
     <Compile Include="SocketsEx\BaseSocketConnectionCreator.cs" />
@@ -77,12 +81,7 @@
     <Compile Include="SocketsEx\SocketListener.cs" />
     <Compile Include="SocketsEx\SocketServer.cs" />
     <Compile Include="SocketsEx\SocketsExTypes.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\ALAZ.SystemEx\ALAZ.SystemEx.csproj">
-      <Project>{FA1EF4FC-2FC7-4B29-9EAB-2872593C89E2}</Project>
-      <Name>ALAZ.SystemEx</Name>
-    </ProjectReference>
+    <Compile Include="ThreadingEx\ThreadEx.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

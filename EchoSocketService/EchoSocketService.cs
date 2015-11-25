@@ -5,8 +5,8 @@ using System.Security.Cryptography;
 using System.Net.Sockets;
 using System.Diagnostics;
 
-using ALAZ.SystemEx.NetEx.SocketsEx;
-using ALAZ.SystemEx.ThreadingEx;
+using EchoSocketCore.SocketsEx;
+using EchoSocketCore.ThreadingEx;
 
 namespace EchoSocketService
 {

@@ -9,7 +9,7 @@ using System.Diagnostics;
 using EchoSocketService;
 using EchoCryptService;
 
-using ALAZ.SystemEx.NetEx.SocketsEx;
+using EchoSocketCore.SocketsEx;
 
 namespace Main
 {

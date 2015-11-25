@@ -42,7 +42,7 @@ using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace ALAZ.SystemEx.NetEx.SocketsEx
+namespace EchoSocketCore.SocketsEx
 {
 
     public class ProxyUtils

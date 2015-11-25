@@ -47,7 +47,7 @@ using System.Text;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 
-namespace ALAZ.SystemEx.NetEx.SocketsEx
+namespace EchoSocketCore.SocketsEx
 {
 
     #region SocketClientSync

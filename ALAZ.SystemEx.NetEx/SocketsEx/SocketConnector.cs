@@ -43,7 +43,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 
-namespace ALAZ.SystemEx.NetEx.SocketsEx
+namespace EchoSocketCore.SocketsEx
 {
 
     /// <summary>

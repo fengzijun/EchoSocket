@@ -40,7 +40,7 @@
 using System;
 using System.Net.Security;
 
-namespace ALAZ.SystemEx.NetEx.SocketsEx
+namespace EchoSocketCore.SocketsEx
 {
 
     /// <summary>

@@ -44,9 +44,9 @@ using System.Net.Security;
 using System.Threading;
 using System.Security.Cryptography.X509Certificates;
 
-using ALAZ.SystemEx.ThreadingEx;
+using EchoSocketCore.ThreadingEx;
 
-namespace ALAZ.SystemEx.NetEx.SocketsEx
+namespace EchoSocketCore.SocketsEx
 {
 
     /// <summary>

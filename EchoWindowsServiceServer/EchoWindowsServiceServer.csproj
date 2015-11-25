@@ -33,7 +33,8 @@
     <IsWebBootstrapper>false</IsWebBootstrapper>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -110,13 +111,9 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ALAZ.SystemEx.NetEx\ALAZ.SystemEx.NetEx.csproj">
+    <ProjectReference Include="..\ALAZ.SystemEx.NetEx\EchoSocketCore.csproj">
       <Project>{25162422-3B32-4FB3-8A99-6BCFBE30D9AE}</Project>
-      <Name>ALAZ.SystemEx.NetEx</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\ALAZ.SystemEx\ALAZ.SystemEx.csproj">
-      <Project>{FA1EF4FC-2FC7-4B29-9EAB-2872593C89E2}</Project>
-      <Name>ALAZ.SystemEx</Name>
+      <Name>EchoSocketCore</Name>
     </ProjectReference>
     <ProjectReference Include="..\EchoCryptService\EchoCryptService.csproj">
       <Project>{6F3E0292-6C57-4AE8-B653-D8671A4D14E6}</Project>

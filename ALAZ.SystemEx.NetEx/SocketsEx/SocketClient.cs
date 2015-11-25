@@ -41,7 +41,7 @@ using System;
 using System.Threading;
 using System.Net;
 
-namespace ALAZ.SystemEx.NetEx.SocketsEx
+namespace EchoSocketCore.SocketsEx
 {
 
     /// <summary>

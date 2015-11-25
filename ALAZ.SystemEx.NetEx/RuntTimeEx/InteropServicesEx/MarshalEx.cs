@@ -38,41 +38,32 @@
  */
 
 using System;
+using System.Runtime.InteropServices;
 
-namespace EchoSocketCore.SocketsEx
+namespace EchoSocketCore.RunTimeEx.InteropServicesEx
 {
 
-    /// <summary>
-    /// Exception event arguments for exception event.
-    /// </summary>
-    public class ExceptionEventArgs : ConnectionEventArgs
+    public class MarshalEx
     {
 
-        #region Fields
+        #region Methods
 
-        private Exception FException;
-
-        #endregion
-
-        #region Constructor
-
-        public ExceptionEventArgs(ISocketConnection connection, Exception exception)
-            : base(connection)
+        public static object[] PtrToStructureArray(IntPtr pointer, Type structureType, int len)
         {
-            FException = exception;
-        }
 
-        #endregion
+            object[] array = new object[len];
+            
+            for (int i = 0; i < len; i++)
+			{
+                array[i] = Marshal.PtrToStructure(pointer, structureType);
+                pointer = (IntPtr) (pointer.ToInt32() + Marshal.SizeOf(array[i]));
+			}
 
-        #region Properties
+            return array;
 
-        public Exception Exception
-        {
-            get { return FException; }
         }
 
         #endregion
 
     }
-
 }

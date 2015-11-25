@@ -9,7 +9,7 @@ using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 
 using ChatSocketService;
-using ALAZ.SystemEx.NetEx.SocketsEx;
+using EchoSocketCore.SocketsEx;
 
 namespace ChatServer
 {

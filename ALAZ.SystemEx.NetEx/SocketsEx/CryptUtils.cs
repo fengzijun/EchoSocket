@@ -43,7 +43,7 @@ using System.IO.Compression;
 using System.Security.Cryptography;
 using System.Diagnostics;
 
-namespace ALAZ.SystemEx.NetEx.SocketsEx
+namespace EchoSocketCore.SocketsEx
 {
 
     /// <summary>

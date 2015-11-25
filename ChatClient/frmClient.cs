@@ -13,8 +13,8 @@ using System.Net;
 using System.Net.Sockets;
 using System.Runtime.InteropServices;
 
-using ALAZ.SystemEx;
-using ALAZ.SystemEx.NetEx.SocketsEx;
+using EchoSocketCore;
+using EchoSocketCore.SocketsEx;
 
 using ChatSocketService;
 

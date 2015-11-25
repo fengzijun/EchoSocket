@@ -38,41 +38,46 @@
  */
 
 using System;
+using System.Threading;
+using EchoSocketCore.RunTimeEx.InteropServicesEx;
 
-namespace EchoSocketCore.SocketsEx
+namespace EchoSocketCore.ThreadingEx
 {
-
-    /// <summary>
-    /// Exception event arguments for exception event.
-    /// </summary>
-    public class ExceptionEventArgs : ConnectionEventArgs
+    
+    public class ThreadEx
     {
 
-        #region Fields
+        #region LoopSleep
 
-        private Exception FException;
-
-        #endregion
-
-        #region Constructor
-
-        public ExceptionEventArgs(ISocketConnection connection, Exception exception)
-            : base(connection)
+        public static void LoopSleep(ref int loopIndex)
         {
-            FException = exception;
+
+            if ((Environment.ProcessorCount == 1) || (++loopIndex % (Environment.ProcessorCount * 50)) == 0)
+            {
+                //----- Single-core!
+                //----- Switch to another running thread!
+                Thread.Sleep(5);
+            }
+            else
+            {
+                //----- Multi-core / HT!
+                //----- Loop n iterations!
+                Thread.SpinWait(20);
+            }
+
         }
 
         #endregion
 
-        #region Properties
+        #region SleepEx
 
-        public Exception Exception
+        public static void SleepEx(int milliseconds)
         {
-            get { return FException; }
+            Thread.Sleep(milliseconds <= 0 ? 1 : milliseconds);
         }
 
         #endregion
 
     }
-
+    
 }

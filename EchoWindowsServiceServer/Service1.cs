@@ -8,7 +8,7 @@ using System.Text;
 using System.Net;
 using System.IO;
 
-using ALAZ.SystemEx.NetEx.SocketsEx;
+using EchoSocketCore.SocketsEx;
 using EchoSocketService;
 using EchoCryptService;
 

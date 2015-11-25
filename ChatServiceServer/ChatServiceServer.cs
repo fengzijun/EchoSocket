@@ -9,7 +9,7 @@ using System.Threading;
 using System.Net;
 using System.Net.Sockets;
 
-using ALAZ.SystemEx.NetEx.SocketsEx;
+using EchoSocketCore.SocketsEx;
 
 namespace ChatServiceServer
 {
