@@ -1,23 +1,15 @@
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Text;
-using System.Windows.Forms;
-using System.Net;
 using System.Threading;
-
+using System.Windows.Forms;
 using EchoSocketService;
 
 namespace EchoFormTemplate
 {
-    
     public partial class frmEchoForm : Form
     {
-
         public OnEventDelegate FEvent;
         private int FConnectionCount;
-        
+
         public frmEchoForm()
         {
             InitializeComponent();
@@ -30,14 +22,12 @@ namespace EchoFormTemplate
 
         public void Event(string eventMessage, bool ex)
         {
-
             if (lstMessages.InvokeRequired)
             {
                 lstMessages.Invoke(new OnEventDelegate(delegate(string s) { Event(s); }), eventMessage);
             }
             else
             {
-
                 if (eventMessage.Contains("Connected"))
                 {
                     Interlocked.Increment(ref FConnectionCount);
@@ -62,9 +52,7 @@ namespace EchoFormTemplate
 
                     lstMessages.EndUpdate();
                 }
-
             }
-
         }
 
         private void frmServer_Load(object sender, EventArgs e)
@@ -81,8 +69,6 @@ namespace EchoFormTemplate
 
         private void lstMessages_SelectedIndexChanged(object sender, EventArgs e)
         {
-
         }
-
     }
 }

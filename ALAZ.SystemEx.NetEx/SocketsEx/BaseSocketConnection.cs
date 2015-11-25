@@ -1,117 +1,63 @@
-/* ====================================================================
- * Copyright (c) 2009 Andre Luis Azevedo (az.andrel@yahoo.com.br)
- * All rights reserved.
- *                       
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- *
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- *    In addition, the source code must keep original namespace names.
- *
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in
- *    the documentation and/or other materials provided with the
- *    distribution. In addition, the binary form must keep the original 
- *    namespace names and original file name.
- * 
- * 3. The name "ALAZ" or "ALAZ Library" must not be used to endorse or promote 
- *    products derived from this software without prior written permission.
- *
- * 4. Products derived from this software may not be called "ALAZ" or
- *    "ALAZ Library" nor may "ALAZ" or "ALAZ Library" appear in their 
- *    names without prior written permission of the author.
- * 
- * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY
- * EXPRESSED OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR
- * ITS CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
- * NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
- * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
- * OF THE POSSIBILITY OF SUCH DAMAGE. 
- */
-
 using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Net;
 using System.Net.Sockets;
-using System.Security.Cryptography;
-using System.IO;
-using System.Collections.Specialized;
-using System.Collections.Generic;
 using System.Reflection;
+using System.Security.Cryptography;
 
 namespace EchoSocketCore.SocketsEx
 {
-
     /// <summary>
     /// Base socket connection
     /// </summary>
     public abstract class BaseSocketConnection : BaseDisposable, ISocketConnection
     {
-
         #region Fields
 
-        //----- Connection!
-        private object FUserData;
-        private long FId;
-
         private object FSyncData;
-        private DateTime FLastAction;
-        private long FWriteBytes;
-        private long FReadBytes;
-
-        //----- Active!
+ 
         private object FSyncActive;
+
         private bool FActive;
 
-        //----- Event Processing!
         private object FSyncEventProcessing;
+
         private EventProcessing FEventProcessing;
 
-        //----- Connection Host and Creator!
-        private BaseSocketConnectionHost FHost;
-        private BaseSocketConnectionCreator FCreator;
-
-        //----- Socket and Stream!
-        private Socket FSocket;
         private Stream FStream;
 
-        //----- Write items!
-        SocketAsyncEventArgs FWriteOV;
+        private SocketAsyncEventArgs FWriteOV;
+
         private Queue<MessageBuffer> FWriteQueue;
+
         private bool FWriteQueueHasItems;
 
-        //----- Read items!
-        SocketAsyncEventArgs FReadOV;
+        private SocketAsyncEventArgs FReadOV;
+
         private object FSyncReadPending;
+
         private bool FReadPending;
 
         private ICryptoTransform FDecryptor;
         private ICryptoTransform FEncryptor;
 
-        #endregion
+        #endregion Fields
 
         #region Constructor
 
         internal BaseSocketConnection(BaseSocketConnectionHost host, BaseSocketConnectionCreator creator, Socket socket)
         {
+            if (Context == null)
+                Context = new SocketContext();
 
-            //----- Connection Id!
-            FId = host.GetConnectionId();
-            
+            Context.ConnectionId = host.GetConnectionId();
+
             FSyncData = new object();
-            FReadBytes = 0;
-            FWriteBytes = 0;
 
-            FHost = host;
-            FCreator = creator;
-            FSocket = socket;
+            Context.Host = host;
+            Context.Creator = creator;
+            Context.SocketHandle = socket;
 
             FSyncActive = new Object();
             FActive = false;
@@ -128,21 +74,18 @@ namespace EchoSocketCore.SocketsEx
             FSyncEventProcessing = new object();
             FEventProcessing = EventProcessing.epNone;
 
-            FLastAction = DateTime.Now;
+            Context.LastAction = DateTime.Now;
 
-            FUserData = null;
             FEncryptor = null;
             FDecryptor = null;
-
         }
 
-        #endregion
+        #endregion Constructor
 
         #region Destructor
 
         protected override void Free(bool canAccessFinalizable)
         {
-
             if (FWriteQueue != null)
             {
                 FWriteQueue.Clear();
@@ -169,7 +112,6 @@ namespace EchoSocketCore.SocketsEx
 
             if (FReadOV != null)
             {
-                
                 Type t = typeof(SocketAsyncEventArgs);
 
                 FieldInfo f = t.GetField("m_Completed", BindingFlags.Instance | BindingFlags.NonPublic);
@@ -178,12 +120,10 @@ namespace EchoSocketCore.SocketsEx
                 FReadOV.SetBuffer(null, 0, 0);
                 FReadOV.Dispose();
                 FReadOV = null;
-
             }
 
             if (FWriteOV != null)
             {
-
                 Type t = typeof(SocketAsyncEventArgs);
 
                 FieldInfo f = t.GetField("m_Completed", BindingFlags.Instance | BindingFlags.NonPublic);
@@ -192,26 +132,18 @@ namespace EchoSocketCore.SocketsEx
                 FWriteOV.SetBuffer(null, 0, 0);
                 FWriteOV.Dispose();
                 FWriteOV = null;
-
             }
 
-            if (FSocket != null)
-            {
-                FSocket.Close();
-                FSocket = null;
-            }
+            Context = null;
 
-            FHost = null;
-            FCreator = null;
             FSyncReadPending = null;
             FSyncData = null;
             FSyncEventProcessing = null;
 
             base.Free(canAccessFinalizable);
-
         }
 
-        #endregion
+        #endregion Destructor
 
         #region Properties
 
@@ -254,7 +186,6 @@ namespace EchoSocketCore.SocketsEx
 
         internal EventProcessing EventProcessing
         {
-
             get
             {
                 lock (FSyncEventProcessing)
@@ -270,13 +201,11 @@ namespace EchoSocketCore.SocketsEx
                     FEventProcessing = value;
                 }
             }
-
         }
 
         internal bool Active
         {
-
-            get 
+            get
             {
                 if (Disposed)
                 {
@@ -289,14 +218,13 @@ namespace EchoSocketCore.SocketsEx
                 }
             }
 
-            set 
+            set
             {
                 lock (FSyncActive)
                 {
-                    FActive = value;    
+                    FActive = value;
                 }
             }
-
         }
 
         internal ICryptoTransform Encryptor
@@ -317,28 +245,21 @@ namespace EchoSocketCore.SocketsEx
             set { FStream = value; }
         }
 
-        internal Socket Socket
-        {
-            get { return FSocket; }
-            set { FSocket = value; }
-        }
+
 
         internal byte[] Delimiter
         {
-            
             get
             {
-
                 switch (EventProcessing)
                 {
-
                     case EventProcessing.epUser:
-                        
-                        return FHost.Delimiter;
+
+                        return Context.Host.Delimiter;
 
                     case EventProcessing.epEncrypt:
-                        
-                        return FHost.DelimiterEncrypt;
+
+                        return Context.Host.DelimiterEncrypt;
 
                     case EventProcessing.epProxy:
 
@@ -347,24 +268,19 @@ namespace EchoSocketCore.SocketsEx
                     default:
 
                         return null;
-
                 }
-
             }
-
         }
 
         internal DelimiterType DelimiterType
         {
             get
             {
-
                 switch (EventProcessing)
                 {
-
                     case EventProcessing.epUser:
 
-                        return FHost.DelimiterType;
+                        return Context.Host.DelimiterType;
 
                     case EventProcessing.epEncrypt:
 
@@ -377,153 +293,96 @@ namespace EchoSocketCore.SocketsEx
                     default:
 
                         return DelimiterType.dtNone;
-
                 }
-
             }
-
         }
 
         internal EncryptType EncryptType
         {
-            get { return FCreator.EncryptType; }
+            get { return Context.Creator.EncryptType; }
         }
 
         internal CompressionType CompressionType
         {
-            get { return FCreator.CompressionType; }
+            get { return Context.Creator.CompressionType; }
         }
 
         internal HostType HostType
         {
-            get { return FHost.HostType; }
+            get { return Context.Host.HostType; }
         }
 
         internal BaseSocketConnectionCreator BaseCreator
         {
-            get { return FCreator; }
+            get { return Context.Creator; }
         }
 
         internal BaseSocketConnectionHost BaseHost
         {
-            get { return FHost; }
+            get { return Context.Host; }
         }
 
-        #endregion
+        #endregion Properties
 
         #region Methods
 
         internal void SetConnectionData(int readBytes, int writeBytes)
         {
-
             if (!Disposed)
             {
-
                 lock (FSyncData)
                 {
-                 
                     if (readBytes > 0)
                     {
-                        FReadBytes += readBytes;
+                        Context.ReadBytes += readBytes;
                     }
 
                     if (writeBytes > 0)
                     {
-                        FWriteBytes += writeBytes;
+                        Context.WriteBytes += writeBytes;
                     }
 
-                    FLastAction = DateTime.Now;
-
+                    Context.LastAction= DateTime.Now;
                 }
-
             }
-
         }
 
-        #endregion
+        #endregion Methods
 
         #region ISocketConnection Members
 
         #region Properties
 
-        public object UserData
-        {
-            get { return FUserData; }
-            set { FUserData = value; }
-        }
+        public SocketContext Context { get; set; }
 
-        public IPEndPoint LocalEndPoint
-        {
-            get { return (IPEndPoint)FSocket.LocalEndPoint; }
-        }
-
-        public IPEndPoint RemoteEndPoint
-        {
-            get { return (IPEndPoint)FSocket.RemoteEndPoint; }
-        }
-
-        public IntPtr SocketHandle
-        {
-            get { return FSocket.Handle; }
-        }
-
-        public long ConnectionId
-        {
-          get { return FId; }
-        }
-
-        public IBaseSocketConnectionCreator Creator
-        {
-          get { return FCreator; }
-        }
-
-        public IBaseSocketConnectionHost Host
-        {
-            get { return FHost; }
-        }
-
-        public DateTime LastAction
-        {
-            get { return FLastAction; }
-        }
-
-        public long ReadBytes
-        {
-            get { return FReadBytes; }
-        }
-
-        public long WriteBytes
-        {
-            get { return FWriteBytes; }
-        }
-
-        #endregion
+        #endregion Properties
 
         #region Socket Options
 
         public void SetTTL(short value)
         {
-          FSocket.Ttl = value;
+            Context.SocketHandle.Ttl = value;
         }
 
         public void SetLinger(LingerOption lo)
         {
-          FSocket.LingerState = lo;
+            Context.SocketHandle.LingerState = lo;
         }
 
         public void SetNagle(bool value)
         {
-          FSocket.NoDelay = value;
+            Context.SocketHandle.NoDelay = value;
         }
 
-        #endregion
+        #endregion Socket Options
 
         #region Abstract Methods
 
         public abstract IClientSocketConnection AsClientConnection();
+
         public abstract IServerSocketConnection AsServerConnection();
 
-        #endregion
+        #endregion Abstract Methods
 
         #region BeginSend
 
@@ -531,11 +390,11 @@ namespace EchoSocketCore.SocketsEx
         {
             if (!Disposed)
             {
-                FHost.BeginSend(this, buffer, false);
+                Context.Host.BeginSend(this, buffer, false);
             }
         }
 
-        #endregion
+        #endregion BeginSend
 
         #region BeginReceive
 
@@ -543,11 +402,11 @@ namespace EchoSocketCore.SocketsEx
         {
             if (!Disposed)
             {
-                FHost.BeginReceive(this);
+                Context.Host.BeginReceive(this);
             }
         }
 
-        #endregion
+        #endregion BeginReceive
 
         #region BeginDisconnect
 
@@ -555,50 +414,44 @@ namespace EchoSocketCore.SocketsEx
         {
             if (!Disposed)
             {
-                FHost.BeginDisconnect(this);
+                Context.Host.BeginDisconnect(this);
             }
         }
 
-        #endregion
+        #endregion BeginDisconnect
 
         #region GetConnections
 
         public ISocketConnection[] GetConnections()
         {
-
             if (!Disposed)
             {
-                return FHost.GetConnections();
+                return Context.Host.GetConnections();
             }
             else
             {
                 return null;
             }
-
         }
 
-        #endregion
+        #endregion GetConnections
 
         #region GetConnectionById
 
         public ISocketConnection GetConnectionById(long id)
         {
-
             if (!Disposed)
             {
-                return FHost.GetSocketConnectionById(id);
+                return Context.Host.GetSocketConnectionById(id);
             }
             else
             {
                 return null;
             }
-
         }
 
-        #endregion
+        #endregion GetConnectionById
 
-        #endregion
-
+        #endregion ISocketConnection Members
     }
-
 }

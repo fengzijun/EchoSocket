@@ -1,57 +1,15 @@
-/* ====================================================================
- * Copyright (c) 2009 Andre Luis Azevedo (az.andrel@yahoo.com.br)
- * All rights reserved.
- *                       
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- *
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- *    In addition, the source code must keep original namespace names.
- *
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in
- *    the documentation and/or other materials provided with the
- *    distribution. In addition, the binary form must keep the original 
- *    namespace names and original file name.
- * 
- * 3. The name "ALAZ" or "ALAZ Library" must not be used to endorse or promote 
- *    products derived from this software without prior written permission.
- *
- * 4. Products derived from this software may not be called "ALAZ" or
- *    "ALAZ Library" nor may "ALAZ" or "ALAZ Library" appear in their 
- *    names without prior written permission of the author.
- * 
- * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY
- * EXPRESSED OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR
- * ITS CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
- * NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
- * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
- * OF THE POSSIBILITY OF SUCH DAMAGE. 
- */
-
 using System;
-using System.Threading;
 using System.Net;
 using System.Net.Sockets;
-using System.Text;
+using System.Threading;
 
 namespace EchoSocketCore.SocketsEx
 {
-
     /// <summary>
     /// Client socket creator.
     /// </summary>
     public class SocketConnector : BaseSocketConnectionCreator
     {
-
         #region Fields
 
         private Socket FSocket;
@@ -64,7 +22,7 @@ namespace EchoSocketCore.SocketsEx
 
         private ProxyInfo FProxyInfo;
 
-        #endregion
+        #endregion Fields
 
         #region Constructor
 
@@ -92,7 +50,6 @@ namespace EchoSocketCore.SocketsEx
         public SocketConnector(BaseSocketConnectionHost host, string name, IPEndPoint remoteEndPoint, ProxyInfo proxyData, EncryptType encryptType, CompressionType compressionType, ICryptoService cryptoService, int reconnectAttempts, int reconnectAttemptInterval, IPEndPoint localEndPoint)
             : base(host, name, localEndPoint, encryptType, compressionType, cryptoService)
         {
-
             FReconnectTimer = new Timer(new TimerCallback(ReconnectConnectionTimerCallBack));
             FRemoteEndPoint = remoteEndPoint;
 
@@ -102,16 +59,14 @@ namespace EchoSocketCore.SocketsEx
             FReconnectAttempted = 0;
 
             FProxyInfo = proxyData;
-
         }
 
-        #endregion
+        #endregion Constructor
 
         #region Destructor
 
         protected override void Free(bool canAccessFinalizable)
         {
-
             if (FReconnectTimer != null)
             {
                 FReconnectTimer.Dispose();
@@ -123,15 +78,14 @@ namespace EchoSocketCore.SocketsEx
                 FSocket.Close();
                 FSocket = null;
             }
-            
+
             FRemoteEndPoint = null;
             FProxyInfo = null;
 
             base.Free(canAccessFinalizable);
-
         }
 
-        #endregion
+        #endregion Destructor
 
         #region Methods
 
@@ -139,15 +93,13 @@ namespace EchoSocketCore.SocketsEx
 
         public override void Start()
         {
-
             if (!Disposed)
             {
                 BeginConnect();
             }
-
         }
 
-        #endregion
+        #endregion Start
 
         #region Stop
 
@@ -156,7 +108,7 @@ namespace EchoSocketCore.SocketsEx
             Dispose();
         }
 
-        #endregion
+        #endregion Stop
 
         #region BeginConnect
 
@@ -165,10 +117,8 @@ namespace EchoSocketCore.SocketsEx
         /// </summary>
         internal void BeginConnect()
         {
-
             if (!Disposed)
             {
-
                 //----- Create Socket!
                 FSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
                 FSocket.Bind(InternalLocalEndPoint);
@@ -187,24 +137,20 @@ namespace EchoSocketCore.SocketsEx
                 }
                 else
                 {
-
                     FProxyInfo.Completed = false;
                     FProxyInfo.SOCKS5Phase = SOCKS5Phase.spIdle;
 
                     e.RemoteEndPoint = FProxyInfo.ProxyEndPoint;
-
                 }
 
                 if (!FSocket.ConnectAsync(e))
                 {
                     BeginConnectCallbackAsync(this, e);
                 }
-
             }
-
         }
 
-        #endregion
+        #endregion BeginConnect
 
         #region BeginAcceptCallbackAsync
 
@@ -214,20 +160,16 @@ namespace EchoSocketCore.SocketsEx
         /// <param name="ar"></param>
         internal void BeginConnectCallbackAsync(object sender, SocketAsyncEventArgs e)
         {
-
             if (!Disposed)
             {
-
                 BaseSocketConnection connection = null;
                 SocketConnector connector = null;
                 Exception exception = null;
 
                 if (e.SocketError == SocketError.Success)
                 {
-
                     try
                     {
-
                         connector = (SocketConnector)e.UserToken;
 
                         connection = new ClientSocketConnection(Host, connector, connector.Socket);
@@ -241,25 +183,19 @@ namespace EchoSocketCore.SocketsEx
                         connection.Active = true;
 
                         Host.InitializeConnection(connection);
-
                     }
                     catch (Exception ex)
                     {
-                        
                         exception = ex;
 
                         if (connection != null)
                         {
-
                             Host.DisposeConnection(connection);
                             Host.RemoveSocketConnection(connection);
 
                             connection = null;
-
                         }
-
                     }
-
                 }
                 else
                 {
@@ -271,80 +207,66 @@ namespace EchoSocketCore.SocketsEx
                     FReconnectAttempted++;
                     ReconnectConnection(false, exception);
                 }
-
             }
 
             e.UserToken = null;
             e.Dispose();
             e = null;
-
         }
 
-        #endregion
+        #endregion BeginAcceptCallbackAsync
 
         #region ReconnectConnection
 
         internal void ReconnectConnection(bool resetAttempts, Exception ex)
         {
-
-          if (!Disposed)
-          {
-
-              if (resetAttempts)
-              {
-                  
-                  //----- Reset counter and start new connect!
-                  FReconnectAttempted = 0;
-                  FReconnectTimer.Change(FReconnectAttemptInterval, FReconnectAttemptInterval);
-
-              }
-              else
-              {
-
-                  //----- Check attempt count!
-                  if (FReconnectAttempts > 0)
-                  {
-
-                      if (FReconnectAttempted < FReconnectAttempts)
-                      {
-                          Host.FireOnException(null, new ReconnectAttemptException("Reconnect attempt", this, ex, FReconnectAttempted, false));
-                          FReconnectTimer.Change(FReconnectAttemptInterval, FReconnectAttemptInterval);
-                      }
-                      else
-                      {
-                          Host.FireOnException(null, new ReconnectAttemptException("Reconnect attempt", this, ex, FReconnectAttempted, true));
-                      }
-
-                  }
-                  else
-                  {
-                      Host.FireOnException(null, new ReconnectAttemptException("Reconnect attempt", this, ex, FReconnectAttempted, true));
-                  }
-              
-              }
-
-          }
-
+            if (!Disposed)
+            {
+                if (resetAttempts)
+                {
+                    //----- Reset counter and start new connect!
+                    FReconnectAttempted = 0;
+                    FReconnectTimer.Change(FReconnectAttemptInterval, FReconnectAttemptInterval);
+                }
+                else
+                {
+                    //----- Check attempt count!
+                    if (FReconnectAttempts > 0)
+                    {
+                        if (FReconnectAttempted < FReconnectAttempts)
+                        {
+                            Host.FireOnException(null, new ReconnectAttemptException("Reconnect attempt", this, ex, FReconnectAttempted, false));
+                            FReconnectTimer.Change(FReconnectAttemptInterval, FReconnectAttemptInterval);
+                        }
+                        else
+                        {
+                            Host.FireOnException(null, new ReconnectAttemptException("Reconnect attempt", this, ex, FReconnectAttempted, true));
+                        }
+                    }
+                    else
+                    {
+                        Host.FireOnException(null, new ReconnectAttemptException("Reconnect attempt", this, ex, FReconnectAttempted, true));
+                    }
+                }
+            }
         }
 
-        #endregion
+        #endregion ReconnectConnection
 
         #region ReconnectConnectionTimerCallBack
 
         private void ReconnectConnectionTimerCallBack(Object stateInfo)
         {
-
             if (!Disposed)
             {
                 FReconnectTimer.Change(Timeout.Infinite, Timeout.Infinite);
                 BeginConnect();
             }
-
         }
 
-        #endregion
+        #endregion ReconnectConnectionTimerCallBack
 
-        #endregion
+        #endregion Methods
 
         #region Properties
 
@@ -370,11 +292,11 @@ namespace EchoSocketCore.SocketsEx
         {
             get { return FRemoteEndPoint; }
         }
-        
-        public  ProxyInfo ProxyInfo
+
+        public ProxyInfo ProxyInfo
         {
             get { return FProxyInfo; }
-            set { FProxyInfo = value; } 
+            set { FProxyInfo = value; }
         }
 
         internal Socket Socket
@@ -382,8 +304,6 @@ namespace EchoSocketCore.SocketsEx
             get { return FSocket; }
         }
 
-        #endregion
-
+        #endregion Properties
     }
-
 }

@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Configuration.Install;
 using System.ServiceProcess;
@@ -11,7 +9,6 @@ namespace ChatServiceServer
     {
         public ChatServiceServerInstaller()
         {
-            
             InitializeComponent();
 
             ServiceProcessInstaller processInstaller = new ServiceProcessInstaller();
@@ -23,7 +20,6 @@ namespace ChatServiceServer
 
             Installers.Add(serviceInstaller);
             Installers.Add(processInstaller);
-
         }
     }
 }

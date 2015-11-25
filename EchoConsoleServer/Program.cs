@@ -1,25 +1,16 @@
 using System;
 using System.Net;
-using System.Security.Cryptography.X509Certificates;
 using System.Threading;
-using System.Security.Cryptography;
-using System.Text;
-
-using EchoSocketService;
-using EchoCryptService;
-
 using EchoSocketCore.SocketsEx;
+using EchoSocketService;
 
 namespace Main
 {
-
-    class MainClass
+    internal class MainClass
     {
-
         [STAThread]
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
-
             AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
 
             //----- Socket Server!
@@ -29,10 +20,10 @@ namespace Main
 
             echoServer.Delimiter = new byte[] { 0xFF, 0x00, 0xFE, 0x01, 0xFD, 0x02 };
             echoServer.DelimiterType = DelimiterType.dtMessageTailExcludeOnReceive;
-            
+
             echoServer.SocketBufferSize = 1024;
             echoServer.MessageBufferSize = 2048;
-            
+
             echoServer.IdleCheckInterval = 60000;
             echoServer.IdleTimeOutValue = 120000;
 
@@ -45,9 +36,9 @@ namespace Main
             listener.EncryptType = EncryptType.etNone;
             listener.CompressionType = CompressionType.ctNone;
             listener.CryptoService = new EchoCryptService.EchoCryptService();
-            
+
             echoServer.Start();
- 
+
             Console.WriteLine("Started!");
             Console.WriteLine("----------------------");
 
@@ -59,21 +50,17 @@ namespace Main
             Console.WriteLine("Threads I/O  - " + iot.ToString());
 
             string s;
-            
+
             do
             {
-
                 s = Console.ReadLine();
 
                 if (s.Equals("g"))
                 {
-
                     ThreadPool.GetAvailableThreads(out wt, out iot);
                     Console.WriteLine("Threads Work " + iot.ToString());
                     Console.WriteLine("Threads I/O  " + wt.ToString());
-
                 }
-
             } while (s.Equals("g"));
 
             try
@@ -81,7 +68,7 @@ namespace Main
                 echoServer.Stop();
                 echoServer.Dispose();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
             }
@@ -91,10 +78,9 @@ namespace Main
             Console.WriteLine("Stopped!");
             Console.WriteLine("----------------------");
             Console.ReadLine();
-
         }
 
-        static void echoServer_OnException(Exception ex)
+        private static void echoServer_OnException(Exception ex)
         {
             Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine("Service Exception! - " + ex.Message);
@@ -102,7 +88,7 @@ namespace Main
             Console.ResetColor();
         }
 
-        static void Event(string eventMessage)
+        private static void Event(string eventMessage)
         {
             if (eventMessage.Contains("Exception"))
             {
@@ -114,15 +100,12 @@ namespace Main
             {
                 Console.WriteLine(eventMessage);
             }
-
         }
 
-        static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+        private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
             Console.WriteLine(e.ExceptionObject.ToString());
             Console.ReadLine();
         }
-
     }
-
 }

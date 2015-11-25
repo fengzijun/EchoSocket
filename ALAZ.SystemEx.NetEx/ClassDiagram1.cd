@@ -1,0 +1,411 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="EchoSocketCore.BaseDisposable" Collapsed="true">
+    <Position X="9" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAACAAABAAAAAAAIAAAAAAAAAAAAAAAAACAAI=</HashCode>
+      <FileName>BaseDisposable.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="EchoSocketCore.BaseFinalizable" Collapsed="true">
+    <Position X="1.25" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>BaseFinalizable.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="EchoSocketCore.RunTimeEx.InteropServicesEx.MarshalEx" Collapsed="true">
+    <Position X="19.5" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>RuntTimeEx\InteropServicesEx\MarshalEx.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="EchoSocketCore.SocketsEx.AuthenticateCallbackData" Collapsed="true">
+    <Position X="19.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAEAAAAAACAAAAAoAEAAAAAAAAAAAQA=</HashCode>
+      <FileName>SocketsEx\AuthenticateCallbackData.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="EchoSocketCore.SocketsEx.BaseSocketConnection" Collapsed="true">
+    <Position X="6.75" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AkAAUQAgAAJACYB4gGIAICA64SAJCUYwkAlAAAC4IYs=</HashCode>
+      <FileName>SocketsEx\BaseSocketConnection.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="EchoSocketCore.SocketsEx.BaseSocketConnectionCreator" Collapsed="true">
+    <Position X="11.25" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AEAAAAAQACAACBAYACAAAARAAAAACAAAIACAAgIAAAI=</HashCode>
+      <FileName>SocketsEx\BaseSocketConnectionCreator.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="EchoSocketCore.SocketsEx.BaseSocketConnectionHost" Collapsed="true">
+    <Position X="15.75" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ARZAdiA1IGMAoQhgIi4SIDIJkKABgEZlIAgIgSiQIQI=</HashCode>
+      <FileName>SocketsEx\BaseSocketConnectionHost.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="EchoSocketCore.SocketsEx.BufferUtils" Collapsed="true">
+    <Position X="24.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAQAgAA=</HashCode>
+      <FileName>SocketsEx\BufferUtils.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="EchoSocketCore.SocketsEx.ClientSocketConnection" Collapsed="true">
+    <Position X="5.75" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAgAAAAAAAAAAAAgAAAAAIAAAAAQAAAAAAAAAAAA=</HashCode>
+      <FileName>SocketsEx\ClientSocketConnection.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="EchoSocketCore.SocketsEx.ConnectionEventArgs" Collapsed="true">
+    <Position X="6.75" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAEAAAAAAAAAAAAgAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>SocketsEx\ConnectionEventArgs.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="EchoSocketCore.SocketsEx.CryptUtils" Collapsed="true">
+    <Position X="26.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAACAAAAAAACAAAAAAAAAgAAgQAAAAAAAA=</HashCode>
+      <FileName>SocketsEx\CryptUtils.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="EchoSocketCore.SocketsEx.ExceptionEventArgs" Collapsed="true">
+    <Position X="5.5" Y="6" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAABAAAAAAAA=</HashCode>
+      <FileName>SocketsEx\ExceptionEventArgs.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="EchoSocketCore.SocketsEx.MessageBuffer" Collapsed="true">
+    <Position X="21.25" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAggAAAAAAAAAAAAQAAAAAAAAAEAAAAAQAQAA=</HashCode>
+      <FileName>SocketsEx\MessageBuffer.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="EchoSocketCore.SocketsEx.MessageEventArgs" Collapsed="true">
+    <Position X="7.75" Y="6" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAgAAAAAAAAAAAAAAgAAAAAAAEAAAAAAAQAA=</HashCode>
+      <FileName>SocketsEx\MessageEventArgs.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="EchoSocketCore.SocketsEx.ProxyInfo" Collapsed="true">
+    <Position X="26.5" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAEBACAAAMAAABAAAAAAAAACAICAAAAAAYAAAA=</HashCode>
+      <FileName>SocketsEx\ProxyInfo.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="EchoSocketCore.SocketsEx.ProxyUtils" Collapsed="true">
+    <Position X="19.5" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAACAAAAAAAA=</HashCode>
+      <FileName>SocketsEx\ProxyUtils.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="EchoSocketCore.SocketsEx.ServerSocketConnection" Collapsed="true">
+    <Position X="8" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAAAAAAAAAAAAAAAIAAAAARAAAAAAAAAAAA=</HashCode>
+      <FileName>SocketsEx\ServerSocketConnection.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="EchoSocketCore.SocketsEx.SocketClient" Collapsed="true">
+    <Position X="14.75" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAgAAAAAAAAAAAAAAAAAAAAAAAABAIAAAAAAAAgA=</HashCode>
+      <FileName>SocketsEx\SocketClient.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="EchoSocketCore.SocketsEx.SocketClientSync" Collapsed="true">
+    <Position X="3.5" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>BMRAUAaQUAGgSABYAAiBDIEwACQBgCEEIAmICSFACAI=</HashCode>
+      <FileName>SocketsEx\SocketClientSync.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="EchoSocketCore.SocketsEx.SocketClientSyncSocketService" Collapsed="true">
+    <Position X="3.5" Y="8.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAIAAAAAAAAAAAAAAAABAAAAAAMAAAAAAwAAAAA=</HashCode>
+      <FileName>SocketsEx\SocketClientSync.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="EchoSocketCore.SocketsEx.SocketClientSyncCryptService" Collapsed="true">
+    <Position X="0.5" Y="8.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAEAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAACAA=</HashCode>
+      <FileName>SocketsEx\SocketClientSync.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="EchoSocketCore.SocketsEx.SocketConnector">
+    <Position X="10.25" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAASAEAAgAAAgECqAQAIAAARAAICkBAAAAAAI=</HashCode>
+      <FileName>SocketsEx\SocketConnector.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="EchoSocketCore.SocketsEx.SocketListener" Collapsed="true">
+    <Position X="12.5" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>gAAAAAAAACAAAAAABAAIACAQAAAAAQAAIIAAAEAACAI=</HashCode>
+      <FileName>SocketsEx\SocketListener.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="EchoSocketCore.SocketsEx.SocketServer" Collapsed="true">
+    <Position X="17" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAgAAAAAAABAAAAAAAAAAAAAAAABAIAAAAAAAAAA=</HashCode>
+      <FileName>SocketsEx\SocketServer.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="EchoSocketCore.SocketsEx.ReconnectAttemptException" Collapsed="true">
+    <Position X="21.25" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAgAAAAAAAAAAAAEABAAAAAAAAAAAAEAAAAAAAQQA=</HashCode>
+      <FileName>SocketsEx\SocketsExTypes.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="EchoSocketCore.SocketsEx.BadDelimiterException" Collapsed="true">
+    <Position X="23" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>SocketsEx\SocketsExTypes.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="EchoSocketCore.SocketsEx.MessageLengthException" Collapsed="true">
+    <Position X="23" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>SocketsEx\SocketsExTypes.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="EchoSocketCore.SocketsEx.SymmetricAuthenticationException" Collapsed="true">
+    <Position X="26.5" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>SocketsEx\SocketsExTypes.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="EchoSocketCore.SocketsEx.SSLAuthenticationException" Collapsed="true">
+    <Position X="24.75" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>SocketsEx\SocketsExTypes.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="EchoSocketCore.SocketsEx.ProxyAuthenticationException" Collapsed="true">
+    <Position X="24.75" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>SocketsEx\SocketsExTypes.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="EchoSocketCore.SocketsEx.AuthMessage" Collapsed="true">
+    <Position X="21.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAABAAAABAQAAAAAAAIAAAAABAAAAAAAAAAAAA=</HashCode>
+      <FileName>SocketsEx\SocketsExTypes.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="EchoSocketCore.SocketsEx.SocketConnection" Collapsed="true">
+    <Position X="23" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAACgAAAAAAAAAAAAAAAAAAAAAAAAAEA=</HashCode>
+      <FileName>SocketsEx\SocketsExTypes.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="EchoSocketCore.SocketsEx.BaseSocketService" Collapsed="true">
+    <Position X="3.5" Y="7.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAIAAAAAAAAAAAAAAAABAAAAAAIAAAAAAwAAAAA=</HashCode>
+      <FileName>SocketsEx\SocketsExTypes.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="EchoSocketCore.SocketsEx.BaseCryptoService" Collapsed="true">
+    <Position X="0.5" Y="7.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>QAAAAAAAEAAAAAAAAAAAACAAAAAAAAAAAAAAAAAACAA=</HashCode>
+      <FileName>SocketsEx\SocketsExTypes.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="EchoSocketCore.SocketsEx.WriteData" Collapsed="true">
+    <Position X="21.25" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAggAAAAEAAAAAAAAAAAAgAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>SocketsEx\WriteData.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="EchoSocketCore.ThreadingEx.ThreadEx" Collapsed="true">
+    <Position X="19.5" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAEAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAA=</HashCode>
+      <FileName>ThreadingEx\ThreadEx.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Interface Name="EchoSocketCore.SocketsEx.IBaseSocketConnectionCreator" Collapsed="true">
+    <Position X="19.5" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAYAAAAAAQAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>SocketsEx\SocketsExTypes.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="EchoSocketCore.SocketsEx.IBaseSocketConnectionHost" Collapsed="true">
+    <Position X="21.25" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAMAAEAAAAAABAAAAAAAAAACAAgAAAAAAAAAAAAQA=</HashCode>
+      <FileName>SocketsEx\SocketsExTypes.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="EchoSocketCore.SocketsEx.ISocketConnectionInfo" Collapsed="true">
+    <Position X="1.75" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>SocketsEx\SocketsExTypes.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="EchoSocketCore.SocketsEx.ISocketConnection" Collapsed="true">
+    <Position X="1.75" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAJAAQAAAAIAICAAIAAAAAQAAAgAAAAAIAA=</HashCode>
+      <FileName>SocketsEx\SocketsExTypes.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="EchoSocketCore.SocketsEx.IClientSocketConnection" Collapsed="true">
+    <Position X="0.5" Y="6.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAgAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>SocketsEx\SocketsExTypes.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="EchoSocketCore.SocketsEx.IServerSocketConnection" Collapsed="true">
+    <Position X="2.75" Y="6.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAA=</HashCode>
+      <FileName>SocketsEx\SocketsExTypes.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="EchoSocketCore.SocketsEx.ISocketService" Collapsed="true">
+    <Position X="24.75" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAIAAAAAAAAAAAAAAAABAAAAAAIAAAAAAwAAAAA=</HashCode>
+      <FileName>SocketsEx\SocketsExTypes.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="EchoSocketCore.SocketsEx.ICryptoService" Collapsed="true">
+    <Position X="23" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>QAAAAAAAEAAAAAAAAAAAACAAAAAAAAAAAAAAAAAACAA=</HashCode>
+      <FileName>SocketsEx\SocketsExTypes.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Enum Name="EchoSocketCore.SocketsEx.CallbackThreadType" Collapsed="true">
+    <Position X="19.5" Y="5.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAgAAAAAAAAA=</HashCode>
+      <FileName>SocketsEx\SocketsExTypes.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="EchoSocketCore.SocketsEx.HostType" Collapsed="true">
+    <Position X="19.5" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAABAAAAAAAAAIAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>SocketsEx\SocketsExTypes.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="EchoSocketCore.SocketsEx.EncryptType" Collapsed="true">
+    <Position X="24.75" Y="5.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAEAgAAAA=</HashCode>
+      <FileName>SocketsEx\SocketsExTypes.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="EchoSocketCore.SocketsEx.CompressionType" Collapsed="true">
+    <Position X="21.25" Y="5.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAQAAAAAAAQAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>SocketsEx\SocketsExTypes.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="EchoSocketCore.SocketsEx.DelimiterType" Collapsed="true">
+    <Position X="23" Y="5.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAgAAACAAAAAAAAAIAAAAAAAAAAAAA=</HashCode>
+      <FileName>SocketsEx\SocketsExTypes.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="EchoSocketCore.SocketsEx.EventProcessing" Collapsed="true">
+    <Position X="26.5" Y="5.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>CAAAAAAACAAAAEAAAAgAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>SocketsEx\SocketsExTypes.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="EchoSocketCore.SocketsEx.ProxyType" Collapsed="true">
+    <Position X="21.25" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAASAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAA=</HashCode>
+      <FileName>SocketsEx\SocketsExTypes.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="EchoSocketCore.SocketsEx.SOCKS5AuthMode" Collapsed="true">
+    <Position X="23" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAQAAAAAAAAA=</HashCode>
+      <FileName>SocketsEx\SocketsExTypes.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="EchoSocketCore.SocketsEx.SOCKS5Phase" Collapsed="true">
+    <Position X="24.75" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAgAIAAAAAAAAAAAAAAAAAAAAAAAAJAAAAAAAAA=</HashCode>
+      <FileName>SocketsEx\SocketsExTypes.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Delegate Name="EchoSocketCore.SocketsEx.OnDisconnectEvent" Collapsed="true">
+    <Position X="19.5" Y="7.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>SocketsEx\SocketsExTypes.cs</FileName>
+    </TypeIdentifier>
+  </Delegate>
+  <Delegate Name="EchoSocketCore.SocketsEx.OnSymmetricAuthenticateEvent" Collapsed="true">
+    <Position X="24.75" Y="7.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAEAA=</HashCode>
+      <FileName>SocketsEx\SocketsExTypes.cs</FileName>
+    </TypeIdentifier>
+  </Delegate>
+  <Delegate Name="EchoSocketCore.SocketsEx.OnSSLClientAuthenticateEvent" Collapsed="true">
+    <Position X="21.25" Y="7.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAgAAAABAAAAAAAAAAAAAAAAABABAAAAAAAAA=</HashCode>
+      <FileName>SocketsEx\SocketsExTypes.cs</FileName>
+    </TypeIdentifier>
+  </Delegate>
+  <Delegate Name="EchoSocketCore.SocketsEx.OnSSLServerAuthenticateEvent" Collapsed="true">
+    <Position X="23" Y="7.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAgAAAAAAAAAABAAAAAAAAAAAAABAAAAAAAAA=</HashCode>
+      <FileName>SocketsEx\SocketsExTypes.cs</FileName>
+    </TypeIdentifier>
+  </Delegate>
+  <Font Name="微软雅黑" Size="10" />
+</ClassDiagram>

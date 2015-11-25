@@ -1,67 +1,24 @@
-/* ====================================================================
- * Copyright (c) 2009 Andre Luis Azevedo (az.andrel@yahoo.com.br)
- * All rights reserved.
- *                       
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- *
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- *    In addition, the source code must keep original namespace names.
- *
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in
- *    the documentation and/or other materials provided with the
- *    distribution. In addition, the binary form must keep the original 
- *    namespace names and original file name.
- * 
- * 3. The name "ALAZ" or "ALAZ Library" must not be used to endorse or promote 
- *    products derived from this software without prior written permission.
- *
- * 4. Products derived from this software may not be called "ALAZ" or
- *    "ALAZ Library" nor may "ALAZ" or "ALAZ Library" appear in their 
- *    names without prior written permission of the author.
- * 
- * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY
- * EXPRESSED OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR
- * ITS CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
- * NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
- * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
- * OF THE POSSIBILITY OF SUCH DAMAGE. 
- */
-
 using System;
 using System.Net;
 using System.Net.Sockets;
-using System.Net.Security;
 using System.Threading;
-using System.Security.Cryptography.X509Certificates;
 
 using EchoSocketCore.ThreadingEx;
 
 namespace EchoSocketCore.SocketsEx
 {
-
     /// <summary>
     /// Server socket connector.
     /// </summary>
     public class SocketListener : BaseSocketConnectionCreator
     {
-
         #region Fields
 
         private Socket FSocket;
         private byte FBackLog;
         private byte FAcceptThreads;
 
-        #endregion
+        #endregion Fields
 
         #region Constructor
 
@@ -92,19 +49,16 @@ namespace EchoSocketCore.SocketsEx
         public SocketListener(BaseSocketConnectionHost host, string name, IPEndPoint localEndPoint, EncryptType encryptType, CompressionType compressionType, ICryptoService cryptoService, byte backLog, byte acceptThreads)
             : base(host, name, localEndPoint, encryptType, compressionType, cryptoService)
         {
-
             FBackLog = backLog;
             FAcceptThreads = acceptThreads;
-
         }
 
-        #endregion
+        #endregion Constructor
 
         #region Destructor
 
         protected override void Free(bool canAccessFinalizable)
         {
-
             if (FSocket != null)
             {
                 FSocket.Close();
@@ -114,7 +68,7 @@ namespace EchoSocketCore.SocketsEx
             base.Free(canAccessFinalizable);
         }
 
-        #endregion
+        #endregion Destructor
 
         #region Methods
 
@@ -122,10 +76,8 @@ namespace EchoSocketCore.SocketsEx
 
         public override void Start()
         {
-
             if (!Disposed)
             {
-
                 FSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
                 FSocket.Bind(LocalEndPoint);
                 FSocket.Listen(FBackLog * FAcceptThreads);
@@ -146,14 +98,11 @@ namespace EchoSocketCore.SocketsEx
                     };
 
                     ThreadEx.LoopSleep(ref loopCount);
-
                 }
-
             }
-
         }
 
-        #endregion
+        #endregion Start
 
         #region BeginAcceptCallbackAsync
 
@@ -167,12 +116,10 @@ namespace EchoSocketCore.SocketsEx
         /// </summary>
         internal void BeginAcceptCallback(object state)
         {
-
             SocketAsyncEventArgs e = (SocketAsyncEventArgs)state;
 
             if (!Disposed)
             {
-                
                 SocketListener listener = null;
                 Socket acceptedSocket = null;
                 BaseSocketConnection connection = null;
@@ -181,10 +128,8 @@ namespace EchoSocketCore.SocketsEx
 
                 if (e.SocketError == SocketError.Success)
                 {
-
                     try
                     {
-
                         //----- Get accepted socket!
                         acceptedSocket = e.AcceptSocket;
 
@@ -199,14 +144,11 @@ namespace EchoSocketCore.SocketsEx
                         connection.Active = true;
 
                         Host.InitializeConnection(connection);
-
                     }
                     catch
                     {
-
                         if (connection != null)
                         {
-
                             if (Host != null)
                             {
                                 Host.DisposeConnection(connection);
@@ -214,11 +156,8 @@ namespace EchoSocketCore.SocketsEx
                             }
 
                             connection = null;
-
                         }
-
                     }
-
                 }
 
                 //---- Continue to accept!
@@ -230,16 +169,14 @@ namespace EchoSocketCore.SocketsEx
                 {
                     BeginAcceptCallbackAsync(this, e2);
                 }
-
             }
 
             e.UserToken = null;
             e.Dispose();
             e = null;
-
         }
 
-        #endregion
+        #endregion BeginAcceptCallbackAsync
 
         #region Stop
 
@@ -248,9 +185,9 @@ namespace EchoSocketCore.SocketsEx
             Dispose();
         }
 
-        #endregion
+        #endregion Stop
 
-        #endregion
+        #endregion Methods
 
         #region Properties
 
@@ -258,7 +195,7 @@ namespace EchoSocketCore.SocketsEx
         {
             get { return InternalLocalEndPoint; }
         }
-        
+
         public byte BackLog
         {
             get { return FBackLog; }
@@ -276,8 +213,6 @@ namespace EchoSocketCore.SocketsEx
             get { return FSocket; }
         }
 
-        #endregion
-
+        #endregion Properties
     }
-
 }

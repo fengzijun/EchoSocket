@@ -1,29 +1,21 @@
 using System;
-using System.Text;
-using System.Net.Sockets;
-using System.Diagnostics;
-using System.Collections;
 using System.Collections.Generic;
-using System.Threading;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
-
-using EchoSocketCore;
+using System.Text;
+using System.Threading;
 using EchoSocketCore.SocketsEx;
-using EchoSocketCore.ThreadingEx;
 
 namespace ChatSocketService
 {
-
     public class ChatSocketService : BaseSocketService
     {
-
         #region Fields
 
         private ReaderWriterLock FUsersSync;
         private Dictionary<long, ISocketConnection> FUsers;
 
-        #endregion
+        #endregion Fields
 
         #region Constructor
 
@@ -33,7 +25,7 @@ namespace ChatSocketService
             FUsers = new Dictionary<long, ISocketConnection>(100);
         }
 
-        #endregion
+        #endregion Constructor
 
         #region Methods
 
@@ -43,131 +35,113 @@ namespace ChatSocketService
 
         public static byte[] SerializeMessage(ChatMessage msg)
         {
-        
-            using(MemoryStream m = new MemoryStream())
+            using (MemoryStream m = new MemoryStream())
             {
-            
                 BinaryFormatter bin = new BinaryFormatter();
                 bin.Serialize(m, msg);
-            
+
                 return m.ToArray();
-                
             }
-        
         }
-        
-        #endregion
+
+        #endregion SerializeMessage
 
         #region DeserializeMessage
 
         public static ChatMessage DeserializeMessage(byte[] buffer)
         {
-
-            using(MemoryStream m = new MemoryStream())
+            using (MemoryStream m = new MemoryStream())
             {
-
                 m.Write(buffer, 0, buffer.Length);
                 m.Position = 0;
 
                 BinaryFormatter bin = new BinaryFormatter();
 
-                return (ChatMessage) bin.Deserialize(m);
-                
+                return (ChatMessage)bin.Deserialize(m);
             }
-
         }
 
-        #endregion
+        #endregion DeserializeMessage
 
-        #endregion
-        
+        #endregion Utils
+
         #region OnConnected
 
         public override void OnConnected(ConnectionEventArgs e)
         {
-
             StringBuilder s = new StringBuilder();
 
             s.Append("\r\n------------------------------------------------\r\n");
             s.Append("New Client\r\n");
-            s.Append(" Connection Id " + e.Connection.ConnectionId + "\r\n");
-            s.Append(" Ip Address " + e.Connection.RemoteEndPoint.Address + "\r\n");
-            s.Append(" Tcp Port " + e.Connection.RemoteEndPoint.Port + "\r\n");
-            
+            s.Append(" Connection Id " + e.Connection.Context.ConnectionId + "\r\n");
+            s.Append(" Ip Address " + e.Connection.Context.RemoteEndPoint.Address + "\r\n");
+            s.Append(" Tcp Port " + e.Connection.Context.RemoteEndPoint.Port + "\r\n");
+
             Console.WriteLine(s.ToString());
             s.Length = 0;
-            
-            e.Connection.UserData = new ConnectionData(ConnectionState.csConnected);
+
+            e.Connection.Context.UserData = new ConnectionData(ConnectionState.csConnected);
             e.Connection.BeginReceive();
-            
         }
 
-        #endregion
+        #endregion OnConnected
 
         #region OnSent
 
         public override void OnSent(MessageEventArgs e)
         {
-
             //if (!e.SentByServer)
             //{
             //    e.Connection.BeginReceive();
             //}
-
         }
 
-        #endregion
+        #endregion OnSent
 
         #region OnReceived
 
         public override void OnReceived(MessageEventArgs e)
         {
-
             ChatMessage msg = DeserializeMessage(e.Buffer);
 
             switch (msg.MessageType)
             {
-
                 case MessageType.mtLogin:
 
-                    ((ConnectionData)e.Connection.UserData).ConnectionState = ConnectionState.csAuthenticated;
-                    ((ConnectionData)e.Connection.UserData).UserName = msg.UserInfo[0].UserName;
+                    ((ConnectionData)e.Connection.Context.UserData).ConnectionState = ConnectionState.csAuthenticated;
+                    ((ConnectionData)e.Connection.Context.UserData).UserName = msg.UserInfo[0].UserName;
 
-                    msg.UserInfo[0].UserId = e.Connection.ConnectionId;
+                    msg.UserInfo[0].UserId = e.Connection.Context.ConnectionId;
                     e.Connection.BeginSend(SerializeMessage(msg));
-                    
+
                     msg.MessageType = MessageType.mtAuthenticated;
                     e.Connection.AsServerConnection().BeginSendToAll(SerializeMessage(msg), false);
-                    
+
                     ISocketConnection[] cnns = e.Connection.AsServerConnection().GetConnections();
-                    
-                    if ( (cnns != null) && (cnns.Length > 0) )
+
+                    if ((cnns != null) && (cnns.Length > 0))
                     {
-                        
                         bool send = false;
-                        
+
                         msg.MessageType = MessageType.mtHello;
                         msg.UserInfo = new UserInfo[cnns.Length];
-                        
+
                         for (int i = 0; i < cnns.Length; i++)
-        			    {
-                            
+                        {
                             if (cnns[i] != e.Connection)
                             {
-                                msg.UserInfo[i].UserName = ((ConnectionData)cnns[i].UserData).UserName;
-                                msg.UserInfo[i].UserId = cnns[i].ConnectionId;
+                                msg.UserInfo[i].UserName = ((ConnectionData)cnns[i].Context.UserData).UserName;
+                                msg.UserInfo[i].UserId = cnns[i].Context.ConnectionId;
                                 send = true;
                             }
-                            
-		        	    }
+                        }
 
                         if (send)
                         {
                             e.Connection.AsServerConnection().BeginSend(SerializeMessage(msg));
                         }
-                        
-                    }                    
-                    
+                    }
+
                     break;
 
                 case MessageType.mtMessage:
@@ -175,42 +149,36 @@ namespace ChatSocketService
                     e.Connection.AsServerConnection().BeginSendToAll(e.Buffer, false);
 
                     break;
-                    
-                    
+
                 case MessageType.mtLogout:
 
                     e.Connection.AsServerConnection().BeginSendToAll(SerializeMessage(msg), false);
-                    break;    
-                
+                    break;
             }
 
             e.Connection.BeginReceive();
-
         }
 
-        #endregion
+        #endregion OnReceived
 
         #region OnDisconnected
 
         public override void OnDisconnected(ConnectionEventArgs e)
         {
-
             StringBuilder s = new StringBuilder();
 
             s.Append("------------------------------------------------" + "\r\n");
             s.Append("Client Disconnected\r\n");
-            s.Append(" Connection Id " + e.Connection.ConnectionId + "\r\n");
-            
-            e.Connection.UserData = null;
-            
+            s.Append(" Connection Id " + e.Connection.Context.ConnectionId + "\r\n");
+
+            e.Connection.Context.UserData = null;
+
             Console.WriteLine(s.ToString());
-            
+
             s.Length = 0;
-
-
         }
 
-        #endregion
+        #endregion OnDisconnected
 
         #region OnException
 
@@ -219,30 +187,28 @@ namespace ChatSocketService
             e.Connection.BeginDisconnect();
         }
 
-        #endregion
+        #endregion OnException
 
-        #endregion
-
+        #endregion Methods
     }
-    
+
     [Serializable]
     public struct UserInfo
     {
-
         #region Fields
 
         private string FUserName;
         private long FUserId;
 
-        #endregion
-        
-	    #region Properties
-	    
-	    public string UserName
-	    {
+        #endregion Fields
+
+        #region Properties
+
+        public string UserName
+        {
             get { return FUserName; }
             set { FUserName = value; }
-	    }
+        }
 
         public long UserId
         {
@@ -250,8 +216,8 @@ namespace ChatSocketService
             set { FUserId = value; }
         }
 
-	    #endregion   
-	    
+        #endregion Properties
+
         #region Methods
 
         public override string ToString()
@@ -259,29 +225,29 @@ namespace ChatSocketService
             return FUserName;
         }
 
-        #endregion
-
+        #endregion Methods
     }
 
     [Serializable]
     public class ChatMessage
     {
-
         #region Fields
 
         private MessageType FMessageType;
         private UserInfo[] FUsers;
         private string FMessage;
 
-        #endregion
-        
+        #endregion Fields
+
         #region Constructor
 
-        public ChatMessage() { }
-		 
-	    #endregion
-	 
-	    #region Properties
+        public ChatMessage()
+        {
+        }
+
+        #endregion Constructor
+
+        #region Properties
 
         public MessageType MessageType
         {
@@ -290,10 +256,10 @@ namespace ChatSocketService
         }
 
         public UserInfo[] UserInfo
-	    {
+        {
             get { return FUsers; }
             set { FUsers = value; }
-	    }
+        }
 
         public string Message
         {
@@ -301,19 +267,17 @@ namespace ChatSocketService
             set { FMessage = value; }
         }
 
-	    #endregion   
-
+        #endregion Properties
     }
 
     public class ConnectionData
     {
-        
         #region Fields
 
         private ConnectionState FConnectionState;
         private string FUserName;
 
-        #endregion
+        #endregion Fields
 
         #region Constructor
 
@@ -323,7 +287,7 @@ namespace ChatSocketService
             FUserName = String.Empty;
         }
 
-        #endregion
+        #endregion Constructor
 
         #region Properties
 
@@ -339,8 +303,7 @@ namespace ChatSocketService
             set { FUserName = value; }
         }
 
-        #endregion
-        
+        #endregion Properties
     }
 
     public enum MessageType
@@ -358,6 +321,4 @@ namespace ChatSocketService
         csAuthenticated,
         csDisconnected
     }
-
-
 }

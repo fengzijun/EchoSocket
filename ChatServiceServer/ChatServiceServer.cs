@@ -1,23 +1,13 @@
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Diagnostics;
-using System.ServiceProcess;
-using System.Text;
-using System.Threading;
 using System.Net;
-using System.Net.Sockets;
-
+using System.ServiceProcess;
 using EchoSocketCore.SocketsEx;
 
 namespace ChatServiceServer
 {
     public partial class ChatServiceServer : ServiceBase
     {
-        
         private SocketServer chatServer;
-        
+
         public ChatServiceServer()
         {
             InitializeComponent();
@@ -25,8 +15,7 @@ namespace ChatServiceServer
 
         protected override void OnStart(string[] args)
         {
-
-            chatServer = new SocketServer( CallbackThreadType.ctWorkerThread, new ChatSocketService.ChatSocketService());
+            chatServer = new SocketServer(CallbackThreadType.ctWorkerThread, new ChatSocketService.ChatSocketService());
 
             chatServer.Delimiter = new byte[] { 0xAA, 0xFF, 0xAA };
             chatServer.DelimiterType = DelimiterType.dtMessageTailExcludeOnReceive;
@@ -45,16 +34,13 @@ namespace ChatServiceServer
             listener.CryptoService = new ChatCryptService.ChatCryptService();
 
             chatServer.Start();
-
         }
 
         protected override void OnStop()
         {
-
             chatServer.Stop();
             chatServer.Dispose();
             chatServer = null;
-            
         }
     }
 }

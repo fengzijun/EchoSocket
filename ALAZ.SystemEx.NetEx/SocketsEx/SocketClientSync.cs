@@ -1,68 +1,27 @@
-/* ====================================================================
- * Copyright (c) 2009 Andre Luis Azevedo (az.andrel@yahoo.com.br)
- * All rights reserved.
- *                       
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- *
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- *    In addition, the source code must keep original namespace names.
- *
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in
- *    the documentation and/or other materials provided with the
- *    distribution. In addition, the binary form must keep the original 
- *    namespace names and original file name.
- * 
- * 3. The name "ALAZ" or "ALAZ Library" must not be used to endorse or promote 
- *    products derived from this software without prior written permission.
- *
- * 4. Products derived from this software may not be called "ALAZ" or
- *    "ALAZ Library" nor may "ALAZ" or "ALAZ Library" appear in their 
- *    names without prior written permission of the author.
- * 
- * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY
- * EXPRESSED OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR
- * ITS CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
- * NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
- * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
- * OF THE POSSIBILITY OF SUCH DAMAGE. 
- */
-
 using System;
 using System.Collections.Generic;
 using System.Net;
-using System.Net.Sockets;
-using System.Threading;
-using System.Text;
-
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
+using System.Text;
+using System.Threading;
 
 namespace EchoSocketCore.SocketsEx
 {
-
     #region SocketClientSync
 
-    public class SocketClientSync: BaseDisposable
+    public class SocketClientSync : BaseDisposable
     {
-
         #region Fields
 
         //----- EndPoints!
         private IPEndPoint FLocalEndPoint;
+
         private IPEndPoint FRemoteEndPoint;
 
         //----- Message Types!
         private EncryptType FEncryptType;
+
         private CompressionType FCompressionType;
         private DelimiterType FDelimiterType;
 
@@ -74,9 +33,11 @@ namespace EchoSocketCore.SocketsEx
 
         private int FMessageBufferSize;
         private int FSocketBufferSize;
-        
+
         private event OnSymmetricAuthenticateEvent FOnSymmetricAuthenticateEvent;
+
         private event OnSSLClientAuthenticateEvent FOnSSLClientAuthenticateEvent;
+
         private event OnDisconnectEvent FOnDisconnectedEvent;
 
         private ISocketConnection FSocketConnection;
@@ -101,13 +62,12 @@ namespace EchoSocketCore.SocketsEx
 
         private Exception FLastException;
 
-        #endregion
-        
+        #endregion Fields
+
         #region Constructor
 
         public SocketClientSync(IPEndPoint host)
         {
-
             FReceivedEvent = new AutoResetEvent(false);
             FExceptionEvent = new AutoResetEvent(false);
             FSentEvent = new AutoResetEvent(false);
@@ -124,7 +84,7 @@ namespace EchoSocketCore.SocketsEx
 
             FSocketClientEvents = new SocketClientSyncSocketService(this);
             FCryptClientEvents = new SocketClientSyncCryptService(this);
-            
+
             FLocalEndPoint = null;
             FRemoteEndPoint = host;
 
@@ -141,16 +101,14 @@ namespace EchoSocketCore.SocketsEx
 
             FMessageBufferSize = 4096;
             FSocketBufferSize = 2048;
-
         }
 
-        #endregion
+        #endregion Constructor
 
         #region Destructor
 
         protected override void Free(bool canAccessFinalizable)
         {
-
             FSocketConnection = null;
             FSocketClientEvents = null;
             FCryptClientEvents = null;
@@ -201,10 +159,9 @@ namespace EchoSocketCore.SocketsEx
             }
 
             base.Free(canAccessFinalizable);
-
         }
 
-        #endregion
+        #endregion Destructor
 
         #region Methods
 
@@ -212,57 +169,49 @@ namespace EchoSocketCore.SocketsEx
 
         internal void DoOnSSLClientAuthenticate(ISocketConnection connection, out string serverName, ref X509Certificate2Collection certs, ref bool checkRevocation)
         {
-
             serverName = String.Empty;
 
             if (FOnSSLClientAuthenticateEvent != null)
             {
                 FOnSSLClientAuthenticateEvent(connection, out serverName, ref certs, ref checkRevocation);
             }
-
         }
 
-
-        #endregion
+        #endregion DoOnSSLClientAuthenticate
 
         #region DoOnSymmetricAuthenticate
 
         internal void DoOnSymmetricAuthenticate(ISocketConnection connection, out RSACryptoServiceProvider serverKey)
         {
-
             serverKey = new RSACryptoServiceProvider();
             serverKey.Clear();
 
             if (FOnSymmetricAuthenticateEvent != null)
             {
                 FOnSymmetricAuthenticateEvent(connection, out serverKey);
-            }   
-
+            }
         }
 
-        #endregion
+        #endregion DoOnSymmetricAuthenticate
 
         #region Connect
 
         public void Connect()
         {
-
             if (!Disposed)
             {
-
                 FLastException = null;
 
                 if (!Connected)
                 {
-
                     FConnectEvent.Reset();
                     FExceptionEvent.Reset();
                     FDisconnectEvent.Reset();
 
                     FSocketClient = new SocketClient(CallbackThreadType.ctWorkerThread, FSocketClientEvents, FDelimiterType, FDelimiter, FSocketBufferSize, FMessageBufferSize);
-                    
+
                     SocketConnector connector = FSocketClient.AddConnector("SocketClientSync", FRemoteEndPoint);
-                    
+
                     connector.EncryptType = FEncryptType;
                     connector.CompressionType = FCompressionType;
                     connector.CryptoService = FCryptClientEvents;
@@ -276,13 +225,12 @@ namespace EchoSocketCore.SocketsEx
 
                     switch (signal)
                     {
-
                         case 0:
 
                             //----- Connect!
                             FLastException = null;
                             Connected = true;
-                            
+
                             break;
 
                         case 1:
@@ -290,7 +238,7 @@ namespace EchoSocketCore.SocketsEx
                             //----- Exception!
                             Connected = false;
                             FSocketConnection = null;
-                            
+
                             FSocketClient.Stop();
                             FSocketClient.Dispose();
                             FSocketClient = null;
@@ -304,25 +252,21 @@ namespace EchoSocketCore.SocketsEx
 
                             Connected = false;
                             FSocketConnection = null;
-                            
+
                             FSocketClient.Stop();
                             FSocketClient.Dispose();
                             FSocketClient = null;
 
                             break;
-
                     }
-
                 }
-
             }
-            
         }
 
-        #endregion
+        #endregion Connect
 
         #region Write
-        
+
         public void Write(string buffer)
         {
             Write(Encoding.GetEncoding(1252).GetBytes(buffer));
@@ -330,15 +274,12 @@ namespace EchoSocketCore.SocketsEx
 
         public void Write(byte[] buffer)
         {
-
             FLastException = null;
 
             if (!Disposed)
             {
-
                 if (Connected)
                 {
-
                     FSentEvent.Reset();
                     FExceptionEvent.Reset();
 
@@ -350,7 +291,6 @@ namespace EchoSocketCore.SocketsEx
 
                     switch (signaled)
                     {
-
                         case 0:
 
                             //----- Sent!
@@ -373,83 +313,66 @@ namespace EchoSocketCore.SocketsEx
                             //----- TimeOut!
                             FLastException = new TimeoutException("Write timeout.");
                             break;
-
                     }
-
                 }
-
             }
-
         }
 
-        #endregion
+        #endregion Write
 
         #region Enqueue
 
         internal void Enqueue(string data)
         {
-
             if (!Disposed)
             {
-
                 lock (FReceivedQueue)
                 {
                     FReceivedQueue.Enqueue(data);
                     FReceivedEvent.Set();
                 }
-
             }
-
         }
 
-        #endregion
+        #endregion Enqueue
 
         #region Read
-        
+
         public string Read(int timeOut)
         {
-
             string result = null;
 
             if (!Disposed)
             {
-
                 FLastException = null;
 
                 if (Connected)
                 {
-
                     lock (FReceivedQueue)
                     {
-
                         if (FReceivedQueue.Count > 0)
                         {
                             result = FReceivedQueue.Dequeue();
                         }
-
                     }
 
                     if (result == null)
                     {
-
                         WaitHandle[] wait = new WaitHandle[] { FReceivedEvent, FDisconnectEvent, FExceptionEvent };
 
                         int signaled = WaitHandle.WaitAny(wait, timeOut, false);
 
                         switch (signaled)
                         {
-
                             case 0:
 
                                 //----- Received!
                                 lock (FReceivedQueue)
                                 {
-
                                     if (FReceivedQueue.Count > 0)
                                     {
                                         result = FReceivedQueue.Dequeue();
                                     }
-
                                 }
 
                                 FLastException = null;
@@ -472,34 +395,26 @@ namespace EchoSocketCore.SocketsEx
                                 //----- TimeOut!
                                 FLastException = new TimeoutException("Read timeout.");
                                 break;
-
                         }
-
                     }
-
                 }
-
             }
 
             return result;
-
         }
 
-        #endregion
+        #endregion Read
 
         #region DoDisconnect
 
         internal void DoDisconnect()
         {
-
             bool fireEvent = false;
-            
+
             lock (FConnectedSync)
             {
-
                 if (FConnected)
                 {
-
                     //----- Disconnect!
                     FConnected = false;
                     FSocketConnection = null;
@@ -510,40 +425,33 @@ namespace EchoSocketCore.SocketsEx
                         FSocketClient.Dispose();
                         FSocketClient = null;
                     }
-                    
-                    fireEvent = true;
-                    
-                }
 
+                    fireEvent = true;
+                }
             }
 
-            if ( (FOnDisconnectedEvent != null) && fireEvent)
+            if ((FOnDisconnectedEvent != null) && fireEvent)
             {
                 FOnDisconnectedEvent();
             }
-
         }
 
-        #endregion
+        #endregion DoDisconnect
 
         #region Disconnect
 
         public void Disconnect()
         {
-
             if (!Disposed)
             {
-
                 FLastException = null;
 
                 if (Connected)
                 {
-
                     FExceptionEvent.Reset();
 
                     if (FSocketConnection != null)
                     {
-
                         WaitHandle[] wait = new WaitHandle[] { FDisconnectEvent, FExceptionEvent };
 
                         FSocketConnection.BeginDisconnect();
@@ -552,7 +460,6 @@ namespace EchoSocketCore.SocketsEx
 
                         switch (signaled)
                         {
-
                             case 0:
 
                                 DoDisconnect();
@@ -569,54 +476,46 @@ namespace EchoSocketCore.SocketsEx
                                 //----- TimeOut!
                                 FLastException = new TimeoutException("Disconnect timeout.");
                                 break;
-
                         }
-
                     }
-
                 }
             }
         }
 
-        #endregion
+        #endregion Disconnect
 
-        #endregion
+        #endregion Methods
 
         #region Properties
 
         public event OnDisconnectEvent OnDisconnected
         {
+            add
+            {
+                FOnDisconnectedEvent += value;
+            }
 
-                add
-                {
-                    FOnDisconnectedEvent += value;
-                }
-
-                remove
-                {
-                    FOnDisconnectedEvent -= value;
-                }
-        
+            remove
+            {
+                FOnDisconnectedEvent -= value;
+            }
         }
 
         public event OnSymmetricAuthenticateEvent OnSymmetricAuthenticate
         {
-
-            add 
+            add
             {
                 FOnSymmetricAuthenticateEvent += value;
             }
 
-            remove 
+            remove
             {
                 FOnSymmetricAuthenticateEvent -= value;
             }
-
         }
 
         public event OnSSLClientAuthenticateEvent OnSSLClientAuthenticate
         {
-
             add
             {
                 FOnSSLClientAuthenticateEvent += value;
@@ -626,9 +525,8 @@ namespace EchoSocketCore.SocketsEx
             {
                 FOnSSLClientAuthenticateEvent -= value;
             }
-
         }
-        
+
         public IPEndPoint RemoteEndPoint
         {
             get { return FRemoteEndPoint; }
@@ -640,7 +538,7 @@ namespace EchoSocketCore.SocketsEx
             get { return FLocalEndPoint; }
             set { FLocalEndPoint = value; }
         }
-        
+
         public DelimiterType DelimiterType
         {
             get { return FDelimiterType; }
@@ -658,7 +556,7 @@ namespace EchoSocketCore.SocketsEx
             get { return FCompressionType; }
             set { FCompressionType = value; }
         }
-        
+
         public byte[] Delimiter
         {
             get { return FDelimiter; }
@@ -670,7 +568,7 @@ namespace EchoSocketCore.SocketsEx
             get { return FProxyInfo; }
             set { FProxyInfo = value; }
         }
-        
+
         public int MessageBufferSize
         {
             get { return FMessageBufferSize; }
@@ -685,65 +583,53 @@ namespace EchoSocketCore.SocketsEx
 
         internal ManualResetEvent DisconnectEvent
         {
-
             get
             {
                 return FDisconnectEvent;
             }
-
         }
 
         internal AutoResetEvent ConnectEvent
         {
-
             get
             {
                 return FConnectEvent;
             }
-
         }
 
         internal AutoResetEvent SentEvent
         {
-
             get
             {
                 return FSentEvent;
             }
-
         }
 
         internal AutoResetEvent ExceptionEvent
         {
-
             get
             {
                 return FExceptionEvent;
             }
-
         }
 
         internal ISocketConnection SocketConnection
         {
-
             get
             {
                 return FSocketConnection;
             }
 
-            set 
+            set
             {
                 FSocketConnection = value;
             }
-
         }
 
         public bool Connected
         {
-            
             get
             {
-
                 bool connected = false;
 
                 lock (FConnectedSync)
@@ -752,24 +638,19 @@ namespace EchoSocketCore.SocketsEx
                 }
 
                 return connected;
-                
             }
 
-            internal set 
+            internal set
             {
-
                 lock (FConnectedSync)
                 {
                     FConnected = value;
                 }
-
             }
-
         }
 
         public Exception LastException
         {
-            
             get
             {
                 return FLastException;
@@ -779,25 +660,22 @@ namespace EchoSocketCore.SocketsEx
             {
                 FLastException = value;
             }
-
         }
 
-        #endregion
-
+        #endregion Properties
     }
 
-    #endregion
+    #endregion SocketClientSync
 
     #region SocketClientSyncSocketService
-    
-    internal class SocketClientSyncSocketService: BaseSocketService
-    {
 
+    internal class SocketClientSyncSocketService : BaseSocketService
+    {
         #region Fields
 
         private SocketClientSync FSocketClient;
 
-        #endregion
+        #endregion Fields
 
         #region Constructor
 
@@ -806,7 +684,7 @@ namespace EchoSocketCore.SocketsEx
             FSocketClient = client;
         }
 
-        #endregion
+        #endregion Constructor
 
         #region Methods
 
@@ -839,22 +717,20 @@ namespace EchoSocketCore.SocketsEx
             FSocketClient.DisconnectEvent.Set();
         }
 
-        #endregion
-
+        #endregion Methods
     }
 
-    #endregion
+    #endregion SocketClientSyncSocketService
 
     #region SocketClientSyncCryptService
 
     internal class SocketClientSyncCryptService : BaseCryptoService
     {
-
         #region Fields
 
         private SocketClientSync FSocketClient;
 
-        #endregion
+        #endregion Fields
 
         #region Constructor
 
@@ -863,7 +739,7 @@ namespace EchoSocketCore.SocketsEx
             FSocketClient = client;
         }
 
-        #endregion
+        #endregion Constructor
 
         #region Methods
 
@@ -877,10 +753,8 @@ namespace EchoSocketCore.SocketsEx
             FSocketClient.DoOnSSLClientAuthenticate(connection, out serverName, ref certs, ref checkRevocation);
         }
 
-        #endregion
-
+        #endregion Methods
     }
 
-    #endregion
-
+    #endregion SocketClientSyncCryptService
 }

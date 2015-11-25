@@ -1,26 +1,15 @@
 using System;
 using System.Net;
-using System.Threading;
-using System.Security.Cryptography.X509Certificates;
-using System.Security.Cryptography;
-using System.Text;
-using System.Diagnostics;
-
-using EchoSocketService;
-using EchoCryptService;
-
 using EchoSocketCore.SocketsEx;
+using EchoSocketService;
 
 namespace Main
 {
-
-    class MainClass
+    internal class MainClass
     {
-
         [STAThread]
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
-
             AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
 
             EncryptType et = EncryptType.etNone;
@@ -35,12 +24,12 @@ namespace Main
 
             if (args.Length >= 2)
             {
-                et = (EncryptType) Enum.Parse(typeof(EncryptType), args[1], true);
+                et = (EncryptType)Enum.Parse(typeof(EncryptType), args[1], true);
             }
 
             if (args.Length >= 3)
             {
-                ct = (CompressionType) Enum.Parse(typeof(CompressionType), args[2], true);
+                ct = (CompressionType)Enum.Parse(typeof(CompressionType), args[2], true);
             }
 
             //----- Socket Client!
@@ -53,22 +42,21 @@ namespace Main
 
             echoClient.SocketBufferSize = 1024;
             echoClient.MessageBufferSize = 2048;
-            
+
             echoClient.IdleCheckInterval = 60000;
             echoClient.IdleTimeOutValue = 120000;
 
             //----- Socket Connectors!
             SocketConnector connector = null;
-            
+
             for (int i = 0; i < connections; i++)
             {
-                
                 connector = echoClient.AddConnector("Connector " + i.ToString(), new IPEndPoint(IPAddress.Loopback, 8090));
-                
+
                 /*
                 connector.ProxyInfo = new ProxyInfo(
-                    ProxyType.ptHTTP, 
-                    new IPEndPoint(IPAddress.Loopback, 8080), 
+                    ProxyType.ptHTTP,
+                    new IPEndPoint(IPAddress.Loopback, 8080),
                     new NetworkCredential("test", "1234"));
                 */
 
@@ -78,11 +66,10 @@ namespace Main
 
                 connector.ReconnectAttempts = 10;
                 connector.ReconnectAttemptInterval = 5000;
-                
             }
 
             Console.Title = "EchoConsoleClient / " + connections.ToString() + " Connections / " + Enum.GetName(typeof(EncryptType), et) + " / " + Enum.GetName(typeof(CompressionType), ct);
-            
+
             echoClient.Start();
 
             Console.WriteLine("Started!");
@@ -105,20 +92,17 @@ namespace Main
             Console.WriteLine("Stopped!");
             Console.WriteLine("----------------------");
             Console.ReadLine();
-
         }
 
-        static void Event(string eventMessage)
+        private static void Event(string eventMessage)
         {
             Console.WriteLine(eventMessage);
         }
 
-        static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+        private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
             Console.WriteLine(e.ExceptionObject.ToString());
             Console.ReadLine();
         }
-
     }
-
 }

@@ -1,62 +1,24 @@
-/* ====================================================================
- * Copyright (c) 2009 Andre Luis Azevedo (az.andrel@yahoo.com.br)
- * All rights reserved.
- *                       
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- *
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- *    In addition, the source code must keep original namespace names.
- *
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in
- *    the documentation and/or other materials provided with the
- *    distribution. In addition, the binary form must keep the original 
- *    namespace names and original file name.
- * 
- * 3. The name "ALAZ" or "ALAZ Library" must not be used to endorse or promote 
- *    products derived from this software without prior written permission.
- *
- * 4. Products derived from this software may not be called "ALAZ" or
- *    "ALAZ Library" nor may "ALAZ" or "ALAZ Library" appear in their 
- *    names without prior written permission of the author.
- * 
- * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY
- * EXPRESSED OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR
- * ITS CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
- * NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
- * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
- * OF THE POSSIBILITY OF SUCH DAMAGE. 
- */
-
 using System;
 using System.Net;
 using System.Net.Security;
 using System.Net.Sockets;
-using System.Threading;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Web;
 
 namespace EchoSocketCore.SocketsEx
 {
-
     #region Delegates
 
     public delegate void OnDisconnectEvent();
+
     public delegate void OnSymmetricAuthenticateEvent(ISocketConnection connection, out RSACryptoServiceProvider serverKey);
+
     public delegate void OnSSLClientAuthenticateEvent(ISocketConnection connection, out string ServerName, ref X509Certificate2Collection certs, ref bool checkRevocation);
+
     public delegate void OnSSLServerAuthenticateEvent(ISocketConnection connection, out X509Certificate2 certificate, out bool clientAuthenticate, ref bool checkRevocation);
 
-    #endregion
+    #endregion Delegates
 
     #region Exceptions
 
@@ -91,7 +53,6 @@ namespace EchoSocketCore.SocketsEx
         {
             get { return FCreator; }
         }
-
     }
 
     /// <summary>
@@ -99,7 +60,10 @@ namespace EchoSocketCore.SocketsEx
     /// </summary>
     public class BadDelimiterException : Exception
     {
-        public BadDelimiterException(string message) : base(message) { }
+        public BadDelimiterException(string message)
+            : base(message)
+        {
+        }
     }
 
     /// <summary>
@@ -107,15 +71,21 @@ namespace EchoSocketCore.SocketsEx
     /// </summary>
     public class MessageLengthException : Exception
     {
-        public MessageLengthException(string message): base(message) { }
+        public MessageLengthException(string message)
+            : base(message)
+        {
+        }
     }
 
     /// <summary>
     /// Symmetric authentication failure.
     /// </summary>
-    public class SymmetricAuthenticationException: Exception
+    public class SymmetricAuthenticationException : Exception
     {
-        public SymmetricAuthenticationException(string message) : base(message) { } 
+        public SymmetricAuthenticationException(string message)
+            : base(message)
+        {
+        }
     }
 
     /// <summary>
@@ -123,21 +93,24 @@ namespace EchoSocketCore.SocketsEx
     /// </summary>
     public class SSLAuthenticationException : Exception
     {
-        public SSLAuthenticationException(string message) : base(message) { }
+        public SSLAuthenticationException(string message)
+            : base(message)
+        {
+        }
     }
 
     /// <summary>
     /// Proxy authentication failure.
     /// </summary>
-    public class ProxyAuthenticationException :  HttpException
+    public class ProxyAuthenticationException : HttpException
     {
-
-      public ProxyAuthenticationException(int code, string message) : base(code, message) { }
-
+        public ProxyAuthenticationException(int code, string message)
+            : base(code, message)
+        {
+        }
     }
 
-
-    #endregion 
+    #endregion Exceptions
 
     #region Structures
 
@@ -153,9 +126,9 @@ namespace EchoSocketCore.SocketsEx
         public byte[] Sign;
     }
 
-    #endregion
+    #endregion AuthMessage
 
-    #endregion
+    #endregion Structures
 
     #region Enums
 
@@ -167,7 +140,7 @@ namespace EchoSocketCore.SocketsEx
         ctIOThread
     }
 
-    #endregion
+    #endregion CallbackThreadType
 
     #region HostType
 
@@ -180,7 +153,7 @@ namespace EchoSocketCore.SocketsEx
         htClient
     }
 
-    #endregion
+    #endregion HostType
 
     #region EncryptType
 
@@ -194,7 +167,7 @@ namespace EchoSocketCore.SocketsEx
         etSSL
     }
 
-    #endregion
+    #endregion EncryptType
 
     #region CompressionType
 
@@ -207,7 +180,7 @@ namespace EchoSocketCore.SocketsEx
         ctGZIP
     }
 
-    #endregion
+    #endregion CompressionType
 
     #region DelimiterType
 
@@ -221,7 +194,7 @@ namespace EchoSocketCore.SocketsEx
         dtMessageTailIncludeOnReceive
     }
 
-    #endregion
+    #endregion DelimiterType
 
     #region EventProcessing
 
@@ -233,7 +206,7 @@ namespace EchoSocketCore.SocketsEx
         epUser
     }
 
-    #endregion
+    #endregion EventProcessing
 
     #region ProxyType
 
@@ -242,45 +215,43 @@ namespace EchoSocketCore.SocketsEx
     /// </summary>
     public enum ProxyType
     {
-      ptSOCKS4,
-      ptSOCKS4a,
-      ptSOCKS5,
-      ptHTTP
+        ptSOCKS4,
+        ptSOCKS4a,
+        ptSOCKS5,
+        ptHTTP
     }
 
-    #endregion
+    #endregion ProxyType
 
     #region SOCKS5AuthMode
-		 
+
     /// <summary>
     /// Defines the SOCK5 authentication mode.
     /// </summary>
     internal enum SOCKS5AuthMode
     {
-      saNoAuth = 0,
-      ssUserPass = 2
+        saNoAuth = 0,
+        ssUserPass = 2
     }
 
-  	#endregion
+    #endregion SOCKS5AuthMode
 
     #region SOCKS5Phase
-		 
-	  /// <summary>
+
+    /// <summary>
     /// Defines the SOCKS5 authentication phase
     /// </summary>
     internal enum SOCKS5Phase
     {
-
-      spIdle,
-      spGreeting,
-      spAuthenticating,
-      spConnecting
-
+        spIdle,
+        spGreeting,
+        spAuthenticating,
+        spConnecting
     }
 
-    #endregion
-  
-    #endregion
+    #endregion SOCKS5Phase
+
+    #endregion Enums
 
     #region Interfaces
 
@@ -288,69 +259,19 @@ namespace EchoSocketCore.SocketsEx
 
     public interface IBaseSocketConnectionCreator
     {
-
-        string Name
-        {
-            get;
-        }
-
-        CompressionType CompressionType
-        {
-            get;
-        }
-
-        EncryptType EncryptType
-        {
-            get;
-        }
-
+        SocketCreatorContext Context { get; set; }
     }
 
-    #endregion
+    #endregion IBaseSocketConnectionCreator
 
     #region IBaseSocketConnectionHost
 
     public interface IBaseSocketConnectionHost
     {
-
-        int SocketBufferSize
-        {
-            get;
-        }
-
-        int MessageBufferSize
-        {
-            get;
-        }
-
-        byte[] Delimiter
-        {
-            get;
-        }
-
-        DelimiterType DelimiterType
-        {
-            get;
-        }
-
-        int IdleCheckInterval
-        {
-            get;
-        }
-
-        int IdleTimeOutValue
-        {
-            get;
-        }
-
-        HostType HostType
-        {
-            get;
-        }
-
+        SocketHostContext Context { get;set; }
     }
 
-    #endregion
+    #endregion IBaseSocketConnectionHost
 
     #region ISocketConnection
 
@@ -358,82 +279,10 @@ namespace EchoSocketCore.SocketsEx
 
     public interface ISocketConnectionInfo
     {
-
-        /// <summary>
-        /// Connection user data.
-        /// </summary>
-        object UserData
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Connection Session Id.
-        /// </summary>
-        long ConnectionId
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Connection Creator object.
-        /// </summary>
-        IBaseSocketConnectionCreator Creator
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Connection Host object.
-        /// </summary>
-        IBaseSocketConnectionHost Host
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Handle of the OS Socket.
-        /// </summary>
-        IntPtr SocketHandle
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Local socket endpoint.
-        /// </summary>
-        IPEndPoint LocalEndPoint
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Remote socket endpoint.
-        /// </summary>
-        IPEndPoint RemoteEndPoint
-        {
-            get;
-        }
-
-        DateTime LastAction
-        {
-            get;
-        }
-
-        long ReadBytes
-        {
-            get;
-        }
-
-        long WriteBytes
-        {
-            get;
-        }
-        
+        SocketContext Context { get; set; }
     }
-    
-    #endregion
+
+    #endregion ISocketConnectionInfo
 
     #region ISocketConnection
 
@@ -442,7 +291,6 @@ namespace EchoSocketCore.SocketsEx
     /// </summary>
     public interface ISocketConnection : ISocketConnectionInfo
     {
-
         /// <summary>
         /// Set Socket Time To Live option
         /// </summary>
@@ -450,6 +298,7 @@ namespace EchoSocketCore.SocketsEx
         /// Value for TTL in seconds
         /// </param>
         void SetTTL(short value);
+
         /// <summary>
         /// Set Socket Linger option.
         /// </summary>
@@ -457,6 +306,7 @@ namespace EchoSocketCore.SocketsEx
         /// LingerOption value to be set
         /// </param>
         void SetLinger(LingerOption lo);
+
         /// <summary>
         /// Set Socket Nagle algoritm.
         /// </summary>
@@ -464,12 +314,12 @@ namespace EchoSocketCore.SocketsEx
         /// Enable/Disable value
         /// </param>
         void SetNagle(bool value);
-      
+
         /// <summary>
         /// Represents the connection as a IClientSocketConnection.
         /// </summary>
         /// <returns>
-        /// 
+        ///
         /// </returns>
         IClientSocketConnection AsClientConnection();
 
@@ -512,25 +362,23 @@ namespace EchoSocketCore.SocketsEx
         /// Begin disconnect the connection.
         /// </summary>
         void BeginDisconnect();
-
     }
 
-    #endregion
+    #endregion ISocketConnection
 
     #region IClientSocketConnection
 
     /// <summary>
     /// Client connection methods.
     /// </summary>
-    public interface IClientSocketConnection: ISocketConnection
+    public interface IClientSocketConnection : ISocketConnection
     {
-
         /// <summary>
         /// Proxy information.
         /// </summary>
         ProxyInfo ProxyInfo
         {
-          get;
+            get;
         }
 
         /// <summary>
@@ -539,16 +387,15 @@ namespace EchoSocketCore.SocketsEx
         void BeginReconnect();
     }
 
-    #endregion
+    #endregion IClientSocketConnection
 
     #region IServerSocketConnection
 
     /// <summary>
     /// Server connection methods.
     /// </summary>
-    public interface IServerSocketConnection: ISocketConnection
+    public interface IServerSocketConnection : ISocketConnection
     {
-
         /// <summary>
         /// Begin send data to all server connections.
         /// </summary>
@@ -570,12 +417,11 @@ namespace EchoSocketCore.SocketsEx
         /// Data to be sent.
         /// </param>
         void BeginSendTo(ISocketConnection connection, byte[] buffer);
-
     }
 
-    #endregion
+    #endregion IServerSocketConnection
 
-    #endregion
+    #endregion ISocketConnection
 
     #region ISocketService
 
@@ -623,10 +469,9 @@ namespace EchoSocketCore.SocketsEx
         /// Information about the exception and connection.
         /// </param>
         void OnException(ExceptionEventArgs e);
-
     }
 
-    #endregion
+    #endregion ISocketService
 
     #region ICryptoService
 
@@ -635,7 +480,6 @@ namespace EchoSocketCore.SocketsEx
     /// </summary>
     public interface ICryptoService
     {
-        
         /// <summary>
         /// Fired when symmetric encryption is used.
         /// </summary>
@@ -659,7 +503,7 @@ namespace EchoSocketCore.SocketsEx
         void OnSSLClientAuthenticate(ISocketConnection connection, out string ServerName, ref X509Certificate2Collection certs, ref bool checkRevocation);
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="connection"></param>
         /// <param name="serverCertificate"></param>
@@ -681,27 +525,24 @@ namespace EchoSocketCore.SocketsEx
         /// Indicates if the certificated must be checked for revocation.
         /// </param>
         void OnSSLServerAuthenticate(ISocketConnection connection, out X509Certificate2 certificate, out bool clientAuthenticate, ref bool checkRevocation);
-
     }
 
-    #endregion
+    #endregion ICryptoService
 
-    #endregion
+    #endregion Interfaces
 
     #region Classes
 
     #region SocketConnection
 
     public class SocketConnection
-    { 
-
+    {
         public int ConnectionId;
         public IPAddress LocalAddress;
         public IPAddress RemoteAddress;
-    
     }
 
-    #endregion
+    #endregion SocketConnection
 
     #region BaseSocketService
 
@@ -710,20 +551,32 @@ namespace EchoSocketCore.SocketsEx
     /// </summary>
     public abstract class BaseSocketService : ISocketService
     {
-
         #region ISocketService Members
 
-        public virtual void OnConnected(ConnectionEventArgs e) { }
-        public virtual void OnSent(MessageEventArgs e) { }
-        public virtual void OnReceived(MessageEventArgs e) { }
-        public virtual void OnDisconnected(ConnectionEventArgs e) { }
-        public virtual void OnException(ExceptionEventArgs e) { }
+        public virtual void OnConnected(ConnectionEventArgs e)
+        {
+        }
 
-        #endregion
+        public virtual void OnSent(MessageEventArgs e)
+        {
+        }
 
+        public virtual void OnReceived(MessageEventArgs e)
+        {
+        }
+
+        public virtual void OnDisconnected(ConnectionEventArgs e)
+        {
+        }
+
+        public virtual void OnException(ExceptionEventArgs e)
+        {
+        }
+
+        #endregion ISocketService Members
     }
 
-    #endregion
+    #endregion BaseSocketService
 
     #region BaseCryptoService
 
@@ -732,12 +585,10 @@ namespace EchoSocketCore.SocketsEx
     /// </summary>
     public abstract class BaseCryptoService : ICryptoService
     {
-
         #region ICryptoService Members
 
         public virtual void OnSymmetricAuthenticate(ISocketConnection connection, out RSACryptoServiceProvider serverKey)
         {
-
             serverKey = new RSACryptoServiceProvider();
             serverKey.Clear();
         }
@@ -755,15 +606,13 @@ namespace EchoSocketCore.SocketsEx
 
         public virtual void OnSSLClientValidateServerCertificate(X509Certificate serverCertificate, X509Chain chain, SslPolicyErrors sslPolicyErrors, out bool acceptCertificate)
         {
-            acceptCertificate = false;    
+            acceptCertificate = false;
         }
 
-        #endregion
-
+        #endregion ICryptoService Members
     }
 
-    #endregion
+    #endregion BaseCryptoService
 
-    #endregion
-
+    #endregion Classes
 }

@@ -1,32 +1,27 @@
 using System;
 using System.Net.Security;
-using System.Security.Cryptography.X509Certificates;
 using System.Security.Cryptography;
-
-using EchoSocketCore;
+using System.Security.Cryptography.X509Certificates;
 using EchoSocketCore.SocketsEx;
 
 namespace EchoCryptService
 {
-    
     public class EchoCryptService : BaseCryptoService
     {
-
         #region OnSymmetricAuthenticate
 
         public override void OnSymmetricAuthenticate(ISocketConnection connection, out RSACryptoServiceProvider serverKey)
         {
-            
             /*
              * A RSACryptoServiceProvider is needed to encrypt and send session key.
              * In server side you need public and private key to decrypt session key.
              * In client side tou need only public key to encrypt session key.
-             * 
-             * You can create a RSACryptoServiceProvider from 
+             *
+             * You can create a RSACryptoServiceProvider from
              *      - a string (file, registry)
              *      - a certificate (from file)
              *      - a certificate (from certificate store)
-             *      
+             *
              * The following certificate and instructions is in CertificateCreation folder.
             */
 
@@ -59,7 +54,6 @@ namespace EchoCryptService
             }
             else
             {
-
                 //----- Need ProviderType=24 for SHA256 sign!
                 RSACryptoServiceProvider certKey = (RSACryptoServiceProvider)certificate.PrivateKey;
 
@@ -69,25 +63,21 @@ namespace EchoCryptService
                 csp.KeyContainerName = certKey.CspKeyContainerInfo.KeyContainerName;
 
                 serverKey = new RSACryptoServiceProvider(csp);
-
             }
             */
 
             //----- Using pfx/p12 certificate!
             X509Certificate2 certificate;
 
-            if (connection.Host.HostType == HostType.htClient)
+            if (connection.Context.Host.HostType == HostType.htClient)
             {
-
                 certificate = new X509Certificate2(@"..\..\..\..\CertificateCreation\cert.crt");
 
                 serverKey = new RSACryptoServiceProvider();
                 serverKey = (RSACryptoServiceProvider)certificate.PublicKey.Key;
-
             }
             else
             {
-
                 certificate = new X509Certificate2(@"..\..\..\..\CertificateCreation\cert.p12", "12345");
 
                 //----- Need ProviderType=24 for SHA256 sign!
@@ -101,18 +91,15 @@ namespace EchoCryptService
                 serverKey = new RSACryptoServiceProvider(csp);
 
                 certKey.Clear();
-
             }
-
         }
 
-        #endregion
+        #endregion OnSymmetricAuthenticate
 
         #region OnSSLServerAuthenticate
-        
+
         public override void OnSSLServerAuthenticate(ISocketConnection connection, out X509Certificate2 certificate, out bool clientAuthenticate, ref bool checkRevocation)
         {
-
             //----- Set server certificate, client authentication and certificate revocation!
             //----- Look at the CertificateCreation folder for instructions
 
@@ -122,7 +109,7 @@ namespace EchoCryptService
             store.Open(OpenFlags.ReadOnly);
 
             certificate = store.Certificates.Find(X509FindType.FindBySubjectName, "TESTCERT", false)[0];
-            
+
             store.Close();
             */
 
@@ -131,16 +118,14 @@ namespace EchoCryptService
 
             clientAuthenticate = false;
             checkRevocation = false;
-
         }
 
-        #endregion
+        #endregion OnSSLServerAuthenticate
 
         #region OnSSLClientAuthenticate
 
         public override void OnSSLClientAuthenticate(ISocketConnection connection, out string serverName, ref X509Certificate2Collection certs, ref bool checkRevocation)
         {
-
             /*
             //----- Using client certificate!
             //----- The following certificate and instructions is in CertificateCreation folder.
@@ -149,26 +134,23 @@ namespace EchoCryptService
             store.Open(OpenFlags.ReadOnly);
 
             certs = store.Certificates.Find(X509FindType.FindBySubjectName, serverName, false);
-             
+
             store.Close();
             */
 
             //----- Check server certificate!
             serverName = "TESTCERT";
             checkRevocation = false;
-
         }
 
-        #endregion
+        #endregion OnSSLClientAuthenticate
 
         #region OnSSLClientValidateServerCertificate
 
         public override void OnSSLClientValidateServerCertificate(X509Certificate serverCertificate, X509Chain chain, SslPolicyErrors sslPolicyErrors, out bool acceptCertificate)
         {
-
             foreach (X509ChainElement element in chain.ChainElements)
             {
-            
                 Console.WriteLine("Element issuer name: {0}", element.Certificate.Issuer);
                 Console.WriteLine("Element certificate valid until: {0}", element.Certificate.NotAfter);
                 Console.WriteLine("Element certificate is valid: {0}", element.Certificate.Verify());
@@ -178,23 +160,17 @@ namespace EchoCryptService
 
                 if (chain.ChainStatus.Length > 1)
                 {
-                    
                     for (int index = 0; index < element.ChainElementStatus.Length; index++)
                     {
                         Console.WriteLine(element.ChainElementStatus[index].Status);
                         Console.WriteLine(element.ChainElementStatus[index].StatusInformation);
                     }
-                    
                 }
-                
             }
 
             acceptCertificate = true;
-            
         }
 
-        #endregion
-
+        #endregion OnSSLClientValidateServerCertificate
     }
-
 }
