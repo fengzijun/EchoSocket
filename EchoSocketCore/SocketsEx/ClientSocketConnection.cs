@@ -42,7 +42,7 @@ namespace EchoSocketCore.SocketsEx
 
         public void BeginReconnect()
         {
-            BaseHost.BeginReconnect(this);
+            Context.Host.BeginReconnect(this);
         }
 
         #endregion IClientSocketConnection Members

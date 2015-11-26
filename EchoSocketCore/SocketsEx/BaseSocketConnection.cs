@@ -15,32 +15,9 @@ namespace EchoSocketCore.SocketsEx
     {
         #region Fields
 
-        private object FSyncData;
- 
-        private object FSyncActive;
-
-        private bool FActive;
-
-        private object FSyncEventProcessing;
-
-        private EventProcessing FEventProcessing;
-
-        private Stream FStream;
-
         private SocketAsyncEventArgs FWriteOV;
 
-        private Queue<MessageBuffer> FWriteQueue;
-
-        private bool FWriteQueueHasItems;
-
         private SocketAsyncEventArgs FReadOV;
-
-        private object FSyncReadPending;
-
-        private bool FReadPending;
-
-        private ICryptoTransform FDecryptor;
-        private ICryptoTransform FEncryptor;
 
         #endregion Fields
 
@@ -49,67 +26,38 @@ namespace EchoSocketCore.SocketsEx
         internal BaseSocketConnection(BaseSocketConnectionHost host, BaseSocketConnectionCreator creator, Socket socket)
         {
             if (Context == null)
-                Context = new SocketContext();
+                Context = new SocketContext
+                {
+                    ConnectionId = host.Context.GenerateConnectionId(),
+                    SyncData = new object(),
+                    Host = host,
+                    Creator = creator,
+                    SocketHandle = socket,
+                    SyncActive = new object(),
+                    Active = false,
+                    WriteQueue = new Queue<MessageBuffer>(),
+                    WriteQueueHasItems = false,
+                    SyncReadPending = new object(),
+                    ReadPending = false,
+                    SyncEventProcessing = new object(),
+                    EventProcessing = EventProcessing.epNone,
+                    LastAction = DateTime.Now,
+                };
 
-            Context.ConnectionId = host.GetConnectionId();
-
-            FSyncData = new object();
-
-            Context.Host = host;
-            Context.Creator = creator;
-            Context.SocketHandle = socket;
-
-            FSyncActive = new Object();
-            FActive = false;
 
             FWriteOV = new SocketAsyncEventArgs();
             FReadOV = new SocketAsyncEventArgs();
 
-            FWriteQueue = new Queue<MessageBuffer>();
-            FWriteQueueHasItems = false;
-
-            FSyncReadPending = new object();
-            FReadPending = false;
-
-            FSyncEventProcessing = new object();
-            FEventProcessing = EventProcessing.epNone;
-
-            Context.LastAction = DateTime.Now;
-
-            FEncryptor = null;
-            FDecryptor = null;
+         
         }
 
         #endregion Constructor
 
         #region Destructor
 
-        protected override void Free(bool canAccessFinalizable)
+        public override void Free(bool canAccessFinalizable)
         {
-            if (FWriteQueue != null)
-            {
-                FWriteQueue.Clear();
-                FWriteQueue = null;
-            }
-
-            if (FStream != null)
-            {
-                FStream.Close();
-                FStream = null;
-            }
-
-            if (FDecryptor != null)
-            {
-                FDecryptor.Dispose();
-                FDecryptor = null;
-            }
-
-            if (FEncryptor != null)
-            {
-                FEncryptor.Dispose();
-                FEncryptor = null;
-            }
-
+          
             if (FReadOV != null)
             {
                 Type t = typeof(SocketAsyncEventArgs);
@@ -134,11 +82,7 @@ namespace EchoSocketCore.SocketsEx
                 FWriteOV = null;
             }
 
-            Context = null;
-
-            FSyncReadPending = null;
-            FSyncData = null;
-            FSyncEventProcessing = null;
+            Context.Free(canAccessFinalizable);
 
             base.Free(canAccessFinalizable);
         }
@@ -147,27 +91,7 @@ namespace EchoSocketCore.SocketsEx
 
         #region Properties
 
-        internal Queue<MessageBuffer> WriteQueue
-        {
-            get { return FWriteQueue; }
-        }
-
-        internal bool WriteQueueHasItems
-        {
-            get { return FWriteQueueHasItems; }
-            set { FWriteQueueHasItems = value; }
-        }
-
-        internal bool ReadPending
-        {
-            get { return FReadPending; }
-            set { FReadPending = value; }
-        }
-
-        internal object SyncReadPending
-        {
-            get { return FSyncReadPending; }
-        }
+    
 
         internal SocketAsyncEventArgs WriteOV
         {
@@ -179,26 +103,22 @@ namespace EchoSocketCore.SocketsEx
             get { return FReadOV; }
         }
 
-        internal object SyncActive
-        {
-            get { return FSyncActive; }
-        }
-
+     
         internal EventProcessing EventProcessing
         {
             get
             {
-                lock (FSyncEventProcessing)
+                lock (Context.SyncEventProcessing)
                 {
-                    return FEventProcessing;
+                    return Context.EventProcessing;
                 }
             }
 
             set
             {
-                lock (FSyncEventProcessing)
+                lock (Context.SyncEventProcessing)
                 {
-                    FEventProcessing = value;
+                    Context.EventProcessing = value;
                 }
             }
         }
@@ -212,39 +132,20 @@ namespace EchoSocketCore.SocketsEx
                     return false;
                 }
 
-                lock (FSyncActive)
+                lock (Context.SyncActive)
                 {
-                    return FActive;
+                    return Context.Active;
                 }
             }
 
             set
             {
-                lock (FSyncActive)
+                lock (Context.SyncActive)
                 {
-                    FActive = value;
+                    Context.Active = value;
                 }
             }
         }
-
-        internal ICryptoTransform Encryptor
-        {
-            get { return FEncryptor; }
-            set { FEncryptor = value; }
-        }
-
-        internal ICryptoTransform Decryptor
-        {
-            get { return FDecryptor; }
-            set { FDecryptor = value; }
-        }
-
-        internal Stream Stream
-        {
-            get { return FStream; }
-            set { FStream = value; }
-        }
-
 
 
         internal byte[] Delimiter
@@ -259,7 +160,7 @@ namespace EchoSocketCore.SocketsEx
 
                     case EventProcessing.epEncrypt:
 
-                        return Context.Host.DelimiterEncrypt;
+                        return Context.Host.Context.DelimiterEncrypt;
 
                     case EventProcessing.epProxy:
 
@@ -297,31 +198,6 @@ namespace EchoSocketCore.SocketsEx
             }
         }
 
-        internal EncryptType EncryptType
-        {
-            get { return Context.Creator.Context.EncryptType; }
-        }
-
-        internal CompressionType CompressionType
-        {
-            get { return Context.Creator.Context.CompressionType; }
-        }
-
-        internal HostType HostType
-        {
-            get { return Context.Host.Context.HostType; }
-        }
-
-        internal BaseSocketConnectionCreator BaseCreator
-        {
-            get { return Context.Creator; }
-        }
-
-        internal BaseSocketConnectionHost BaseHost
-        {
-            get { return Context.Host; }
-        }
-
         #endregion Properties
 
         #region Methods
@@ -330,7 +206,7 @@ namespace EchoSocketCore.SocketsEx
         {
             if (!Disposed)
             {
-                lock (FSyncData)
+                lock (Context.SyncData)
                 {
                     if (readBytes > 0)
                     {

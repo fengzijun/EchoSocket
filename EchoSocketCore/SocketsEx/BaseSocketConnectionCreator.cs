@@ -9,38 +9,40 @@ namespace EchoSocketCore.SocketsEx
     /// </summary>
     public abstract class BaseSocketConnectionCreator : BaseDisposable, IBaseSocketConnectionCreator
     {
-        #region Fields
-
-
-        private ICryptoService FCryptoService;
-
-        #endregion Fields
 
         #region Constructor
 
         public BaseSocketConnectionCreator(BaseSocketConnectionHost host, string name, IPEndPoint localEndPoint, EncryptType encryptType, CompressionType compressionType, ICryptoService cryptoService)
         {
             if (Context == null)
-                Context = new SocketCreatorContext();
+                Context = new SocketCreatorContext
+                {
+                    CompressionType = compressionType,
+                    CryptoService = cryptoService,
+                    Host = host,
+                    EncryptType = encryptType,
+                    Name = name,
+                    localEndPoint = localEndPoint
+                };
 
-            Context.Host = host;
-            Context.Name = name;
-            Context.localEndPoint = localEndPoint;
-            Context.CompressionType = compressionType;
-            Context.EncryptType = encryptType;
-
-            FCryptoService = cryptoService;
         }
+
+        public BaseSocketConnectionCreator(BaseSocketConnectionHost host, string name, IPEndPoint localEndPoint, EncryptType encryptType, ICryptoService cryptoService):
+            this(host, name, localEndPoint, encryptType, CompressionType.ctNone, cryptoService)
+        { }
+
+        public BaseSocketConnectionCreator(BaseSocketConnectionHost host, string name, IPEndPoint localEndPoint, ICryptoService cryptoService) :
+            this(host, name, localEndPoint, EncryptType.etNone, CompressionType.ctNone, cryptoService)
+        { }
 
         #endregion Constructor
 
         #region Destructor
 
-        protected override void Free(bool canAccessFinalizable)
+        public override void Free(bool canAccessFinalizable)
         {
           
-            FCryptoService = null;
-            Context = null;
+            Context.Free(canAccessFinalizable);
 
             base.Free(canAccessFinalizable);
         }
@@ -54,7 +56,7 @@ namespace EchoSocketCore.SocketsEx
         internal bool ValidateServerCertificateCallback(object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors)
         {
             bool acceptCertificate = false;
-            FCryptoService.OnSSLClientValidateServerCertificate(certificate, chain, sslPolicyErrors, out acceptCertificate);
+            Context.CryptoService.OnSSLClientValidateServerCertificate(certificate, chain, sslPolicyErrors, out acceptCertificate);
 
             return acceptCertificate;
         }
@@ -72,14 +74,6 @@ namespace EchoSocketCore.SocketsEx
         #endregion Methods
 
         #region Properties
-
-
-        public ICryptoService CryptoService
-        {
-            get { return FCryptoService; }
-            set { FCryptoService = value; }
-        }
-
 
         public SocketCreatorContext Context { get; set; }
 

@@ -198,7 +198,7 @@ namespace EchoSocketCore.SocketsEx
 
     #region EventProcessing
 
-    internal enum EventProcessing
+    public enum EventProcessing
     {
         epNone,
         epProxy,
@@ -268,7 +268,7 @@ namespace EchoSocketCore.SocketsEx
 
     public interface IBaseSocketConnectionHost
     {
-        SocketHostContext Context { get;set; }
+       
     }
 
     #endregion IBaseSocketConnectionHost

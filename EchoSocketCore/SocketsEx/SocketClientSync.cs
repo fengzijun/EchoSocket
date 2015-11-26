@@ -107,7 +107,7 @@ namespace EchoSocketCore.SocketsEx
 
         #region Destructor
 
-        protected override void Free(bool canAccessFinalizable)
+        public override void Free(bool canAccessFinalizable)
         {
             FSocketConnection = null;
             FSocketClientEvents = null;
@@ -214,7 +214,7 @@ namespace EchoSocketCore.SocketsEx
 
                     connector.Context.EncryptType = FEncryptType;
                     connector.Context.CompressionType = FCompressionType;
-                    connector.CryptoService = FCryptClientEvents;
+                    connector.Context.CryptoService = FCryptClientEvents;
                     connector.ProxyInfo = FProxyInfo;
 
                     WaitHandle[] wait = new WaitHandle[] { FConnectEvent, FExceptionEvent };

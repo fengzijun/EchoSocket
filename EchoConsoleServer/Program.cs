@@ -35,7 +35,7 @@ namespace Main
 
             listener.Context.EncryptType = EncryptType.etNone;
             listener.Context.CompressionType = CompressionType.ctNone;
-            listener.CryptoService = new EchoCryptService.EchoCryptService();
+            listener.Context.CryptoService = new EchoCryptService.EchoCryptService();
 
             echoServer.Start();
 

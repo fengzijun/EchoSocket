@@ -25,7 +25,7 @@ namespace EchoSocketCore
         /// If canAccessFinalizable = false the method was called by GC and you can´t access finalizable member objects.
         /// If canAccessFinalizable = true the method was called by user and you can access all member objects.
         /// </param>
-        protected virtual void Free(bool canAccessFinalizable)
+        public virtual void Free(bool canAccessFinalizable)
         {
             FDisposed = true;
         }

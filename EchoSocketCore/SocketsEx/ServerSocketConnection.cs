@@ -35,12 +35,12 @@ namespace EchoSocketCore.SocketsEx
 
         public void BeginSendToAll(byte[] buffer, bool includeMe)
         {
-            BaseHost.BeginSendToAll(this, buffer, includeMe);
+            Context.Host.BeginSendToAll(this, buffer, includeMe);
         }
 
         public void BeginSendTo(ISocketConnection connection, byte[] buffer)
         {
-            BaseHost.BeginSendTo((BaseSocketConnection)connection, buffer);
+            Context.Host.BeginSendTo((BaseSocketConnection)connection, buffer);
         }
 
         #endregion IServerSocketConnection Members

@@ -31,7 +31,7 @@ namespace ChatServiceServer
 
             listener.Context.CompressionType = CompressionType.ctNone;
             listener.Context.EncryptType = EncryptType.etRijndael;
-            listener.CryptoService = new ChatCryptService.ChatCryptService();
+            listener.Context.CryptoService = new ChatCryptService.ChatCryptService();
 
             chatServer.Start();
         }

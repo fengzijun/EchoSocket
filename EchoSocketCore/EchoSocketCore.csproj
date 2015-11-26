@@ -58,6 +58,7 @@
     <Compile Include="BaseFinalizable.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RuntTimeEx\InteropServicesEx\MarshalEx.cs" />
+    <Compile Include="SocketsEx\ISocketSecurityProvider.cs" />
     <Compile Include="SocketsEx\SocketContext.cs" />
     <Compile Include="SocketsEx\AuthenticateCallbackData.cs" />
     <Compile Include="SocketsEx\BaseSocketConnection.cs" />
@@ -67,6 +68,7 @@
     <Compile Include="SocketsEx\ProxyUtils.cs" />
     <Compile Include="SocketsEx\SocketCreatorContext.cs" />
     <Compile Include="SocketsEx\SocketHostContext.cs" />
+    <Compile Include="SocketsEx\SocketRSACryptoProvider.cs" />
     <Compile Include="SocketsEx\WriteData.cs" />
     <Compile Include="SocketsEx\ClientSocketConnection.cs" />
     <Compile Include="SocketsEx\ConnectionEventArgs.cs" />

@@ -60,7 +60,7 @@ namespace Main
                     new NetworkCredential("test", "1234"));
                 */
 
-                connector.CryptoService = new EchoCryptService.EchoCryptService();
+                connector.Context.CryptoService = new EchoCryptService.EchoCryptService();
                 connector.Context.CompressionType = ct;
                 connector.Context.EncryptType = et;
 

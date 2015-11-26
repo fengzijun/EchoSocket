@@ -1,13 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace EchoSocketCore.SocketsEx
 {
-    public class SocketContext
+    public class SocketContext:BaseDisposable
     {
         /// <summary>
         /// Connection user data.
@@ -49,5 +51,40 @@ namespace EchoSocketCore.SocketsEx
         public long ReadBytes { get; set; }
 
         public long WriteBytes { get; set; }
+
+        public ICryptoTransform Encryptor { get; set; }
+
+        public ICryptoTransform Decryptor { get; set; }
+
+        public Stream Stream { get; set; }
+
+        public object SyncData { get; set; }
+
+        public object SyncActive { get; set; }
+
+        public bool Active { get; set; }
+
+        public object SyncEventProcessing { get; set; }
+
+        public EventProcessing EventProcessing { get; set; }
+
+        public Queue<MessageBuffer> WriteQueue { get; set; }
+
+        public bool WriteQueueHasItems { get; set; }
+
+        public object SyncReadPending { get; set; }
+
+        public bool ReadPending { get; set; }
+
+        public override void Free(bool canAccessFinalizable)
+        {
+            SocketHandle = null;
+            Stream = null;
+            Creator = null;
+            Host = null;
+            WriteQueue = null;
+
+            base.Free(canAccessFinalizable);
+        }
     }
 }

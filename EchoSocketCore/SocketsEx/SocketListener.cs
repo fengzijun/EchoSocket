@@ -57,7 +57,7 @@ namespace EchoSocketCore.SocketsEx
 
         #region Destructor
 
-        protected override void Free(bool canAccessFinalizable)
+        public override void Free(bool canAccessFinalizable)
         {
             if (FSocket != null)
             {

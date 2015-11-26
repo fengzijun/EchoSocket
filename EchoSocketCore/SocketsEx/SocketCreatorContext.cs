@@ -6,7 +6,7 @@ using System.Text;
 
 namespace EchoSocketCore.SocketsEx
 {
-    public class SocketCreatorContext
+    public class SocketCreatorContext:BaseDisposable
     {
         public string Name { get; set; }
 
@@ -18,5 +18,15 @@ namespace EchoSocketCore.SocketsEx
 
         public IPEndPoint localEndPoint { get; set; }
 
+        public ICryptoService CryptoService { get; set; }
+
+
+        public override void Free(bool canAccessFinalizable)
+        {
+            CryptoService = null;
+            Host = null;
+
+            base.Free(canAccessFinalizable);
+        }
     }
 }

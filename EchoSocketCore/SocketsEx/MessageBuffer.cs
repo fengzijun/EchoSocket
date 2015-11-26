@@ -1,6 +1,6 @@
 namespace EchoSocketCore.SocketsEx
 {
-    internal class MessageBuffer
+    public class MessageBuffer
     {
         #region Fields
 
