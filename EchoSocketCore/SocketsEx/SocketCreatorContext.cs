@@ -16,7 +16,9 @@ namespace EchoSocketCore.SocketsEx
 
         public BaseSocketConnectionHost Host { get; set; }
 
-        public IPEndPoint localEndPoint { get; set; }
+        public IPEndPoint LocalEndPoint { get; set; }
+
+        public IPEndPoint RemotEndPoint { get; set; }
 
         public ICryptoService CryptoService { get; set; }
 

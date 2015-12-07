@@ -12,7 +12,7 @@ namespace EchoSocketCore.SocketsEx
             byte[] result = null;
             buffer = CryptUtils.EncryptData(connection, buffer);
 
-            switch (connection.DelimiterType)
+            switch (connection.Context.DelimiterType)
             {
                 case DelimiterType.dtNone:
 
@@ -27,14 +27,14 @@ namespace EchoSocketCore.SocketsEx
                 case DelimiterType.dtMessageTailExcludeOnReceive:
                 case DelimiterType.dtMessageTailIncludeOnReceive:
 
-                    if (connection.Delimiter != null && connection.Delimiter.Length >= 0)
+                    if (connection.Context.Delimiter != null && connection.Context.Delimiter.Length >= 0)
                     {
                         //----- Need delimiter!
-                        bufferSize = buffer.Length + connection.Delimiter.Length;
+                        bufferSize = buffer.Length + connection.Context.Delimiter.Length;
 
                         result = connection.Context.Host.Context.BufferManager.TakeBuffer(bufferSize);
                         Buffer.BlockCopy(buffer, 0, result, 0, buffer.Length);
-                        Buffer.BlockCopy(connection.Delimiter, 0, result, buffer.Length, connection.Delimiter.Length);
+                        Buffer.BlockCopy(connection.Context.Delimiter, 0, result, buffer.Length, connection.Context.Delimiter.Length);
                     }
                     else
                     {
@@ -70,7 +70,7 @@ namespace EchoSocketCore.SocketsEx
             //----- Get Raw Buffer with Tail!
             byte[] result = null;
 
-            if (connection.DelimiterType == DelimiterType.dtMessageTailIncludeOnReceive)
+            if (connection.Context.DelimiterType == DelimiterType.dtMessageTailIncludeOnReceive)
             {
                 result = new byte[position - e.Offset + 1];
             }

@@ -118,8 +118,8 @@ namespace EchoSocketCore.SocketsEx
             byte[] result = null;
 
             if (
-                 (connection.EventProcessing == EventProcessing.epEncrypt)
-                 || (connection.EventProcessing == EventProcessing.epProxy)
+                 (connection.Context.EventProcessing == EventProcessing.epEncrypt)
+                 || (connection.Context.EventProcessing == EventProcessing.epProxy)
                  || (connection.Context.Creator.Context.EncryptType == EncryptType.etSSL && connection.Context.Creator.Context.CompressionType == CompressionType.ctNone)
                  || (connection.Context.Creator.Context.EncryptType == EncryptType.etNone && connection.Context.Creator.Context.CompressionType == CompressionType.ctNone)
                 )
@@ -210,8 +210,8 @@ namespace EchoSocketCore.SocketsEx
             byte[] result = null;
 
             if (
-                 (connection.EventProcessing == EventProcessing.epEncrypt)
-                 || (connection.EventProcessing == EventProcessing.epProxy)
+                 (connection.Context.EventProcessing == EventProcessing.epEncrypt)
+                 || (connection.Context.EventProcessing == EventProcessing.epProxy)
                  || (connection.Context.Creator.Context.EncryptType == EncryptType.etSSL && connection.Context.Creator.Context.CompressionType == CompressionType.ctNone)
                  || (connection.Context.Creator.Context.EncryptType == EncryptType.etNone && connection.Context.Creator.Context.CompressionType == CompressionType.ctNone)
 

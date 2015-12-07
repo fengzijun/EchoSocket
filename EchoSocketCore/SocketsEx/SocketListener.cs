@@ -22,30 +22,7 @@ namespace EchoSocketCore.SocketsEx
 
         #region Constructor
 
-        /// <summary>
-        /// Base SocketListener creator.
-        /// </summary>
-        /// <param name="host">
-        /// Host.
-        /// </param>
-        /// <param name="localEndPoint">
-        /// Local endpoint to be used.
-        /// </param>
-        /// <param name="encryptType">
-        /// Encryption to be used.
-        /// </param>
-        /// <param name="compressionType">
-        /// Compression to be used.
-        /// </param>
-        /// <param name="cryptoService">
-        /// CryptoService. if null, will not be used.
-        /// </param>
-        /// <param name="backLog">
-        /// Socket backlog queue number.
-        /// </param>
-        /// <param name="acceptThreads">
-        /// Number of accept events to be used.
-        /// </param>
+        
         public SocketListener(BaseSocketConnectionHost host, string name, IPEndPoint localEndPoint, EncryptType encryptType, CompressionType compressionType, ICryptoService cryptoService, byte backLog, byte acceptThreads)
             : base(host, name, localEndPoint, encryptType, compressionType, cryptoService)
         {
@@ -79,7 +56,7 @@ namespace EchoSocketCore.SocketsEx
             if (!Disposed)
             {
                 FSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-                FSocket.Bind(LocalEndPoint);
+                FSocket.Bind(Context.LocalEndPoint);
                 FSocket.Listen(FBackLog * FAcceptThreads);
 
                 //----- Begin accept new connections!
@@ -191,10 +168,6 @@ namespace EchoSocketCore.SocketsEx
 
         #region Properties
 
-        public IPEndPoint LocalEndPoint
-        {
-            get { return Context.localEndPoint; }
-        }
 
         public byte BackLog
         {

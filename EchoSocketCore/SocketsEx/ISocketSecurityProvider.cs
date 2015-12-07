@@ -13,5 +13,7 @@ namespace EchoSocketCore.SocketsEx
         ICryptoTransform CreateDecryptor();
 
         bool Verify();
+
+        RSACryptoServiceProvider ServerPrivateKey { get; set; }
     }
 }

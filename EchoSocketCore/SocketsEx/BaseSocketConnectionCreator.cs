@@ -12,27 +12,40 @@ namespace EchoSocketCore.SocketsEx
 
         #region Constructor
 
-        public BaseSocketConnectionCreator(BaseSocketConnectionHost host, string name, IPEndPoint localEndPoint, EncryptType encryptType, CompressionType compressionType, ICryptoService cryptoService)
+        public BaseSocketConnectionCreator(BaseSocketConnectionHost host, string name, IPEndPoint localEndPoint, EncryptType encryptType, CompressionType compressionType, ICryptoService cryptoService,IPEndPoint remoteEndPoint)
         {
-            if (Context == null)
-                Context = new SocketCreatorContext
-                {
-                    CompressionType = compressionType,
-                    CryptoService = cryptoService,
-                    Host = host,
-                    EncryptType = encryptType,
-                    Name = name,
-                    localEndPoint = localEndPoint
-                };
+            Context = new SocketCreatorContext
+            {
+                CompressionType = compressionType,
+                CryptoService = cryptoService,
+                Host = host,
+                EncryptType = encryptType,
+                Name = name,
+                LocalEndPoint = localEndPoint,
+                RemotEndPoint = remoteEndPoint
+            };
 
         }
 
-        public BaseSocketConnectionCreator(BaseSocketConnectionHost host, string name, IPEndPoint localEndPoint, EncryptType encryptType, ICryptoService cryptoService):
-            this(host, name, localEndPoint, encryptType, CompressionType.ctNone, cryptoService)
+        public BaseSocketConnectionCreator(BaseSocketConnectionHost host, string name, IPEndPoint localEndPoint, EncryptType encryptType, CompressionType compressionType, ICryptoService cryptoService):this(host,  name,  localEndPoint,  encryptType,  compressionType,  cryptoService,null)
+        {
+           
+        }
+
+        public BaseSocketConnectionCreator(BaseSocketConnectionHost host, string name, IPEndPoint localEndPoint, EncryptType encryptType, ICryptoService cryptoService, IPEndPoint remoteEndPoint) :
+            this(host, name, localEndPoint, encryptType, CompressionType.ctNone, cryptoService,remoteEndPoint)
+        { }
+
+        public BaseSocketConnectionCreator(BaseSocketConnectionHost host, string name, IPEndPoint localEndPoint, EncryptType encryptType, ICryptoService cryptoService) :
+            this(host, name, localEndPoint, encryptType, CompressionType.ctNone, cryptoService, null)
+        { }
+
+        public BaseSocketConnectionCreator(BaseSocketConnectionHost host, string name, IPEndPoint localEndPoint, ICryptoService cryptoService, IPEndPoint remoteEndPoint) :
+            this(host, name, localEndPoint, EncryptType.etNone, CompressionType.ctNone, cryptoService,remoteEndPoint)
         { }
 
         public BaseSocketConnectionCreator(BaseSocketConnectionHost host, string name, IPEndPoint localEndPoint, ICryptoService cryptoService) :
-            this(host, name, localEndPoint, EncryptType.etNone, CompressionType.ctNone, cryptoService)
+            this(host, name, localEndPoint, EncryptType.etNone, CompressionType.ctNone, cryptoService, null)
         { }
 
         #endregion Constructor

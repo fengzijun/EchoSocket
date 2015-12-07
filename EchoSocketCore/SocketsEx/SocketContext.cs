@@ -66,8 +66,6 @@ namespace EchoSocketCore.SocketsEx
 
         public object SyncEventProcessing { get; set; }
 
-        public EventProcessing EventProcessing { get; set; }
-
         public Queue<MessageBuffer> WriteQueue { get; set; }
 
         public bool WriteQueueHasItems { get; set; }
@@ -75,6 +73,77 @@ namespace EchoSocketCore.SocketsEx
         public object SyncReadPending { get; set; }
 
         public bool ReadPending { get; set; }
+
+        private EventProcessing eventProcessing;
+        public EventProcessing EventProcessing
+        {
+            get
+            {
+                lock (SyncEventProcessing)
+                {
+                    return eventProcessing;
+                }
+            }
+
+            set
+            {
+                lock (SyncEventProcessing)
+                {
+                    eventProcessing = value;
+                }
+            }
+        }
+
+        public byte[] Delimiter
+        {
+            get
+            {
+                switch (eventProcessing)
+                {
+                    case EventProcessing.epUser:
+
+                        return Host.Context.Delimiter;
+
+                    case EventProcessing.epEncrypt:
+
+                        return Host.Context.DelimiterEncrypt;
+
+                    case EventProcessing.epProxy:
+
+                        return null;
+
+                    default:
+
+                        return null;
+                }
+            }
+        }
+
+
+        public DelimiterType DelimiterType
+        {
+            get
+            {
+                switch (eventProcessing)
+                {
+                    case EventProcessing.epUser:
+
+                        return Host.Context.DelimiterType;
+
+                    case EventProcessing.epEncrypt:
+
+                        return DelimiterType.dtMessageTailExcludeOnReceive;
+
+                    case EventProcessing.epProxy:
+
+                        return DelimiterType.dtNone;
+
+                    default:
+
+                        return DelimiterType.dtNone;
+                }
+            }
+        }
 
         public override void Free(bool canAccessFinalizable)
         {

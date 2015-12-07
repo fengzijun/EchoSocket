@@ -21,15 +21,17 @@ namespace EchoSocketCore.SocketsEx
     {
         #region Fields
 
-        private ReaderWriterLockSlim FSocketConnectionsSync;
+        private ReaderWriterLockSlim fSocketConnectionsSync;
 
-        private ManualResetEvent FWaitCreatorsDisposing;
+        private ManualResetEvent fWaitCreatorsDisposing;
 
-        private ManualResetEvent FWaitConnectionsDisposing;
+        private ManualResetEvent fWaitConnectionsDisposing;
 
-        private ManualResetEvent FWaitThreadsDisposing;
+        private ManualResetEvent fWaitThreadsDisposing;
 
-        private Timer FIdleTimer;
+        private ISocketSecurityProvider socketSecurityProvider; 
+
+        private Timer fIdleTimer;
 
         #endregion Fields
 
@@ -37,31 +39,30 @@ namespace EchoSocketCore.SocketsEx
 
         public BaseSocketConnectionHost(HostType hostType, CallbackThreadType callbackThreadtype, ISocketService socketService, DelimiterType delimiterType, byte[] delimiter, int socketBufferSize, int messageBufferSize, int idleCheckInterval, int idleTimeOutValue)
         {
-            if (Context == null)
-                Context = new SocketHostContext
-                {
-                    Active = false,
-                    SyncActive = new object(),
-                    SocketCreators = new List<BaseSocketConnectionCreator>(),
-                    SocketConnections = new Dictionary<long, BaseSocketConnection>(),
-                    BufferManager = BufferManager.CreateBufferManager(0, messageBufferSize),
-                    SocketService = socketService,
-                    IdleCheckInterval = idleCheckInterval,
-                    IdleTimeOutValue = idleTimeOutValue,
-                    CallbackThreadType = callbackThreadtype,
-                    DelimiterType = delimiterType,
-                    Delimiter = delimiter,
-                    DelimiterEncrypt = new byte[] { 0xFE, 0xDC, 0xBA, 0x98, 0xBA, 0xDC, 0xFE },
-                    MessageBufferSize = messageBufferSize,
-                    SocketBufferSize = socketBufferSize,
-                    HostType = hostType
+            Context = new SocketHostContext
+            {
+                Active = false,
+                SyncActive = new object(),
+                SocketCreators = new List<BaseSocketConnectionCreator>(),
+                SocketConnections = new Dictionary<long, BaseSocketConnection>(),
+                BufferManager = BufferManager.CreateBufferManager(0, messageBufferSize),
+                SocketService = socketService,
+                IdleCheckInterval = idleCheckInterval,
+                IdleTimeOutValue = idleTimeOutValue,
+                CallbackThreadType = callbackThreadtype,
+                DelimiterType = delimiterType,
+                Delimiter = delimiter,
+                DelimiterEncrypt = new byte[] { 0xFE, 0xDC, 0xBA, 0x98, 0xBA, 0xDC, 0xFE },
+                MessageBufferSize = messageBufferSize,
+                SocketBufferSize = socketBufferSize,
+                HostType = hostType
 
-                };
-
-            FSocketConnectionsSync = new ReaderWriterLockSlim();
-            FWaitCreatorsDisposing = new ManualResetEvent(false);
-            FWaitConnectionsDisposing = new ManualResetEvent(false);
-            FWaitThreadsDisposing = new ManualResetEvent(false);
+            };
+               
+            fSocketConnectionsSync = new ReaderWriterLockSlim();
+            fWaitCreatorsDisposing = new ManualResetEvent(false);
+            fWaitConnectionsDisposing = new ManualResetEvent(false);
+            fWaitThreadsDisposing = new ManualResetEvent(false);
 
         }
 
@@ -89,32 +90,32 @@ namespace EchoSocketCore.SocketsEx
 
         public override void Free(bool canAccessFinalizable)
         {
-            if (FIdleTimer != null)
+            if (fIdleTimer != null)
             {
-                FIdleTimer.Change(Timeout.Infinite, Timeout.Infinite);
-                FIdleTimer.Dispose();
-                FIdleTimer = null;
+                fIdleTimer.Change(Timeout.Infinite, Timeout.Infinite);
+                fIdleTimer.Dispose();
+                fIdleTimer = null;
             }
 
-            if (FWaitCreatorsDisposing != null)
+            if (fWaitCreatorsDisposing != null)
             {
-                FWaitCreatorsDisposing.Set();
-                FWaitCreatorsDisposing.Close();
-                FWaitCreatorsDisposing = null;
+                fWaitCreatorsDisposing.Set();
+                fWaitCreatorsDisposing.Close();
+                fWaitCreatorsDisposing = null;
             }
 
-            if (FWaitConnectionsDisposing != null)
+            if (fWaitConnectionsDisposing != null)
             {
-                FWaitConnectionsDisposing.Set();
-                FWaitConnectionsDisposing.Close();
-                FWaitConnectionsDisposing = null;
+                fWaitConnectionsDisposing.Set();
+                fWaitConnectionsDisposing.Close();
+                fWaitConnectionsDisposing = null;
             }
 
-            if (FWaitThreadsDisposing != null)
+            if (fWaitThreadsDisposing != null)
             {
-                FWaitThreadsDisposing.Set();
-                FWaitThreadsDisposing.Close();
-                FWaitThreadsDisposing = null;
+                fWaitThreadsDisposing.Set();
+                fWaitThreadsDisposing.Close();
+                fWaitThreadsDisposing = null;
             }
 
             Context.Free(canAccessFinalizable);
@@ -148,12 +149,12 @@ namespace EchoSocketCore.SocketsEx
 
                 if ((Context.IdleCheckInterval > 0) && (Context.IdleTimeOutValue > 0))
                 {
-                    FIdleTimer = new Timer(new TimerCallback(CheckSocketConnections));
+                    fIdleTimer = new Timer(new TimerCallback(CheckSocketConnections));
                 }
 
-                if (FIdleTimer != null)
+                if (fIdleTimer != null)
                 {
-                    FIdleTimer.Change(Context.IdleCheckInterval, Context.IdleCheckInterval);
+                    fIdleTimer.Change(Context.IdleCheckInterval, Context.IdleCheckInterval);
                 }
 
                 Active = true;
@@ -191,7 +192,7 @@ namespace EchoSocketCore.SocketsEx
 
                 if (creators != null)
                 {
-                    FWaitCreatorsDisposing.Reset();
+                    fWaitCreatorsDisposing.Reset();
 
                     int loopCount = 0;
 
@@ -212,7 +213,7 @@ namespace EchoSocketCore.SocketsEx
 
                     if (creators.Length > 0)
                     {
-                        FWaitCreatorsDisposing.WaitOne(Timeout.Infinite, false);
+                        fWaitCreatorsDisposing.WaitOne(Timeout.Infinite, false);
                     }
                 }
             }
@@ -231,7 +232,7 @@ namespace EchoSocketCore.SocketsEx
 
                 if (connections != null)
                 {
-                    FWaitConnectionsDisposing.Reset();
+                    fWaitConnectionsDisposing.Reset();
 
                     int loopSleep = 0;
 
@@ -243,7 +244,7 @@ namespace EchoSocketCore.SocketsEx
 
                     if (connections.Length > 0)
                     {
-                        FWaitConnectionsDisposing.WaitOne(Timeout.Infinite, false);
+                        fWaitConnectionsDisposing.WaitOne(Timeout.Infinite, false);
                     }
                 }
             }
@@ -263,7 +264,7 @@ namespace EchoSocketCore.SocketsEx
                 {
                     try
                     {
-                        switch (connection.EventProcessing)
+                        switch (connection.Context.EventProcessing)
                         {
                             case EventProcessing.epUser:
 
@@ -301,7 +302,7 @@ namespace EchoSocketCore.SocketsEx
                 {
                     try
                     {
-                        switch (connection.EventProcessing)
+                        switch (connection.Context.EventProcessing)
                         {
                             case EventProcessing.epUser:
 
@@ -339,7 +340,7 @@ namespace EchoSocketCore.SocketsEx
                 {
                     try
                     {
-                        switch (connection.EventProcessing)
+                        switch (connection.Context.EventProcessing)
                         {
                             case EventProcessing.epUser:
 
@@ -432,7 +433,7 @@ namespace EchoSocketCore.SocketsEx
                 {
                     if (connection.Active)
                     {
-                        if ((connection.EventProcessing == EventProcessing.epUser) && (buffer.Length > Context.MessageBufferSize))
+                        if ((connection.Context.EventProcessing == EventProcessing.epUser) && (buffer.Length > Context.MessageBufferSize))
                         {
                             throw new MessageLengthException("Message length is greater than Host maximum message length.");
                         }
@@ -747,7 +748,7 @@ namespace EchoSocketCore.SocketsEx
                             if (!connection.Context.ReadPending)
                             {
                                 //----- if the connection is not receiving, start the receive!
-                                if (connection.EventProcessing == EventProcessing.epUser)
+                                if (connection.Context.EventProcessing == EventProcessing.epUser)
                                 {
                                     readMessage = Context.BufferManager.TakeBuffer(Context.MessageBufferSize);
                                 }
@@ -961,7 +962,7 @@ namespace EchoSocketCore.SocketsEx
             int remainingBytes = 0;
             SocketAsyncEventArgs e = connection.ReadOV;
 
-            switch (connection.DelimiterType)
+            switch (connection.Context.DelimiterType)
             {
                 case DelimiterType.dtNone:
 
@@ -1040,7 +1041,7 @@ namespace EchoSocketCore.SocketsEx
         {
             byte[] rawBuffer = null;
 
-            byte[] delimiter = connection.Delimiter;
+            byte[] delimiter = connection.Context.Delimiter;
             int delimiterSize = delimiter.Length;
 
             bool readPacket = false;
@@ -1257,7 +1258,7 @@ namespace EchoSocketCore.SocketsEx
         {
             if (!Disposed)
             {
-                switch (connection.EventProcessing)
+                switch (connection.Context.EventProcessing)
                 {
                     case EventProcessing.epNone:
 
@@ -1273,7 +1274,7 @@ namespace EchoSocketCore.SocketsEx
                             }
                             else
                             {
-                                connection.EventProcessing = EventProcessing.epUser;
+                                connection.Context.EventProcessing = EventProcessing.epUser;
                                 FireOnConnected(connection);
                             }
                         }
@@ -1288,7 +1289,7 @@ namespace EchoSocketCore.SocketsEx
                         }
                         else
                         {
-                            connection.EventProcessing = EventProcessing.epUser;
+                            connection.Context.EventProcessing = EventProcessing.epUser;
                             FireOnConnected(connection);
                         }
 
@@ -1296,7 +1297,7 @@ namespace EchoSocketCore.SocketsEx
 
                     case EventProcessing.epEncrypt:
 
-                        connection.EventProcessing = EventProcessing.epUser;
+                        connection.Context.EventProcessing = EventProcessing.epUser;
                         FireOnConnected(connection);
 
                         break;
@@ -1318,7 +1319,7 @@ namespace EchoSocketCore.SocketsEx
                 {
                     if (((SocketConnector)connection.Context.Creator).ProxyInfo != null)
                     {
-                        connection.EventProcessing = EventProcessing.epProxy;
+                        connection.Context.EventProcessing = EventProcessing.epProxy;
                         result = true;
                     }
                 }
@@ -1341,7 +1342,7 @@ namespace EchoSocketCore.SocketsEx
 
                 if ((cryptService != null) && (connection.Context.Creator.Context.EncryptType != EncryptType.etNone))
                 {
-                    connection.EventProcessing = EventProcessing.epEncrypt;
+                    connection.Context.EventProcessing = EventProcessing.epEncrypt;
                     result = true;
                 }
             }
@@ -1358,7 +1359,7 @@ namespace EchoSocketCore.SocketsEx
         {
             if (!Disposed)
             {
-                FSocketConnectionsSync.EnterWriteLock();
+                fSocketConnectionsSync.EnterWriteLock();
 
                 try
                 {
@@ -1369,7 +1370,7 @@ namespace EchoSocketCore.SocketsEx
                 }
                 finally
                 {
-                    FSocketConnectionsSync.ExitWriteLock();
+                    fSocketConnectionsSync.ExitWriteLock();
                 }
             }
         }
@@ -1384,7 +1385,7 @@ namespace EchoSocketCore.SocketsEx
             {
                 if (socketConnection != null)
                 {
-                    FSocketConnectionsSync.EnterWriteLock();
+                    fSocketConnectionsSync.EnterWriteLock();
 
                     try
                     {
@@ -1394,10 +1395,10 @@ namespace EchoSocketCore.SocketsEx
                     {
                         if (Context.SocketConnections.Count <= 0)
                         {
-                            FWaitConnectionsDisposing.Set();
+                            fWaitConnectionsDisposing.Set();
                         }
 
-                        FSocketConnectionsSync.ExitWriteLock();
+                        fSocketConnectionsSync.ExitWriteLock();
                     }
                 }
             }
@@ -1473,7 +1474,7 @@ namespace EchoSocketCore.SocketsEx
 
             if (!Disposed)
             {
-                FSocketConnectionsSync.EnterReadLock();
+                fSocketConnectionsSync.EnterReadLock();
 
                 try
                 {
@@ -1482,7 +1483,7 @@ namespace EchoSocketCore.SocketsEx
                 }
                 finally
                 {
-                    FSocketConnectionsSync.ExitReadLock();
+                    fSocketConnectionsSync.ExitReadLock();
                 }
             }
 
@@ -1499,7 +1500,7 @@ namespace EchoSocketCore.SocketsEx
 
             if (!Disposed)
             {
-                FSocketConnectionsSync.EnterReadLock();
+                fSocketConnectionsSync.EnterReadLock();
 
                 try
                 {
@@ -1507,7 +1508,7 @@ namespace EchoSocketCore.SocketsEx
                 }
                 finally
                 {
-                    FSocketConnectionsSync.ExitReadLock();
+                    fSocketConnectionsSync.ExitReadLock();
                 }
             }
 
@@ -1523,7 +1524,7 @@ namespace EchoSocketCore.SocketsEx
             if (!Disposed)
             {
                 //----- Disable timer event!
-                FIdleTimer.Change(Timeout.Infinite, Timeout.Infinite);
+                fIdleTimer.Change(Timeout.Infinite, Timeout.Infinite);
 
                 try
                 {
@@ -1564,7 +1565,7 @@ namespace EchoSocketCore.SocketsEx
                     if (!Disposed)
                     {
                         //----- Restart the timer event!
-                        FIdleTimer.Change(Context.IdleCheckInterval, Context.IdleCheckInterval);
+                        fIdleTimer.Change(Context.IdleCheckInterval, Context.IdleCheckInterval);
                     }
                 }
 
@@ -1603,7 +1604,7 @@ namespace EchoSocketCore.SocketsEx
 
                     if (Context.SocketCreators.Count <= 0)
                     {
-                        FWaitCreatorsDisposing.Set();
+                        fWaitCreatorsDisposing.Set();
                     }
                 }
             }
@@ -1647,7 +1648,7 @@ namespace EchoSocketCore.SocketsEx
                 {
                     if (connection.Active)
                     {
-                        switch (connection.EventProcessing)
+                        switch (connection.Context.EventProcessing)
                         {
                             case EventProcessing.epEncrypt:
 
@@ -1659,6 +1660,9 @@ namespace EchoSocketCore.SocketsEx
                                         {
                                             #region Client
 
+                                            //----- Create authenticate message
+                                            AuthMessage am = new AuthMessage();
+
                                             //----- Generate client asymmetric key pair (public and private)
                                             RSACryptoServiceProvider clientKeyPair = new RSACryptoServiceProvider(2048);
 
@@ -1669,12 +1673,14 @@ namespace EchoSocketCore.SocketsEx
                                             //----- Generates symmetric algoritm
                                             SymmetricAlgorithm sa = CryptUtils.CreateSymmetricAlgoritm(connection.Context.Creator.Context.EncryptType);
 
+                                            socketSecurityProvider = new SocketRSACryptoProvider(connection, am, new byte[] { });
+
                                             //----- Adjust connection cryptors
                                             connection.Context.Encryptor = sa.CreateEncryptor();
                                             connection.Context.Decryptor = sa.CreateDecryptor();
 
-                                            //----- Create authenticate message
-                                            AuthMessage am = new AuthMessage();
+
+                                            
 
                                             //----- Encrypt session IV and session Key with server public key
                                             am.SessionIV = serverPublicKey.Encrypt(sa.IV, true);
@@ -1776,7 +1782,7 @@ namespace EchoSocketCore.SocketsEx
                             case EventProcessing.epProxy:
 
                                 ProxyInfo proxyInfo = ((SocketConnector)connection.Context.Creator).ProxyInfo;
-                                IPEndPoint endPoint = ((SocketConnector)connection.Context.Creator).RemoteEndPoint;
+                                IPEndPoint endPoint = ((SocketConnector)connection.Context.Creator).Context.RemotEndPoint;
                                 byte[] proxyBuffer = ProxyUtils.GetProxyRequestData(proxyInfo, endPoint);
 
                                 connection.BeginSend(proxyBuffer);
@@ -1804,13 +1810,13 @@ namespace EchoSocketCore.SocketsEx
                 {
                     try
                     {
-                        switch (connection.EventProcessing)
+                        switch (connection.Context.EventProcessing)
                         {
                             case EventProcessing.epEncrypt:
 
                                 if (connection.Context.Host.Context.HostType == HostType.htServer)
                                 {
-                                    connection.EventProcessing = EventProcessing.epUser;
+                                    connection.Context.EventProcessing = EventProcessing.epUser;
                                     FireOnConnected(connection);
                                 }
                                 else
@@ -1846,7 +1852,7 @@ namespace EchoSocketCore.SocketsEx
                 {
                     try
                     {
-                        switch (connection.EventProcessing)
+                        switch (connection.Context.EventProcessing)
                         {
                             case EventProcessing.epEncrypt:
 
@@ -1874,33 +1880,13 @@ namespace EchoSocketCore.SocketsEx
 
                                     if (am != null)
                                     {
-                                        //----- Server private key
-                                        RSACryptoServiceProvider serverPrivateKey;
-                                        connection.Context.Creator.Context.CryptoService.OnSymmetricAuthenticate(connection, out serverPrivateKey);
-
-                                        //----- Decrypt session Key and session IV with server private key
-                                        SymmetricAlgorithm sa = CryptUtils.CreateSymmetricAlgoritm(connection.Context.Creator.Context.EncryptType);
-                                        sa.Key = serverPrivateKey.Decrypt(am.SessionKey, true);
-                                        sa.IV = serverPrivateKey.Decrypt(am.SessionIV, true);
+                                        socketSecurityProvider = new SocketRSACryptoProvider(connection, am, buffer);
 
                                         //----- Adjust connection cryptors
-                                        connection.Context.Encryptor = sa.CreateEncryptor();
-                                        connection.Context.Decryptor = sa.CreateDecryptor();
+                                        connection.Context.Encryptor = socketSecurityProvider.CreateEncryptor();
+                                        connection.Context.Decryptor = socketSecurityProvider.CreateDecryptor();
 
-                                        //----- Verify sign
-                                        RSACryptoServiceProvider clientPublicKey = new RSACryptoServiceProvider();
-                                        clientPublicKey.FromXmlString(Encoding.UTF8.GetString(CryptUtils.DecryptDataForAuthenticate(connection.Context.Decryptor, am.ClientKey)));
-
-                                        m.SetLength(0);
-                                        m.Write(am.SessionKey, 0, am.SessionKey.Length);
-                                        m.Write(am.ClientKey, 0, am.ClientKey.Length);
-                                        m.Write(am.Data, 0, am.Data.Length);
-
-                                        am.SessionIV.Initialize();
-                                        am.SessionKey.Initialize();
-                                        am.ClientKey.Initialize();
-
-                                        if (clientPublicKey.VerifyData(CryptUtils.EncryptDataForAuthenticate(connection.Context.Encryptor, m.ToArray()), "SHA256", am.Sign))
+                                        if (socketSecurityProvider.Verify())
                                         {
                                             am.Data = new byte[32];
                                             RNGCryptoServiceProvider.Create().GetBytes(am.Data);
@@ -1908,7 +1894,7 @@ namespace EchoSocketCore.SocketsEx
                                             am.SessionIV = null;
                                             am.SessionKey = null;
                                             am.ClientKey = null;
-                                            am.Sign = serverPrivateKey.SignData(am.Data, "SHA256");
+                                            am.Sign = socketSecurityProvider.ServerPrivateKey.SignData(am.Data, "SHA256");
 
                                             m.SetLength(0);
                                             b.Serialize(m, am);
@@ -1923,8 +1909,8 @@ namespace EchoSocketCore.SocketsEx
                                         am.Sign.Initialize();
                                         m.Close();
 
-                                        serverPrivateKey.Clear();
-                                        clientPublicKey.Clear();
+                                        socketSecurityProvider.ServerPrivateKey.Clear();
+                                        //clientPublicKey.Clear();
                                     }
                                     else
                                     {
@@ -1962,7 +1948,7 @@ namespace EchoSocketCore.SocketsEx
                                         //----- Verify sign
                                         if (serverPublicKey.VerifyData(am.Data, "SHA256", am.Sign))
                                         {
-                                            connection.EventProcessing = EventProcessing.epUser;
+                                            connection.Context.EventProcessing = EventProcessing.epUser;
                                             FireOnConnected(connection);
                                         }
                                         else
@@ -1998,7 +1984,7 @@ namespace EchoSocketCore.SocketsEx
                                 }
                                 else
                                 {
-                                    IPEndPoint endPoint = ((SocketConnector)connection.Context.Creator).RemoteEndPoint;
+                                    IPEndPoint endPoint = ((SocketConnector)connection.Context.Creator).Context.RemotEndPoint;
                                     byte[] proxyBuffer = ProxyUtils.GetProxyRequestData(proxyInfo, endPoint);
 
                                     connection.BeginSend(proxyBuffer);
@@ -2055,7 +2041,7 @@ namespace EchoSocketCore.SocketsEx
 
                         if (completed)
                         {
-                            connection.EventProcessing = EventProcessing.epUser;
+                            connection.Context.EventProcessing = EventProcessing.epUser;
                             FireOnConnected(connection);
                         }
                         else

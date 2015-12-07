@@ -12,17 +12,25 @@ namespace EchoSocketCore.SocketsEx
         private BaseSocketConnection connection;
         private AuthMessage am;
         private byte[] buffer;
+
+        private RSACryptoServiceProvider serverPrivateKey;
+        public RSACryptoServiceProvider ServerPrivateKey { 
+            get { return serverPrivateKey; } 
+            set { serverPrivateKey = value; } 
+        }
+
         public SocketRSACryptoProvider(BaseSocketConnection connection,AuthMessage am,byte[] buffer)
         {
             this.connection = connection;
             this.am = am;
             this.buffer = buffer;
+          
         }
 
 
         private SymmetricAlgorithm GetAlgorithm()
         {
-            RSACryptoServiceProvider serverPrivateKey;
+
             connection.Context.Creator.Context.CryptoService.OnSymmetricAuthenticate(connection, out serverPrivateKey);
 
             SymmetricAlgorithm sa = CryptUtils.CreateSymmetricAlgoritm(connection.Context.Creator.Context.EncryptType);

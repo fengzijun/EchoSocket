@@ -8,8 +8,19 @@ namespace EchoSocketCore.SocketsEx
     internal class ServerSocketConnection : BaseSocketConnection, IServerSocketConnection
     {
         #region Constructor
+        public ServerSocketConnection(BaseSocketConnectionCreator creator, Socket socket)
+            : base(creator, socket)
+        {
+            //-----
+        }
 
-        internal ServerSocketConnection(BaseSocketConnectionHost host, BaseSocketConnectionCreator creator, Socket socket)
+        public ServerSocketConnection(BaseSocketConnectionHost host, Socket socket)
+            : base(host, socket)
+        {
+            //-----
+        }
+
+        public ServerSocketConnection(BaseSocketConnectionHost host, BaseSocketConnectionCreator creator, Socket socket)
             : base(host, creator, socket)
         {
             //-----

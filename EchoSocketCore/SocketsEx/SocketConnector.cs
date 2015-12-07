@@ -13,7 +13,6 @@ namespace EchoSocketCore.SocketsEx
         #region Fields
 
         private Socket FSocket;
-        private IPEndPoint FRemoteEndPoint;
 
         private Timer FReconnectTimer;
         private int FReconnectAttempts;
@@ -26,32 +25,10 @@ namespace EchoSocketCore.SocketsEx
 
         #region Constructor
 
-        /// <summary>
-        /// Base SocketConnector creator.
-        /// </summary>
-        /// <param name="host">
-        /// Host.
-        /// </param>
-        /// <param name="remoteEndPoint">
-        /// The remote endpoint to connect.
-        /// </param>
-        /// <param name="encryptType">
-        /// Encrypt type.
-        /// </param>
-        /// <param name="compressionType">
-        /// Compression type.
-        /// </param>
-        /// <param name="cryptoService">
-        /// CryptoService. if null, will not be used.
-        /// </param>
-        /// <param name="localEndPoint">
-        /// Local endpoint. if null, will be any address/port.
-        /// </param>
         public SocketConnector(BaseSocketConnectionHost host, string name, IPEndPoint remoteEndPoint, ProxyInfo proxyData, EncryptType encryptType, CompressionType compressionType, ICryptoService cryptoService, int reconnectAttempts, int reconnectAttemptInterval, IPEndPoint localEndPoint)
-            : base(host, name, localEndPoint, encryptType, compressionType, cryptoService)
+            : base(host, name, localEndPoint, encryptType, compressionType, cryptoService, remoteEndPoint)
         {
             FReconnectTimer = new Timer(new TimerCallback(ReconnectConnectionTimerCallBack));
-            FRemoteEndPoint = remoteEndPoint;
 
             FReconnectAttempts = reconnectAttempts;
             FReconnectAttemptInterval = reconnectAttemptInterval;
@@ -79,7 +56,6 @@ namespace EchoSocketCore.SocketsEx
                 FSocket = null;
             }
 
-            FRemoteEndPoint = null;
             FProxyInfo = null;
 
             base.Free(canAccessFinalizable);
@@ -121,7 +97,7 @@ namespace EchoSocketCore.SocketsEx
             {
                 //----- Create Socket!
                 FSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-                FSocket.Bind(Context.localEndPoint);
+                FSocket.Bind(Context.LocalEndPoint);
                 FSocket.ReceiveBufferSize = Context.Host.Context.SocketBufferSize;
                 FSocket.SendBufferSize = Context.Host.Context.SocketBufferSize;
 
@@ -133,7 +109,7 @@ namespace EchoSocketCore.SocketsEx
 
                 if (FProxyInfo == null)
                 {
-                    e.RemoteEndPoint = FRemoteEndPoint;
+                    e.RemoteEndPoint = Context.RemotEndPoint;
                 }
                 else
                 {
@@ -282,16 +258,7 @@ namespace EchoSocketCore.SocketsEx
             set { FReconnectAttemptInterval = value; }
         }
 
-        public IPEndPoint LocalEndPoint
-        {
-            get { return Context.localEndPoint; }
-            set { Context.localEndPoint = value; }
-        }
-
-        public IPEndPoint RemoteEndPoint
-        {
-            get { return FRemoteEndPoint; }
-        }
+   
 
         public ProxyInfo ProxyInfo
         {

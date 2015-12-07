@@ -23,27 +23,37 @@ namespace EchoSocketCore.SocketsEx
 
         #region Constructor
 
-        internal BaseSocketConnection(BaseSocketConnectionHost host, BaseSocketConnectionCreator creator, Socket socket)
+        public BaseSocketConnection(BaseSocketConnectionHost host, Socket socket)
+            : this(host, host.Context.SocketCreators[0], socket)
         {
-            if (Context == null)
-                Context = new SocketContext
-                {
-                    ConnectionId = host.Context.GenerateConnectionId(),
-                    SyncData = new object(),
-                    Host = host,
-                    Creator = creator,
-                    SocketHandle = socket,
-                    SyncActive = new object(),
-                    Active = false,
-                    WriteQueue = new Queue<MessageBuffer>(),
-                    WriteQueueHasItems = false,
-                    SyncReadPending = new object(),
-                    ReadPending = false,
-                    SyncEventProcessing = new object(),
-                    EventProcessing = EventProcessing.epNone,
-                    LastAction = DateTime.Now,
-                };
 
+        }
+
+        public BaseSocketConnection(BaseSocketConnectionCreator creator, Socket socket)
+            : this(creator.Context.Host, creator, socket)
+        {
+
+        }
+
+        public BaseSocketConnection(BaseSocketConnectionHost host, BaseSocketConnectionCreator creator, Socket socket)
+        {
+            Context = new SocketContext
+            {
+                ConnectionId = host.Context.GenerateConnectionId(),
+                SyncData = new object(),
+                Host = host,
+                Creator = creator,
+                SocketHandle = socket,
+                SyncActive = new object(),
+                Active = false,
+                WriteQueue = new Queue<MessageBuffer>(),
+                WriteQueueHasItems = false,
+                SyncReadPending = new object(),
+                ReadPending = false,
+                SyncEventProcessing = new object(),
+                EventProcessing = EventProcessing.epNone,
+                LastAction = DateTime.Now,
+            };
 
             FWriteOV = new SocketAsyncEventArgs();
             FReadOV = new SocketAsyncEventArgs();
@@ -92,7 +102,6 @@ namespace EchoSocketCore.SocketsEx
         #region Properties
 
     
-
         internal SocketAsyncEventArgs WriteOV
         {
             get { return FWriteOV; }
@@ -101,26 +110,6 @@ namespace EchoSocketCore.SocketsEx
         internal SocketAsyncEventArgs ReadOV
         {
             get { return FReadOV; }
-        }
-
-     
-        internal EventProcessing EventProcessing
-        {
-            get
-            {
-                lock (Context.SyncEventProcessing)
-                {
-                    return Context.EventProcessing;
-                }
-            }
-
-            set
-            {
-                lock (Context.SyncEventProcessing)
-                {
-                    Context.EventProcessing = value;
-                }
-            }
         }
 
         internal bool Active
@@ -143,57 +132,6 @@ namespace EchoSocketCore.SocketsEx
                 lock (Context.SyncActive)
                 {
                     Context.Active = value;
-                }
-            }
-        }
-
-
-        internal byte[] Delimiter
-        {
-            get
-            {
-                switch (EventProcessing)
-                {
-                    case EventProcessing.epUser:
-
-                        return Context.Host.Context.Delimiter;
-
-                    case EventProcessing.epEncrypt:
-
-                        return Context.Host.Context.DelimiterEncrypt;
-
-                    case EventProcessing.epProxy:
-
-                        return null;
-
-                    default:
-
-                        return null;
-                }
-            }
-        }
-
-        internal DelimiterType DelimiterType
-        {
-            get
-            {
-                switch (EventProcessing)
-                {
-                    case EventProcessing.epUser:
-
-                        return Context.Host.Context.DelimiterType;
-
-                    case EventProcessing.epEncrypt:
-
-                        return DelimiterType.dtMessageTailExcludeOnReceive;
-
-                    case EventProcessing.epProxy:
-
-                        return DelimiterType.dtNone;
-
-                    default:
-
-                        return DelimiterType.dtNone;
                 }
             }
         }
