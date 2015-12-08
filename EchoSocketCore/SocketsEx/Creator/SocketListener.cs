@@ -53,29 +53,29 @@ namespace EchoSocketCore.SocketsEx
 
         public override void Start()
         {
-            if (!Disposed)
+            if (Disposed)
+                return;
+
+            FSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            FSocket.Bind(Context.LocalEndPoint);
+            FSocket.Listen(FBackLog * FAcceptThreads);
+
+            //----- Begin accept new connections!
+            int loopCount = 0;
+            SocketAsyncEventArgs e = null;
+
+            for (int i = 1; i <= FAcceptThreads; i++)
             {
-                FSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-                FSocket.Bind(Context.LocalEndPoint);
-                FSocket.Listen(FBackLog * FAcceptThreads);
+                e = new SocketAsyncEventArgs();
+                e.UserToken = this;
+                e.Completed += new EventHandler<SocketAsyncEventArgs>(BeginAcceptCallbackAsync);
 
-                //----- Begin accept new connections!
-                int loopCount = 0;
-                SocketAsyncEventArgs e = null;
-
-                for (int i = 1; i <= FAcceptThreads; i++)
+                if (!FSocket.AcceptAsync(e))
                 {
-                    e = new SocketAsyncEventArgs();
-                    e.UserToken = this;
-                    e.Completed += new EventHandler<SocketAsyncEventArgs>(BeginAcceptCallbackAsync);
+                    BeginAcceptCallbackAsync(this, e);
+                };
 
-                    if (!FSocket.AcceptAsync(e))
-                    {
-                        BeginAcceptCallbackAsync(this, e);
-                    };
-
-                    ThreadEx.LoopSleep(ref loopCount);
-                }
+                ThreadEx.LoopSleep(ref loopCount);
             }
         }
 
@@ -95,57 +95,57 @@ namespace EchoSocketCore.SocketsEx
         {
             SocketAsyncEventArgs e = (SocketAsyncEventArgs)state;
 
-            if (!Disposed)
+            if (Disposed)
+                return;
+
+            SocketListener listener = null;
+            Socket acceptedSocket = null;
+            BaseSocketConnection connection = null;
+
+            listener = (SocketListener)e.UserToken;
+
+            if (e.SocketError == SocketError.Success)
             {
-                SocketListener listener = null;
-                Socket acceptedSocket = null;
-                BaseSocketConnection connection = null;
-
-                listener = (SocketListener)e.UserToken;
-
-                if (e.SocketError == SocketError.Success)
+                try
                 {
-                    try
+                    //----- Get accepted socket!
+                    acceptedSocket = e.AcceptSocket;
+
+                    //----- Adjust buffer size!
+                    acceptedSocket.ReceiveBufferSize = Context.Host.Context.SocketBufferSize;
+                    acceptedSocket.SendBufferSize = Context.Host.Context.SocketBufferSize;
+
+                    connection = new ServerSocketConnection(Context.Host, listener, acceptedSocket);
+
+                    //----- Initialize!
+                    Context.Host.AddSocketConnection(connection);
+                    connection.Active = true;
+
+                    Context.Host.InitializeConnection(connection);
+                }
+                catch
+                {
+                    if (connection != null)
                     {
-                        //----- Get accepted socket!
-                        acceptedSocket = e.AcceptSocket;
-
-                        //----- Adjust buffer size!
-                        acceptedSocket.ReceiveBufferSize = Context.Host.Context.SocketBufferSize;
-                        acceptedSocket.SendBufferSize = Context.Host.Context.SocketBufferSize;
-
-                        connection = new ServerSocketConnection(Context.Host, listener, acceptedSocket);
-
-                        //----- Initialize!
-                        Context.Host.AddSocketConnection(connection);
-                        connection.Active = true;
-
-                        Context.Host.InitializeConnection(connection);
-                    }
-                    catch
-                    {
-                        if (connection != null)
+                        if (Context.Host != null)
                         {
-                            if (Context.Host != null)
-                            {
-                                Context.Host.DisposeConnection(connection);
-                                Context.Host.RemoveSocketConnection(connection);
-                            }
-
-                            connection = null;
+                            Context.Host.DisposeConnection(connection);
+                            Context.Host.RemoveSocketConnection(connection);
                         }
+
+                        connection = null;
                     }
                 }
+            }
 
-                //---- Continue to accept!
-                SocketAsyncEventArgs e2 = new SocketAsyncEventArgs();
-                e2.UserToken = listener;
-                e2.Completed += new EventHandler<SocketAsyncEventArgs>(BeginAcceptCallbackAsync);
+            //---- Continue to accept!
+            SocketAsyncEventArgs e2 = new SocketAsyncEventArgs();
+            e2.UserToken = listener;
+            e2.Completed += new EventHandler<SocketAsyncEventArgs>(BeginAcceptCallbackAsync);
 
-                if (!listener.Socket.AcceptAsync(e2))
-                {
-                    BeginAcceptCallbackAsync(this, e2);
-                }
+            if (!listener.Socket.AcceptAsync(e2))
+            {
+                BeginAcceptCallbackAsync(this, e2);
             }
 
             e.UserToken = null;

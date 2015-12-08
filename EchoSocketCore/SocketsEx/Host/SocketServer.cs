@@ -52,35 +52,35 @@ namespace EchoSocketCore.SocketsEx
 
         internal override void BeginSendToAll(ServerSocketConnection connection, byte[] buffer, bool includeMe)
         {
-            if (!Disposed)
+            if (Disposed)
+                return;
+
+            BaseSocketConnection[] items = GetSocketConnections();
+
+            if (items != null)
             {
-                BaseSocketConnection[] items = GetSocketConnections();
+                int loopSleep = 0;
 
-                if (items != null)
+                foreach (BaseSocketConnection cnn in items)
                 {
-                    int loopSleep = 0;
-
-                    foreach (BaseSocketConnection cnn in items)
+                    if (Disposed)
                     {
-                        if (Disposed)
-                        {
-                            break;
-                        }
+                        break;
+                    }
 
-                        try
+                    try
+                    {
+                        if (includeMe || connection != cnn)
                         {
-                            if (includeMe || connection != cnn)
-                            {
-                                byte[] localBuffer = new byte[buffer.Length];
-                                Buffer.BlockCopy(buffer, 0, localBuffer, 0, buffer.Length);
+                            byte[] localBuffer = new byte[buffer.Length];
+                            Buffer.BlockCopy(buffer, 0, localBuffer, 0, buffer.Length);
 
-                                BeginSend(cnn, localBuffer, true);
-                            }
+                            BeginSend(cnn, localBuffer, true);
                         }
-                        finally
-                        {
-                            ThreadEx.LoopSleep(ref loopSleep);
-                        }
+                    }
+                    finally
+                    {
+                        ThreadEx.LoopSleep(ref loopSleep);
                     }
                 }
             }

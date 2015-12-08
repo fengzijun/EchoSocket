@@ -20,8 +20,6 @@ namespace EchoSocketCore.SocketsEx
 
     #endregion Delegates
 
-  
-
     #region Structures
 
     #region AuthMessage
@@ -162,8 +160,6 @@ namespace EchoSocketCore.SocketsEx
     #endregion SOCKS5Phase
 
     #endregion Enums
-
- 
 
 
 }

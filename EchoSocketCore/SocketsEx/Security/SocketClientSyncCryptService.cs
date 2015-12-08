@@ -25,7 +25,6 @@ namespace EchoSocketCore.SocketsEx
         #endregion Constructor
 
         #region Methods
-
         public override void OnSymmetricAuthenticate(ISocketConnection connection, out RSACryptoServiceProvider serverKey)
         {
             FSocketClient.DoOnSymmetricAuthenticate(connection, out serverKey);
