@@ -27,8 +27,8 @@ namespace EchoSocketCore.SocketsEx
 
         public override void OnConnected(ConnectionEventArgs e)
         {
-            FSocketClient.SocketConnection = e.Connection;
-            FSocketClient.SocketConnection.BeginReceive();
+            FSocketClient.Context.SocketConnection = e.Connection;
+            FSocketClient.Context.SocketConnection.BeginReceive();
             FSocketClient.ConnectEvent.Set();
         }
 
@@ -46,7 +46,7 @@ namespace EchoSocketCore.SocketsEx
         public override void OnReceived(MessageEventArgs e)
         {
             FSocketClient.Enqueue(Encoding.GetEncoding(1252).GetString(e.Buffer));
-            FSocketClient.SocketConnection.BeginReceive();
+            FSocketClient.Context.SocketConnection.BeginReceive();
         }
 
         public override void OnDisconnected(ConnectionEventArgs e)

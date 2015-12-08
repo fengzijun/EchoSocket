@@ -166,7 +166,7 @@ namespace ChatClient
             SocketClientSync client = (SocketClientSync)data;
             string read = null;
 
-            while (client.Connected)
+            while (client.Context.Connected)
             {
                 read = client.Read(500);
 
@@ -192,22 +192,22 @@ namespace ChatClient
 
         private void button1_Click(object sender, EventArgs e)
         {
-            if (!client.Connected)
+            if (!client.Context.Connected)
             {
-                client.RemoteEndPoint = new IPEndPoint(IPAddress.Parse(txtHost.Text), 8090);
+                client.Context.RemoteEndPoint = new IPEndPoint(IPAddress.Parse(txtHost.Text), 8090);
 
-                client.DelimiterType = DelimiterType.dtMessageTailExcludeOnReceive;
-                client.Delimiter = new byte[] { 0xAA, 0xFF, 0xAA };
+                client.Context.DelimiterType = DelimiterType.dtMessageTailExcludeOnReceive;
+                client.Context.Delimiter = new byte[] { 0xAA, 0xFF, 0xAA };
 
-                client.EncryptType = EncryptType.etRijndael;
-                client.CompressionType = CompressionType.ctNone;
+                client.Context.EncryptType = EncryptType.etRijndael;
+                client.Context.CompressionType = CompressionType.ctNone;
 
-                client.SocketBufferSize = 1024;
-                client.MessageBufferSize = 512;
+                client.Context.SocketBufferSize = 1024;
+                client.Context.MessageBufferSize = 512;
 
                 client.Connect();
 
-                if (client.Connected)
+                if (client.Context.Connected)
                 {
                     this.lstUsers.Items.Clear();
                     this.lstStatus.Items.Clear();
@@ -266,7 +266,7 @@ namespace ChatClient
 
         private void button2_Click(object sender, EventArgs e)
         {
-            if (client.Connected)
+            if (client.Context.Connected)
             {
                 ChatMessage msg = new ChatMessage();
                 msg.MessageType = MessageType.mtLogout;
@@ -283,7 +283,7 @@ namespace ChatClient
 
                 client.Disconnect();
 
-                if (!client.Connected)
+                if (!client.Context.Connected)
                 {
                     UpdateList("Disconnected!");
                 }
@@ -307,7 +307,7 @@ namespace ChatClient
         {
             if (client != null)
             {
-                if (client.Connected)
+                if (client.Context.Connected)
                 {
                     client.Disconnect();
                 }
@@ -318,7 +318,7 @@ namespace ChatClient
 
         private void Send()
         {
-            if (client.Connected)
+            if (client.Context.Connected)
             {
                 ChatMessage msg = new ChatMessage();
 
