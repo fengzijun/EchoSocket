@@ -9,7 +9,7 @@ using System.Security.Cryptography;
 namespace EchoSocketCore.SocketsEx
 {
     /// <summary>
-    /// Base socket connection
+    /// connection data 
     /// </summary>
     public abstract class BaseSocketConnection : BaseDisposable, ISocketConnection
     {
@@ -18,6 +18,8 @@ namespace EchoSocketCore.SocketsEx
         private SocketAsyncEventArgs FWriteOV;
 
         private SocketAsyncEventArgs FReadOV;
+
+        private SocketContext context;
 
         #endregion Fields
 
@@ -37,7 +39,7 @@ namespace EchoSocketCore.SocketsEx
 
         public BaseSocketConnection(BaseSocketConnectionHost host, BaseSocketConnectionCreator creator, Socket socket)
         {
-            Context = new SocketContext
+            context = new SocketContext
             {
                 ConnectionId = host.Context.GenerateConnectionId(),
                 SyncData = new object(),
@@ -121,17 +123,17 @@ namespace EchoSocketCore.SocketsEx
                     return false;
                 }
 
-                lock (Context.SyncActive)
+                lock (context.SyncActive)
                 {
-                    return Context.Active;
+                    return context.Active;
                 }
             }
 
             set
             {
-                lock (Context.SyncActive)
+                lock (context.SyncActive)
                 {
-                    Context.Active = value;
+                    context.Active = value;
                 }
             }
         }
@@ -167,7 +169,11 @@ namespace EchoSocketCore.SocketsEx
 
         #region Properties
 
-        public SocketContext Context { get; set; }
+        public SocketContext Context {
+
+            get { return context; } 
+            set { context = value; }
+        }
 
         #endregion Properties
 
@@ -175,17 +181,17 @@ namespace EchoSocketCore.SocketsEx
 
         public void SetTTL(short value)
         {
-            Context.SocketHandle.Ttl = value;
+            context.SocketHandle.Ttl = value;
         }
 
         public void SetLinger(LingerOption lo)
         {
-            Context.SocketHandle.LingerState = lo;
+            context.SocketHandle.LingerState = lo;
         }
 
         public void SetNagle(bool value)
         {
-            Context.SocketHandle.NoDelay = value;
+            context.SocketHandle.NoDelay = value;
         }
 
         #endregion Socket Options
@@ -204,7 +210,7 @@ namespace EchoSocketCore.SocketsEx
         {
             if (!Disposed)
             {
-                Context.Host.BeginSend(this, buffer, false);
+                context.Host.BeginSend(this, buffer, false);
             }
         }
 
@@ -216,7 +222,7 @@ namespace EchoSocketCore.SocketsEx
         {
             if (!Disposed)
             {
-                Context.Host.BeginReceive(this);
+                context.Host.BeginReceive(this);
             }
         }
 
@@ -228,7 +234,7 @@ namespace EchoSocketCore.SocketsEx
         {
             if (!Disposed)
             {
-                Context.Host.BeginDisconnect(this);
+                context.Host.BeginDisconnect(this);
             }
         }
 
@@ -240,7 +246,7 @@ namespace EchoSocketCore.SocketsEx
         {
             if (!Disposed)
             {
-                return Context.Host.GetConnections();
+                return context.Host.GetConnections();
             }
             else
             {
@@ -256,7 +262,7 @@ namespace EchoSocketCore.SocketsEx
         {
             if (!Disposed)
             {
-                return Context.Host.GetSocketConnectionById(id);
+                return context.Host.GetSocketConnectionById(id);
             }
             else
             {

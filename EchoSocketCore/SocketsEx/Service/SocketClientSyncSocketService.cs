@@ -10,7 +10,7 @@ namespace EchoSocketCore.SocketsEx
     {
         #region Fields
 
-        private SocketClientSync FSocketClient;
+        private SocketClientSync fSocketClient;
 
         #endregion Fields
 
@@ -18,7 +18,7 @@ namespace EchoSocketCore.SocketsEx
 
         public SocketClientSyncSocketService(SocketClientSync client)
         {
-            FSocketClient = client;
+            fSocketClient = client;
         }
 
         #endregion Constructor
@@ -27,31 +27,31 @@ namespace EchoSocketCore.SocketsEx
 
         public override void OnConnected(ConnectionEventArgs e)
         {
-            FSocketClient.Context.SocketConnection = e.Connection;
-            FSocketClient.Context.SocketConnection.BeginReceive();
-            FSocketClient.ConnectEvent.Set();
+            fSocketClient.Context.SocketConnection = e.Connection;
+            fSocketClient.Context.SocketConnection.BeginReceive();
+            fSocketClient.ConnectEvent.Set();
         }
 
         public override void OnException(ExceptionEventArgs e)
         {
-            FSocketClient.LastException = e.Exception;
-            FSocketClient.ExceptionEvent.Set();
+            fSocketClient.LastException = e.Exception;
+            fSocketClient.ExceptionEvent.Set();
         }
 
         public override void OnSent(MessageEventArgs e)
         {
-            FSocketClient.SentEvent.Set();
+            fSocketClient.SentEvent.Set();
         }
 
         public override void OnReceived(MessageEventArgs e)
         {
-            FSocketClient.Enqueue(Encoding.GetEncoding(1252).GetString(e.Buffer));
-            FSocketClient.Context.SocketConnection.BeginReceive();
+            fSocketClient.Enqueue(Encoding.GetEncoding(1252).GetString(e.Buffer));
+            fSocketClient.Context.SocketConnection.BeginReceive();
         }
 
         public override void OnDisconnected(ConnectionEventArgs e)
         {
-            FSocketClient.DisconnectEvent.Set();
+            fSocketClient.DisconnectEvent.Set();
         }
 
         #endregion Methods
