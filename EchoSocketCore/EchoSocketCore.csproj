@@ -60,6 +60,7 @@
     <Compile Include="RuntTimeEx\InteropServicesEx\MarshalEx.cs" />
     <Compile Include="SocketsEx\Context\SocketClientSyncContext.cs" />
     <Compile Include="SocketsEx\Security\BaseCryptoService.cs" />
+    <Compile Include="SocketsEx\Security\SocketRSACryptoProvider.cs" />
     <Compile Include="SocketsEx\Service\BaseSocketService.cs" />
     <Compile Include="SocketsEx\Exception\Exceptions.cs" />
     <Compile Include="SocketsEx\Creator\IBaseSocketConnectionCreator.cs" />
@@ -82,7 +83,6 @@
     <Compile Include="SocketsEx\Utils\ProxyUtils.cs" />
     <Compile Include="SocketsEx\Context\SocketCreatorContext.cs" />
     <Compile Include="SocketsEx\Context\SocketHostContext.cs" />
-    <Compile Include="SocketsEx\Security\SocketRSACryptoProvider.cs" />
     <Compile Include="SocketsEx\Model\WriteData.cs" />
     <Compile Include="SocketsEx\Connection\ClientSocketConnection.cs" />
     <Compile Include="SocketsEx\Event\ConnectionEventArgs.cs" />
