@@ -23,7 +23,7 @@ namespace EchoSocketCore.SocketsEx
         #region Constructor
 
         
-        public SocketListener(BaseSocketConnectionHost host, string name, IPEndPoint localEndPoint, EncryptType encryptType, CompressionType compressionType, ICryptoService cryptoService, byte backLog, byte acceptThreads)
+        public SocketListener(BaseSocketProvider host, string name, IPEndPoint localEndPoint, EncryptType encryptType, CompressionType compressionType, ICryptoService cryptoService, byte backLog, byte acceptThreads)
             : base(host, name, localEndPoint, encryptType, compressionType, cryptoService)
         {
             FBackLog = backLog;
@@ -118,10 +118,7 @@ namespace EchoSocketCore.SocketsEx
                     connection = new ServerSocketConnection(Context.Host, listener, acceptedSocket);
 
                     //----- Initialize!
-                    Context.Host.AddSocketConnection(connection);
-                    connection.Active = true;
-
-                    Context.Host.InitializeConnection(connection);
+                    connection.Initialize();
                 }
                 catch
                 {
@@ -129,8 +126,8 @@ namespace EchoSocketCore.SocketsEx
                     {
                         if (Context.Host != null)
                         {
-                            Context.Host.DisposeConnection(connection);
-                            Context.Host.RemoveSocketConnection(connection);
+                            connection.DisposeConnection();
+                            connection.RemoveSocketConnection();
                         }
 
                         connection = null;

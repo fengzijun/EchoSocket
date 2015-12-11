@@ -14,7 +14,7 @@ namespace EchoSocketCore.SocketsEx
 
         public EncryptType EncryptType { get; set; }
 
-        public BaseSocketConnectionHost Host { get; set; }
+        public BaseSocketProvider Host { get; set; }
 
         public IPEndPoint LocalEndPoint { get; set; }
 

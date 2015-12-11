@@ -25,7 +25,7 @@ namespace EchoSocketCore.SocketsEx
 
         #region Constructor
 
-        public SocketConnector(BaseSocketConnectionHost host, string name, IPEndPoint remoteEndPoint, ProxyInfo proxyData, EncryptType encryptType, CompressionType compressionType, ICryptoService cryptoService, int reconnectAttempts, int reconnectAttemptInterval, IPEndPoint localEndPoint)
+        public SocketConnector(BaseSocketProvider host, string name, IPEndPoint remoteEndPoint, ProxyInfo proxyData, EncryptType encryptType, CompressionType compressionType, ICryptoService cryptoService, int reconnectAttempts, int reconnectAttemptInterval, IPEndPoint localEndPoint)
             : base(host, name, localEndPoint, encryptType, compressionType, cryptoService, remoteEndPoint)
         {
             FReconnectTimer = new Timer(new TimerCallback(ReconnectConnectionTimerCallBack));
@@ -155,10 +155,8 @@ namespace EchoSocketCore.SocketsEx
                         connector.Socket.SendBufferSize = Context.Host.Context.SocketBufferSize; ;
 
                         //----- Initialize!
-                        Context.Host.AddSocketConnection(connection);
-                        connection.Active = true;
-
-                        Context.Host.InitializeConnection(connection);
+                        connection.Initialize();
+                      
                     }
                     catch (Exception ex)
                     {
@@ -166,8 +164,8 @@ namespace EchoSocketCore.SocketsEx
 
                         if (connection != null)
                         {
-                            Context.Host.DisposeConnection(connection);
-                            Context.Host.RemoveSocketConnection(connection);
+                            connection.DisposeConnection();
+                            connection.RemoveSocketConnection();
 
                             connection = null;
                         }

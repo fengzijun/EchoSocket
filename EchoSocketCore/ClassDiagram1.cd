@@ -32,7 +32,7 @@
   <Class Name="EchoSocketCore.SocketsEx.BaseSocketConnection" Collapsed="true">
     <Position X="6.75" Y="1.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAQAAgAgJACQAAAAIAICAgIAAAAAQgAAhAAAAAIAI=</HashCode>
+      <HashCode>YAICQAAgAgJAiQAAAgIAIDAgIAAAAAQkAAhIAAAAIAI=</HashCode>
       <FileName>SocketsEx\Connection\BaseSocketConnection.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
@@ -45,11 +45,11 @@
     </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Class>
-  <Class Name="EchoSocketCore.SocketsEx.BaseSocketConnectionHost" Collapsed="true">
+  <Class Name="EchoSocketCore.SocketsEx.BaseSocketProvider" Collapsed="true">
     <Position X="15.75" Y="1.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>YRZAUgAAImEAhQggIioSIDIJkAAAAAZlIAgIAQiAIAI=</HashCode>
-      <FileName>SocketsEx\Host\BaseSocketConnectionHost.cs</FileName>
+      <HashCode>YRRCUgAAImAABQggICoSICIJkAAAAAJhIAgAAQiAIAI=</HashCode>
+      <FileName>SocketsEx\Provider\BaseSocketProvider.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Class>
@@ -125,17 +125,17 @@
     </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Class>
-  <Class Name="EchoSocketCore.SocketsEx.SocketClient" Collapsed="true">
+  <Class Name="EchoSocketCore.SocketsEx.SocketClientProvider" Collapsed="true">
     <Position X="14.75" Y="3.25" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAQAAgAAAAAAAAAAAAAAAAAAAAAAAABAIAAAAAAAAgA=</HashCode>
-      <FileName>SocketsEx\Host\SocketClient.cs</FileName>
+      <FileName>SocketsEx\Provider\SocketClientProvider.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="EchoSocketCore.SocketsEx.SocketClientSync" Collapsed="true">
     <Position X="3.5" Y="1.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>BMRAUAaQUAGgSABYAAiBDIEwACQBgCEEIAmICSFACAI=</HashCode>
+      <HashCode>BIVCSAIAEgCAAAAAAAgABIAggQAAAAAAAEAgCAEACAY=</HashCode>
       <FileName>SocketsEx\SocketClientSync.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -160,11 +160,11 @@
       <FileName>SocketsEx\Creator\SocketListener.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="EchoSocketCore.SocketsEx.SocketServer" Collapsed="true">
+  <Class Name="EchoSocketCore.SocketsEx.SocketServerProvider" Collapsed="true">
     <Position X="17" Y="3.25" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAQAAgAAAAAAABAAAAAAAAAAAAAAAABAIAAAAAAAAAA=</HashCode>
-      <FileName>SocketsEx\Host\SocketServer.cs</FileName>
+      <FileName>SocketsEx\Provider\SocketServerProvider.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="EchoSocketCore.SocketsEx.AuthMessage" Collapsed="true">
@@ -207,7 +207,7 @@
   <Class Name="EchoSocketCore.SocketsEx.SocketClientSyncSocketService" Collapsed="true">
     <Position X="3.5" Y="8.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAIAAAAAAAAAAAAAAAABAAAAAAMAAAAAAwAAAAA=</HashCode>
+      <HashCode>AAAAAAIAAAAAAAAAAAAAAAABAAAAAAIAAAABAwAAAAA=</HashCode>
       <FileName>SocketsEx\Service\SocketClientSyncSocketService.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -260,11 +260,11 @@
       <FileName>SocketsEx\Creator\IBaseSocketConnectionCreator.cs</FileName>
     </TypeIdentifier>
   </Interface>
-  <Interface Name="EchoSocketCore.SocketsEx.IBaseSocketConnectionHost" Collapsed="true">
+  <Interface Name="EchoSocketCore.SocketsEx.IBaseSocketProvider" Collapsed="true">
     <Position X="21.25" Y="4.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>SocketsEx\Host\IBaseSocketConnectionHost.cs</FileName>
+      <FileName>SocketsEx\Provider\IBaseSocketProvider.cs</FileName>
     </TypeIdentifier>
   </Interface>
   <Interface Name="EchoSocketCore.SocketsEx.ISocketConnectionInfo" Collapsed="true">

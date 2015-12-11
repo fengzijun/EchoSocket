@@ -9,7 +9,7 @@ namespace EchoSocketCore.SocketsEx
     {
         #region Constructor
 
-        internal ClientSocketConnection(BaseSocketConnectionHost host, BaseSocketConnectionCreator creator, Socket socket)
+        internal ClientSocketConnection(BaseSocketProvider host, BaseSocketConnectionCreator creator, Socket socket)
             : base(host, creator, socket)
         {
         }

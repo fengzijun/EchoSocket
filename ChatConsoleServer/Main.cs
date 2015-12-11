@@ -12,7 +12,7 @@ namespace ChatServer
         [STAThread]
         private static void Main(string[] args)
         {
-            SocketServer chatServer = new SocketServer(CallbackThreadType.ctWorkerThread, new ChatSocketService.ChatSocketService());
+            SocketServerProvider chatServer = new SocketServerProvider(CallbackThreadType.ctWorkerThread, new ChatSocketService.ChatSocketService());
 
             chatServer.Context.Delimiter = new byte[] { 0xAA, 0xFF, 0xAA };
             chatServer.Context.DelimiterType = DelimiterType.dtMessageTailExcludeOnReceive;

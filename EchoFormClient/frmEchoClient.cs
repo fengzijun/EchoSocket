@@ -7,7 +7,7 @@ namespace EchoFormClient
 {
     public partial class frmEchoClient : EchoFormTemplate.frmEchoForm
     {
-        private SocketClient FEchoClient;
+        private SocketClientProvider FEchoClient;
 
         public frmEchoClient()
         {
@@ -33,7 +33,7 @@ namespace EchoFormClient
 
         private void frmEchoClient_Load(object sender, EventArgs e)
         {
-            FEchoClient = new SocketClient(CallbackThreadType.ctWorkerThread, new EchoSocketService.EchoSocketService(FEvent), DelimiterType.dtMessageTailExcludeOnReceive, Encoding.GetEncoding(1252).GetBytes("ALAZ"), 1024 * 2, 1024 * 16);
+            FEchoClient = new SocketClientProvider(CallbackThreadType.ctWorkerThread, new EchoSocketService.EchoSocketService(FEvent), DelimiterType.dtMessageTailExcludeOnReceive, Encoding.GetEncoding(1252).GetBytes("ALAZ"), 1024 * 2, 1024 * 16);
         }
 
         private void AddConnector()

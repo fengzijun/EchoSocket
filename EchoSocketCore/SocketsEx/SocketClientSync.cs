@@ -155,7 +155,7 @@ namespace EchoSocketCore.SocketsEx
             fExceptionEvent.Reset();
             fDisconnectEvent.Reset();
 
-            context.SocketClient = new SocketClient(CallbackThreadType.ctWorkerThread, context.SocketClientEvents, context.DelimiterType, context.Delimiter, context.SocketBufferSize, context.MessageBufferSize);
+            context.SocketClient = new SocketClientProvider(CallbackThreadType.ctWorkerThread, context.SocketClientEvents, context.DelimiterType, context.Delimiter, context.SocketBufferSize, context.MessageBufferSize);
 
             SocketConnector connector = context.SocketClient.AddConnector("SocketClientSync", context.RemoteEndPoint);
 

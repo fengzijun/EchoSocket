@@ -8,29 +8,29 @@ namespace EchoSocketCore.SocketsEx
     /// <summary>
     /// Server connection host.
     /// </summary>
-    public class SocketServer : BaseSocketConnectionHost
+    public class SocketServerProvider : BaseSocketProvider
     {
         #region Constructor
 
-        public SocketServer(CallbackThreadType callbackThreadType, ISocketService socketService)
+        public SocketServerProvider(CallbackThreadType callbackThreadType, ISocketService socketService)
             : base(HostType.htServer, callbackThreadType, socketService, DelimiterType.dtNone, null, 2048, 2048, 0, 0)
         {
             //-----
         }
 
-        public SocketServer(CallbackThreadType callbackThreadType, ISocketService socketService, DelimiterType delimiterType, byte[] delimiter)
+        public SocketServerProvider(CallbackThreadType callbackThreadType, ISocketService socketService, DelimiterType delimiterType, byte[] delimiter)
             : base(HostType.htServer, callbackThreadType, socketService, delimiterType, delimiter, 2048, 2048, 0, 0)
         {
             //-----
         }
 
-        public SocketServer(CallbackThreadType callbackThreadType, ISocketService socketService, DelimiterType delimiterType, byte[] delimiter, int socketBufferSize, int messageBufferSize)
+        public SocketServerProvider(CallbackThreadType callbackThreadType, ISocketService socketService, DelimiterType delimiterType, byte[] delimiter, int socketBufferSize, int messageBufferSize)
             : base(HostType.htServer, callbackThreadType, socketService, delimiterType, delimiter, socketBufferSize, messageBufferSize, 0, 0)
         {
             //-----
         }
 
-        public SocketServer(CallbackThreadType callbackThreadType, ISocketService socketService, DelimiterType delimiterType, byte[] delimiter, int socketBufferSize, int messageBufferSize, int idleCheckInterval, int idleTimeOutValue)
+        public SocketServerProvider(CallbackThreadType callbackThreadType, ISocketService socketService, DelimiterType delimiterType, byte[] delimiter, int socketBufferSize, int messageBufferSize, int idleCheckInterval, int idleTimeOutValue)
             : base(HostType.htServer, callbackThreadType, socketService, delimiterType, delimiter, socketBufferSize, messageBufferSize, idleCheckInterval, idleTimeOutValue)
         {
             //-----
@@ -125,7 +125,7 @@ namespace EchoSocketCore.SocketsEx
             if (!Disposed)
             {
                 listener = new SocketListener(this, name, localEndPoint, encryptType, compressionType, cryptoService, backLog, acceptThreads);
-                AddCreator(listener);
+                listener.AddCreator();
             }
 
             return listener;

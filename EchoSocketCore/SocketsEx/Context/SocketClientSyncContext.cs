@@ -29,7 +29,7 @@ namespace EchoSocketCore.SocketsEx.Context
         private int FSocketBufferSize;
 
         private ISocketConnection FSocketConnection;
-        private SocketClient FSocketClient;
+        private SocketClientProvider FSocketClient;
         private SocketClientSyncSocketService FSocketClientEvents;
         private SocketClientSyncCryptService FCryptClientEvents;
 
@@ -41,7 +41,7 @@ namespace EchoSocketCore.SocketsEx.Context
 
         private Queue<string> FReceivedQueue;
 
-        public SocketClient SocketClient
+        public SocketClientProvider SocketClient
         {
             get { return FSocketClient; }
             set { FSocketClient = value; }

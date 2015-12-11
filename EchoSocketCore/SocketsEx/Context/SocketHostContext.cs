@@ -7,10 +7,10 @@ using System.Threading;
 
 namespace EchoSocketCore.SocketsEx
 {
-    public class SocketHostContext : BaseDisposable
+    public class SocketProviderContext : BaseDisposable
     {
 
-        public SocketHostContext()
+        public SocketProviderContext()
         {
             connectionId = 1000;
         }

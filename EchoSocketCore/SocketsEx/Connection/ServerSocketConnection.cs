@@ -14,13 +14,13 @@ namespace EchoSocketCore.SocketsEx
             //-----
         }
 
-        public ServerSocketConnection(BaseSocketConnectionHost host, Socket socket)
+        public ServerSocketConnection(BaseSocketProvider host, Socket socket)
             : base(host, socket)
         {
             //-----
         }
 
-        public ServerSocketConnection(BaseSocketConnectionHost host, BaseSocketConnectionCreator creator, Socket socket)
+        public ServerSocketConnection(BaseSocketProvider host, BaseSocketConnectionCreator creator, Socket socket)
             : base(host, creator, socket)
         {
             //-----

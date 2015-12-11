@@ -9,7 +9,7 @@ namespace EchoWindowsServiceServer
 {
     public partial class Service1 : ServiceBase
     {
-        private SocketServer FServer;
+        private SocketServerProvider FServer;
         private OnEventDelegate FEvent;
         private StreamWriter FEchoLog;
 
@@ -23,7 +23,7 @@ namespace EchoWindowsServiceServer
             FEvent = new OnEventDelegate(Event);
             FEchoLog = new StreamWriter(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "\\EchoLog.txt");
 
-            FServer = new SocketServer(CallbackThreadType.ctWorkerThread, new EchoSocketService.EchoSocketService(FEvent), DelimiterType.dtMessageTailExcludeOnReceive, Encoding.GetEncoding(1252).GetBytes("ALAZ"), 1024 * 2, 1024 * 16);
+            FServer = new SocketServerProvider(CallbackThreadType.ctWorkerThread, new EchoSocketService.EchoSocketService(FEvent), DelimiterType.dtMessageTailExcludeOnReceive, Encoding.GetEncoding(1252).GetBytes("ALAZ"), 1024 * 2, 1024 * 16);
             FServer.AddListener("Commom Port - 8090", new IPEndPoint(IPAddress.Any, 8090), EncryptType.etRijndael, CompressionType.ctNone, new EchoCryptService.EchoCryptService(), 50, 3);
             FServer.Start();
         }

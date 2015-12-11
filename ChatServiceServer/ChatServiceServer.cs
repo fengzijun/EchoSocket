@@ -6,7 +6,7 @@ namespace ChatServiceServer
 {
     public partial class ChatServiceServer : ServiceBase
     {
-        private SocketServer chatServer;
+        private SocketServerProvider chatServer;
 
         public ChatServiceServer()
         {
@@ -15,7 +15,7 @@ namespace ChatServiceServer
 
         protected override void OnStart(string[] args)
         {
-            chatServer = new SocketServer(CallbackThreadType.ctWorkerThread, new ChatSocketService.ChatSocketService());
+            chatServer = new SocketServerProvider(CallbackThreadType.ctWorkerThread, new ChatSocketService.ChatSocketService());
 
             chatServer.Context.Delimiter = new byte[] { 0xAA, 0xFF, 0xAA };
             chatServer.Context.DelimiterType = DelimiterType.dtMessageTailExcludeOnReceive;

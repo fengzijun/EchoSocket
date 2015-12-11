@@ -16,7 +16,7 @@ namespace Main
             //----- Socket Server!
             OnEventDelegate FEvent = new OnEventDelegate(Event);
 
-            SocketServer echoServer = new SocketServer(CallbackThreadType.ctWorkerThread, new EchoSocketService.EchoSocketService(FEvent));
+            SocketServerProvider echoServer = new SocketServerProvider(CallbackThreadType.ctWorkerThread, new EchoSocketService.EchoSocketService(FEvent));
 
             echoServer.Context.Delimiter = new byte[] { 0xFF, 0x00, 0xFE, 0x01, 0xFD, 0x02 };
             echoServer.Context.DelimiterType = DelimiterType.dtMessageTailExcludeOnReceive;

@@ -29,7 +29,7 @@ namespace EchoSocketCore.SocketsEx
         /// <summary>
         /// Connection Host object.
         /// </summary>
-        public BaseSocketConnectionHost Host { get; set; }
+        public BaseSocketProvider Host { get; set; }
 
         /// <summary>
         /// Handle of the OS Socket.

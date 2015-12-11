@@ -64,7 +64,7 @@
     <Compile Include="SocketsEx\Service\BaseSocketService.cs" />
     <Compile Include="SocketsEx\Exception\Exceptions.cs" />
     <Compile Include="SocketsEx\Creator\IBaseSocketConnectionCreator.cs" />
-    <Compile Include="SocketsEx\Host\IBaseSocketConnectionHost.cs" />
+    <Compile Include="SocketsEx\Provider\IBaseSocketProvider.cs" />
     <Compile Include="SocketsEx\Connection\IClientSocketConnection.cs" />
     <Compile Include="SocketsEx\Security\ICryptoService.cs" />
     <Compile Include="SocketsEx\Connection\IServerSocketConnection.cs" />
@@ -78,7 +78,7 @@
     <Compile Include="SocketsEx\Security\AuthenticateCallbackData.cs" />
     <Compile Include="SocketsEx\Connection\BaseSocketConnection.cs" />
     <Compile Include="SocketsEx\Creator\BaseSocketConnectionCreator.cs" />
-    <Compile Include="SocketsEx\Host\BaseSocketConnectionHost.cs" />
+    <Compile Include="SocketsEx\Provider\BaseSocketProvider.cs" />
     <Compile Include="SocketsEx\Utils\BufferUtils.cs" />
     <Compile Include="SocketsEx\Utils\ProxyUtils.cs" />
     <Compile Include="SocketsEx\Context\SocketCreatorContext.cs" />
@@ -94,11 +94,11 @@
     <Compile Include="SocketsEx\Event\MessageEventArgs.cs" />
     <Compile Include="SocketsEx\Model\ProxyInfo.cs" />
     <Compile Include="SocketsEx\Connection\ServerSocketConnection.cs" />
-    <Compile Include="SocketsEx\Host\SocketClient.cs" />
+    <Compile Include="SocketsEx\Provider\SocketClientProvider.cs" />
     <Compile Include="SocketsEx\SocketClientSync.cs" />
     <Compile Include="SocketsEx\Creator\SocketConnector.cs" />
     <Compile Include="SocketsEx\Creator\SocketListener.cs" />
-    <Compile Include="SocketsEx\Host\SocketServer.cs" />
+    <Compile Include="SocketsEx\Provider\SocketServerProvider.cs" />
     <Compile Include="SocketsEx\Model\SocketsExTypes.cs" />
     <Compile Include="ThreadingEx\ThreadEx.cs" />
   </ItemGroup>
