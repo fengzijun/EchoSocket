@@ -10,7 +10,7 @@ namespace EchoSocketCore.SocketsEx
     /// </summary>
     public class SocketServerProvider : BaseSocketProvider
     {
-        #region Constructor
+    
 
         public SocketServerProvider(CallbackThreadType callbackThreadType, ISocketService socketService)
             : base(HostType.htServer, callbackThreadType, socketService, DelimiterType.dtNone, null, 2048, 2048, 0, 0)
@@ -36,19 +36,16 @@ namespace EchoSocketCore.SocketsEx
             //-----
         }
 
-        #endregion Constructor
 
-        #region Methods
 
-        #region BeginReconnect
+
+
+
 
         internal override void BeginReconnect(ClientSocketConnection connection)
         {
         }
 
-        #endregion BeginReconnect
-
-        #region BeginSendToAll
 
         internal override void BeginSendToAll(ServerSocketConnection connection, byte[] buffer, bool includeMe)
         {
@@ -86,9 +83,9 @@ namespace EchoSocketCore.SocketsEx
             }
         }
 
-        #endregion BeginSendToAll
 
-        #region BeginSendTo
+
+
 
         internal override void BeginSendTo(BaseSocketConnection connection, byte[] buffer)
         {
@@ -98,11 +95,11 @@ namespace EchoSocketCore.SocketsEx
             }
         }
 
-        #endregion BeginSendTo
 
-        #endregion Methods
 
-        #region AddListener
+
+
+
 
         /// <summary>
         /// Add the server connector (SocketListener).
@@ -124,17 +121,16 @@ namespace EchoSocketCore.SocketsEx
 
             if (!Disposed)
             {
-                listener = new SocketListener(this, name, localEndPoint, encryptType, compressionType, cryptoService, backLog, acceptThreads);
-                listener.AddCreator();
+                listener = new SocketListener(Context, backLog, acceptThreads);
+                AddCreator(listener);
             }
 
             return listener;
         }
 
-        #endregion AddListener
 
-        #region Stop
 
+     
         public override void Stop()
         {
             if (!Disposed)
@@ -146,6 +142,6 @@ namespace EchoSocketCore.SocketsEx
             base.Stop();
         }
 
-        #endregion Stop
+       
     }
 }

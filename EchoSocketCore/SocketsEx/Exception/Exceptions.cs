@@ -15,9 +15,9 @@ namespace EchoSocketCore.SocketsEx
     {
         private int FAttempt;
         private bool FMaxReached;
-        private IBaseSocketConnectionCreator FCreator;
+        private ISocket FCreator;
 
-        public ReconnectAttemptException(string message, IBaseSocketConnectionCreator creator, Exception innerException, int attempt, bool maxReached)
+       public ReconnectAttemptException(string message, ISocket creator, Exception innerException, int attempt, bool maxReached)
             : base(message, innerException)
         {
             FAttempt = attempt;
@@ -35,7 +35,7 @@ namespace EchoSocketCore.SocketsEx
             get { return FMaxReached; }
         }
 
-        public IBaseSocketConnectionCreator Creator
+        public ISocket Creator
         {
             get { return FCreator; }
         }

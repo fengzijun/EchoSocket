@@ -8,53 +8,29 @@ namespace EchoSocketCore.SocketsEx
     /// <summary>
     /// Connection creator using in BaseSocketProvider.
     /// </summary>
-    public abstract class BaseSocketConnectionCreator : BaseDisposable, IBaseSocketConnectionCreator
+    public abstract class BaseSocketConnectionCreator : BaseDisposable, ISocket
     {
-       
+        private SocketContext context;
 
-        #region Constructor
 
-        public BaseSocketConnectionCreator(BaseSocketProvider host, string name, IPEndPoint localEndPoint, EncryptType encryptType, CompressionType compressionType, ICryptoService cryptoService,IPEndPoint remoteEndPoint)
+        public BaseSocketConnectionCreator(SocketContext context)
         {
-            Context = new SocketCreatorContext
-            {
-                CompressionType = compressionType,
-                CryptoService = cryptoService,
-                Host = host,
-                EncryptType = encryptType,
-                Name = name,
-                LocalEndPoint = localEndPoint,
-                RemotEndPoint = remoteEndPoint
-            };
+            //Context = new SocketContext
+            //{
+            //    CompressionType = compressionType,
+            //    CryptoService = cryptoService,
+            //    Host = host,
+            //    EncryptType = encryptType,
+            //    Name = name,
+            //    LocalEndPoint = localEndPoint,
+            //     RemoteEndPoint = remoteEndPoint
+            //};
 
             //fWaitCreatorsDisposing = new ManualResetEvent(false);
 
+            this.context = context;
         }
 
-        public BaseSocketConnectionCreator(BaseSocketProvider host, string name, IPEndPoint localEndPoint, EncryptType encryptType, CompressionType compressionType, ICryptoService cryptoService):this(host,  name,  localEndPoint,  encryptType,  compressionType,  cryptoService,null)
-        {
-           
-        }
-
-        public BaseSocketConnectionCreator(BaseSocketProvider host, string name, IPEndPoint localEndPoint, EncryptType encryptType, ICryptoService cryptoService, IPEndPoint remoteEndPoint) :
-            this(host, name, localEndPoint, encryptType, CompressionType.ctNone, cryptoService,remoteEndPoint)
-        { }
-
-        public BaseSocketConnectionCreator(BaseSocketProvider host, string name, IPEndPoint localEndPoint, EncryptType encryptType, ICryptoService cryptoService) :
-            this(host, name, localEndPoint, encryptType, CompressionType.ctNone, cryptoService, null)
-        { }
-
-        public BaseSocketConnectionCreator(BaseSocketProvider host, string name, IPEndPoint localEndPoint, ICryptoService cryptoService, IPEndPoint remoteEndPoint) :
-            this(host, name, localEndPoint, EncryptType.etNone, CompressionType.ctNone, cryptoService,remoteEndPoint)
-        { }
-
-        public BaseSocketConnectionCreator(BaseSocketProvider host, string name, IPEndPoint localEndPoint, ICryptoService cryptoService) :
-            this(host, name, localEndPoint, EncryptType.etNone, CompressionType.ctNone, cryptoService, null)
-        { }
-
-        #endregion Constructor
-
-        #region Destructor
 
         public override void Free(bool canAccessFinalizable)
         {
@@ -72,11 +48,6 @@ namespace EchoSocketCore.SocketsEx
             base.Free(canAccessFinalizable);
         }
 
-        #endregion Destructor
-
-        #region Methods
-
-        #region ValidateServerCertificateCallback
 
         internal bool ValidateServerCertificateCallback(object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors)
         {
@@ -86,51 +57,17 @@ namespace EchoSocketCore.SocketsEx
             return acceptCertificate;
         }
 
-        #endregion ValidateServerCertificateCallback
-
-        #region Abstract Methods
 
         public abstract void Start();
 
         public abstract void Stop();
 
-        #endregion Abstract Methods
 
-        #endregion Methods
 
-        #region Properties
-
-        public SocketCreatorContext Context { get; set; }
-
-        #endregion Properties
-
-        public void AddCreator()
-        {
-            if (!Disposed)
-            {
-                lock (Context.Host.Context.SocketCreators)
-                {
-                    Context.Host.Context.SocketCreators.Add(this);
-                }
-            }
+        public SocketContext Context { 
+            get {return context;}
+            set { context = value; }
         }
-
-        public void RemoveCreator()
-        {
-            if (!Disposed)
-            {
-                lock (Context.Host.Context.SocketCreators)
-                {
-                    Context.Host.Context.SocketCreators.Remove(this);
-
-                    if (Context.Host.Context.SocketCreators.Count <= 0)
-                    {
-                        Context.Host.FWaitCreatorsDisposing.Set();
-                    }
-                }
-            }
-        }
-
 
     }
 }

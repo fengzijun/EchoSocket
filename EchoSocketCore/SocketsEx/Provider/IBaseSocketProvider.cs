@@ -5,7 +5,7 @@ using System.Text;
 
 namespace EchoSocketCore.SocketsEx
 {
-    public interface IBaseSocketProvider
-    {
-    }
+    //public interface IBaseSocketProvider
+    //{
+    //}
 }

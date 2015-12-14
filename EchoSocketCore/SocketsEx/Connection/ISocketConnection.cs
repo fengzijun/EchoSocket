@@ -6,7 +6,7 @@ using System.Text;
 
 namespace EchoSocketCore.SocketsEx
 {
-    public interface ISocketConnection:ISocketConnectionInfo
+    public interface ISocketConnection:ISocket
     {
         /// <summary>
         /// Set Socket Time To Live option

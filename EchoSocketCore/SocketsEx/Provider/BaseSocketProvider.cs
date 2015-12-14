@@ -14,7 +14,7 @@ namespace EchoSocketCore.SocketsEx
     /// <summary>
     /// The connection host.
     /// </summary>
-    public abstract class BaseSocketProvider : BaseDisposable, IBaseSocketProvider
+    public abstract class BaseSocketProvider : BaseDisposable, ISocket
     {
         private ReaderWriterLockSlim fSocketConnectionsSync;
 
@@ -38,9 +38,9 @@ namespace EchoSocketCore.SocketsEx
 
         private Timer fIdleTimer;
 
-        private SocketProviderContext context;
+        private SocketContext context;
 
-        public SocketProviderContext Context {
+        public SocketContext Context {
             get{return context;}
             set { context = value; }
         }
@@ -76,20 +76,15 @@ namespace EchoSocketCore.SocketsEx
 
         public BaseSocketProvider(HostType hostType, CallbackThreadType callbackThreadtype, ISocketService socketService, DelimiterType delimiterType, byte[] delimiter, int socketBufferSize, int messageBufferSize, int idleCheckInterval, int idleTimeOutValue)
         {
-            context = new SocketProviderContext
+            context = new SocketContext
             {
-                Active = false,
-                SyncActive = new object(),
-                SocketCreators = new List<BaseSocketConnectionCreator>(),
-                SocketConnections = new Dictionary<long, BaseSocketConnection>(),
                 BufferManager = BufferManager.CreateBufferManager(0, messageBufferSize),
                 SocketService = socketService,
                 IdleCheckInterval = idleCheckInterval,
                 IdleTimeOutValue = idleTimeOutValue,
                 CallbackThreadType = callbackThreadtype,
-                DelimiterType = delimiterType,
-                Delimiter = delimiter,
-                DelimiterEncrypt = new byte[] { 0xFE, 0xDC, 0xBA, 0x98, 0xBA, 0xDC, 0xFE },
+                DelimiterUserType = delimiterType,
+                DelimiterUserEncrypt = delimiter,
                 MessageBufferSize = messageBufferSize,
                 SocketBufferSize = socketBufferSize,
                 HostType = hostType
@@ -215,7 +210,7 @@ namespace EchoSocketCore.SocketsEx
                     }
                     finally
                     {
-                        creator.RemoveCreator();
+                        RemoveCreator(creator);
                         //RemoveCreator(creator);
                         creator.Dispose();
 
@@ -226,6 +221,100 @@ namespace EchoSocketCore.SocketsEx
                 if (creators.Length > 0)
                 {
                     fWaitCreatorsDisposing.WaitOne(Timeout.Infinite, false);
+                }
+            }
+        }
+
+        internal virtual void AddSocketConnection(BaseSocketConnection socketConnection)
+        {
+            if (Disposed)
+                return;
+
+            fSocketConnectionsSync.EnterWriteLock();
+
+            try
+            {
+                Context.SocketConnections.Add(socketConnection.Context.ConnectionId, socketConnection);
+               
+                socketConnection.WriteOV.Completed += new EventHandler<SocketAsyncEventArgs>(BeginSendCallbackAsync);
+                socketConnection.ReadOV.Completed += new EventHandler<SocketAsyncEventArgs>(BeginReadCallbackAsync);
+
+            }
+            finally
+            {
+                FSocketConnectionsSync.ExitWriteLock();
+            }
+
+        }
+
+        internal virtual void RemoveSocketConnection(BaseSocketConnection socketConnection)
+        {
+            if (Disposed || this == null)
+                return;
+
+            fSocketConnectionsSync.EnterWriteLock();
+            var socketConnections = context.SocketConnections;
+
+            try
+            {
+                socketConnections.Remove(socketConnection.Context.ConnectionId);
+            }
+            finally
+            {
+                if (socketConnections.Count <= 0)
+                {
+                    fWaitConnectionsDisposing.Set();
+                }
+
+                fSocketConnectionsSync.ExitWriteLock();
+            }
+        }
+
+        internal virtual void DisposeConnection(BaseSocketConnection socketConnection)
+        {
+            if (Disposed || this == null)
+                return;
+
+            if (socketConnection.WriteOV != null)
+            {
+                if (socketConnection.WriteOV.Buffer != null)
+                {
+                    context.BufferManager.ReturnBuffer(socketConnection.WriteOV.Buffer);
+                }
+            }
+
+            if (socketConnection.ReadOV != null)
+            {
+                if (socketConnection.ReadOV.Buffer != null)
+                {
+                    context.BufferManager.ReturnBuffer(socketConnection.ReadOV.Buffer);
+                }
+            }
+
+            Dispose();
+        }
+
+        internal virtual void CloseConnection(BaseSocketConnection socketConnection)
+        {
+            if (Disposed)
+                return;
+
+            Active = false;
+            socketConnection.Context.SocketHandle.Shutdown(SocketShutdown.Send);
+
+            lock (socketConnection.Context.WriteQueue)
+            {
+                if (socketConnection.Context.WriteQueue.Count > 0)
+                {
+                    for (int i = 1; i <= socketConnection.Context.WriteQueue.Count; i++)
+                    {
+                        MessageBuffer message = socketConnection.Context.WriteQueue.Dequeue();
+
+                        if (message != null)
+                        {
+                            context.BufferManager.ReturnBuffer(message.Buffer);
+                        }
+                    }
                 }
             }
         }
@@ -352,32 +441,32 @@ namespace EchoSocketCore.SocketsEx
             GC.Collect();
         }
 
-        //protected void AddCreator(BaseSocketConnectionCreator creator)
-        //{
-        //    if (!Disposed)
-        //    {
-        //        lock (Context.SocketCreators)
-        //        {
-        //            context.SocketCreators.Add(creator);
-        //        }
-        //    }
-        //}
+        protected void AddCreator(BaseSocketConnectionCreator creator)
+        {
+            if (!Disposed)
+            {
+                lock (Context.SocketCreators)
+                {
+                    context.SocketCreators.Add(creator);
+                }
+            }
+        }
 
-        //protected void RemoveCreator(BaseSocketConnectionCreator creator)
-        //{
-        //    if (!Disposed)
-        //    {
-        //        lock (context.SocketCreators)
-        //        {
-        //            context.SocketCreators.Remove(creator);
+        protected void RemoveCreator(BaseSocketConnectionCreator creator)
+        {
+            if (!Disposed)
+            {
+                lock (context.SocketCreators)
+                {
+                    context.SocketCreators.Remove(creator);
 
-        //            if (context.SocketCreators.Count <= 0)
-        //            {
-        //                fWaitCreatorsDisposing.Set();
-        //            }
-        //        }
-        //    }
-        //}
+                    if (context.SocketCreators.Count <= 0)
+                    {
+                        fWaitCreatorsDisposing.Set();
+                    }
+                }
+            }
+        }
 
         protected BaseSocketConnectionCreator[] GetSocketCreators()
         {
@@ -1061,10 +1150,10 @@ namespace EchoSocketCore.SocketsEx
                 }
                 else
                 {
-                    byte[] readMessage = connection.Context.Host.Context.BufferManager.TakeBuffer(Context.MessageBufferSize);
+                    byte[] readMessage = connection.Context.BufferManager.TakeBuffer(Context.MessageBufferSize);
                     Buffer.BlockCopy(e.Buffer, e.Offset, readMessage, 0, remainingBytes);
 
-                    connection.Context.Host.Context.BufferManager.ReturnBuffer(e.Buffer);
+                    connection.Context.BufferManager.ReturnBuffer(e.Buffer);
                     e.SetBuffer(null, 0, 0);
                     e.SetBuffer(readMessage, remainingBytes, readMessage.Length - remainingBytes);
                 }
@@ -1241,15 +1330,15 @@ namespace EchoSocketCore.SocketsEx
 
                 lock (connection.Context.SyncActive)
                 {
-                    connection.CloseConnection();
+                    connection.Context.Host.CloseConnection(connection);
                     FireOnDisconnected(connection);
                 }
             }
             finally
             {
                 Console.WriteLine(connection.Context.ConnectionId + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff"));
-                connection.DisposeConnection();
-                connection.RemoveSocketConnection();
+                connection.Context.Host.DisposeConnection(connection);
+                connection.Context.Host.RemoveSocketConnection(connection);
                 connection = null;
             }
         }
@@ -1299,11 +1388,11 @@ namespace EchoSocketCore.SocketsEx
                 {
                     case EventProcessing.epEncrypt:
 
-                        switch (connection.Context.Creator.Context.EncryptType)
+                        switch (connection.Context.EncryptType)
                         {
                             case EncryptType.etRijndael:
 
-                                if (connection.Context.Host.Context.HostType == HostType.htClient)
+                                if (connection.Context.HostType == HostType.htClient)
                                 {
                                     
 
@@ -1325,7 +1414,7 @@ namespace EchoSocketCore.SocketsEx
 
                             case EncryptType.etSSL:
 
-                                if (connection.Context.Host.Context.HostType == HostType.htClient)
+                                if (connection.Context.HostType == HostType.htClient)
                                 {
                                     
 
@@ -1334,7 +1423,7 @@ namespace EchoSocketCore.SocketsEx
                                     string serverName = null;
                                     bool checkRevocation = true;
 
-                                    connection.Context.Creator.Context.CryptoService.OnSSLClientAuthenticate(connection, out serverName, ref certs, ref checkRevocation);
+                                    connection.Context.CryptoService.OnSSLClientAuthenticate(connection, out serverName, ref certs, ref checkRevocation);
 
                                     //----- Authenticate SSL!
                                     SslStream ssl = new SslStream(new NetworkStream(connection.Context.SocketHandle), true, new RemoteCertificateValidationCallback(connection.Context.Creator.ValidateServerCertificateCallback));
@@ -1359,7 +1448,7 @@ namespace EchoSocketCore.SocketsEx
                                     bool clientAuthenticate = false;
                                     bool checkRevocation = true;
 
-                                    connection.Context.Creator.Context.CryptoService.OnSSLServerAuthenticate(connection, out cert, out clientAuthenticate, ref checkRevocation);
+                                    connection.Context.CryptoService.OnSSLServerAuthenticate(connection, out cert, out clientAuthenticate, ref checkRevocation);
 
                                     //----- Authneticate SSL!
                                     SslStream ssl = new SslStream(new NetworkStream(connection.Context.SocketHandle));
@@ -1376,7 +1465,7 @@ namespace EchoSocketCore.SocketsEx
                     case EventProcessing.epProxy:
 
                         ProxyInfo proxyInfo = ((SocketConnector)connection.Context.Creator).ProxyInfo;
-                        IPEndPoint endPoint = ((SocketConnector)connection.Context.Creator).Context.RemotEndPoint;
+                        IPEndPoint endPoint = ((SocketConnector)connection.Context.Creator).Context.RemoteEndPoint;
                         byte[] proxyBuffer = ProxyUtils.GetProxyRequestData(proxyInfo, endPoint);
 
                         connection.BeginSend(proxyBuffer);
@@ -1401,7 +1490,7 @@ namespace EchoSocketCore.SocketsEx
                 {
                     case EventProcessing.epEncrypt:
 
-                        if (connection.Context.Host.Context.HostType == HostType.htServer)
+                        if (connection.Context.HostType == HostType.htServer)
                         {
                             connection.Context.EventProcessing = EventProcessing.epUser;
                             FireOnConnected(connection);
@@ -1438,7 +1527,7 @@ namespace EchoSocketCore.SocketsEx
                 {
                     case EventProcessing.epEncrypt:
 
-                        if (connection.Context.Host.Context.HostType == HostType.htServer)
+                        if (connection.Context.HostType == HostType.htServer)
                         {
                             //----- Deserialize authentication message
 
@@ -1479,7 +1568,7 @@ namespace EchoSocketCore.SocketsEx
                         }
                         else
                         {
-                            IPEndPoint endPoint = ((SocketConnector)connection.Context.Creator).Context.RemotEndPoint;
+                            IPEndPoint endPoint = connection.Context.RemoteEndPoint;
                             byte[] proxyBuffer = ProxyUtils.GetProxyRequestData(proxyInfo, endPoint);
 
                             connection.BeginSend(proxyBuffer);

@@ -5,7 +5,7 @@ using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading;
-using EchoSocketCore.SocketsEx.Context;
+
 
 namespace EchoSocketCore.SocketsEx
 {
@@ -33,7 +33,7 @@ namespace EchoSocketCore.SocketsEx
 
         private Exception fLastException;
 
-        private SocketClientSyncContext context;
+        private SocketContext context;
 
         #endregion Fields
 
@@ -47,22 +47,10 @@ namespace EchoSocketCore.SocketsEx
             fConnectEvent = new AutoResetEvent(false);
             fDisconnectEvent = new ManualResetEvent(false);
 
-            context = new SocketClientSyncContext
-            {
-                ReceivedQueue = new Queue<string>(),
-                ConnectTimeout = 10000,
-                SentTimeout = 10000,
-                ConnectedSync = new object(),
-                Connected = false,
-                SocketClientEvents = new SocketClientSyncSocketService(this),
-                CryptClientEvents = new SocketClientSyncCryptService(this),
-                RemoteEndPoint = host,
-                EncryptType = EncryptType.etNone,
-                CompressionType = CompressionType.ctNone,
-                DelimiterType = DelimiterType.dtNone,
-                MessageBufferSize = 4096,
-                SocketBufferSize = 2048
-            };
+            context = new SocketContext();
+            context.SocketService = new SocketClientSyncSocketService(this);
+            context.CryptoService = new SocketClientSyncCryptService(this);
+            context.RemoteEndPoint = host;
 
         }
 
@@ -155,19 +143,18 @@ namespace EchoSocketCore.SocketsEx
             fExceptionEvent.Reset();
             fDisconnectEvent.Reset();
 
-            context.SocketClient = new SocketClientProvider(CallbackThreadType.ctWorkerThread, context.SocketClientEvents, context.DelimiterType, context.Delimiter, context.SocketBufferSize, context.MessageBufferSize);
-
-            SocketConnector connector = context.SocketClient.AddConnector("SocketClientSync", context.RemoteEndPoint);
+            context.Host = new SocketClientProvider(CallbackThreadType.ctWorkerThread, context.SocketService, context.DelimiterType, context.Delimiter, context.SocketBufferSize, context.MessageBufferSize);
+            SocketClientProvider clientProvider = context.Host as SocketClientProvider;
+            SocketConnector connector = clientProvider.AddConnector("SocketClientSync", context.RemoteEndPoint);
 
             connector.Context.EncryptType = context.EncryptType;
             connector.Context.CompressionType = context.CompressionType;
-            connector.Context.CryptoService = context.CryptClientEvents;
+            connector.Context.CryptoService = context.CryptoService;
             connector.ProxyInfo = context.ProxyInfo;
 
             WaitHandle[] wait = new WaitHandle[] { fConnectEvent, fExceptionEvent };
-
-            context.SocketClient.Start();
-
+            clientProvider.Start();
+            
             int signal = WaitHandle.WaitAny(wait, context.ConnectTimeout, false);
 
             switch (signal)
@@ -186,9 +173,9 @@ namespace EchoSocketCore.SocketsEx
                     context.Connected = false;
                     context.SocketConnection = null;
 
-                    context.SocketClient.Stop();
-                    context.SocketClient.Dispose();
-                    context.SocketClient = null;
+                    clientProvider.Stop();
+                    clientProvider.Dispose();
+                    clientProvider = null;
 
                     break;
 
@@ -200,9 +187,9 @@ namespace EchoSocketCore.SocketsEx
                     context.Connected = false;
                     context.SocketConnection = null;
 
-                    context.SocketClient.Stop();
-                    context.SocketClient.Dispose();
-                    context.SocketClient = null;
+                    clientProvider.Stop();
+                    clientProvider.Dispose();
+                    clientProvider = null;
 
                     break;
             }
@@ -355,12 +342,12 @@ namespace EchoSocketCore.SocketsEx
                     //----- Disconnect!
                     context.Connected = false;
                     context.SocketConnection = null;
-
-                    if (context.SocketClient != null)
+                    SocketClientProvider clientProvider = context.Host as SocketClientProvider;
+                    if (clientProvider != null)
                     {
-                        context.SocketClient.Stop();
-                        context.SocketClient.Dispose();
-                        context.SocketClient = null;
+                        clientProvider.Stop();
+                        clientProvider.Dispose();
+                        clientProvider = null;
                     }
 
                     fireEvent = true;
@@ -508,7 +495,7 @@ namespace EchoSocketCore.SocketsEx
             }
         }
 
-        public SocketClientSyncContext Context
+        public SocketContext Context
         {
             get { return context; }
             set { context = value; }

@@ -120,8 +120,8 @@ namespace EchoSocketCore.SocketsEx
             if (
                  (connection.Context.EventProcessing == EventProcessing.epEncrypt)
                  || (connection.Context.EventProcessing == EventProcessing.epProxy)
-                 || (connection.Context.Creator.Context.EncryptType == EncryptType.etSSL && connection.Context.Creator.Context.CompressionType == CompressionType.ctNone)
-                 || (connection.Context.Creator.Context.EncryptType == EncryptType.etNone && connection.Context.Creator.Context.CompressionType == CompressionType.ctNone)
+                 || (connection.Context.EncryptType == EncryptType.etSSL && connection.Context.CompressionType == CompressionType.ctNone)
+                 || (connection.Context.EncryptType == EncryptType.etNone && connection.Context.CompressionType == CompressionType.ctNone)
                 )
             {
                 result = buffer;
@@ -133,7 +133,7 @@ namespace EchoSocketCore.SocketsEx
                     CryptoStream cs = null;
                     GZipStream gs = null;
 
-                    switch (connection.Context.Creator.Context.EncryptType)
+                    switch (connection.Context.EncryptType)
                     {
                         case EncryptType.etNone:
                         case EncryptType.etSSL:
@@ -148,7 +148,7 @@ namespace EchoSocketCore.SocketsEx
                             }
                     }
 
-                    switch (connection.Context.Creator.Context.CompressionType)
+                    switch (connection.Context.CompressionType)
                     {
                         case CompressionType.ctGZIP:
                             {
@@ -212,8 +212,8 @@ namespace EchoSocketCore.SocketsEx
             if (
                  (connection.Context.EventProcessing == EventProcessing.epEncrypt)
                  || (connection.Context.EventProcessing == EventProcessing.epProxy)
-                 || (connection.Context.Creator.Context.EncryptType == EncryptType.etSSL && connection.Context.Creator.Context.CompressionType == CompressionType.ctNone)
-                 || (connection.Context.Creator.Context.EncryptType == EncryptType.etNone && connection.Context.Creator.Context.CompressionType == CompressionType.ctNone)
+                 || (connection.Context.EncryptType == EncryptType.etSSL && connection.Context.CompressionType == CompressionType.ctNone)
+                 || (connection.Context.EncryptType == EncryptType.etNone && connection.Context.CompressionType == CompressionType.ctNone)
 
                 )
             {
@@ -225,7 +225,7 @@ namespace EchoSocketCore.SocketsEx
                 CryptoStream cs = null;
                 GZipStream gs = null;
 
-                switch (connection.Context.Creator.Context.EncryptType)
+                switch (connection.Context.EncryptType)
                 {
                     case EncryptType.etNone:
                     case EncryptType.etSSL:
@@ -240,7 +240,7 @@ namespace EchoSocketCore.SocketsEx
                         }
                 }
 
-                switch (connection.Context.Creator.Context.CompressionType)
+                switch (connection.Context.CompressionType)
                 {
                     case CompressionType.ctGZIP:
                         {

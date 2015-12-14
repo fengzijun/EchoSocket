@@ -1,34 +1,34 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Text;
+﻿//using System;
+//using System.Collections.Generic;
+//using System.Linq;
+//using System.Net;
+//using System.Text;
 
-namespace EchoSocketCore.SocketsEx
-{
-    public class SocketCreatorContext:BaseDisposable
-    {
-        public string Name { get; set; }
+//namespace EchoSocketCore.SocketsEx
+//{
+//    public class SocketCreatorContext:BaseDisposable
+//    {
+//        public string Name { get; set; }
 
-        public CompressionType CompressionType { get; set; }
+//        public CompressionType CompressionType { get; set; }
 
-        public EncryptType EncryptType { get; set; }
+//        public EncryptType EncryptType { get; set; }
 
-        public BaseSocketProvider Host { get; set; }
+//        public BaseSocketProvider Host { get; set; }
 
-        public IPEndPoint LocalEndPoint { get; set; }
+//        public IPEndPoint LocalEndPoint { get; set; }
 
-        public IPEndPoint RemotEndPoint { get; set; }
+//        public IPEndPoint RemotEndPoint { get; set; }
 
-        public ICryptoService CryptoService { get; set; }
+//        public ICryptoService CryptoService { get; set; }
 
 
-        public override void Free(bool canAccessFinalizable)
-        {
-            CryptoService = null;
-            Host = null;
+//        public override void Free(bool canAccessFinalizable)
+//        {
+//            CryptoService = null;
+//            Host = null;
 
-            base.Free(canAccessFinalizable);
-        }
-    }
-}
+//            base.Free(canAccessFinalizable);
+//        }
+//    }
+//}

@@ -114,8 +114,8 @@ namespace EchoSocketCore.SocketsEx
 
             if (!Disposed)
             {
-                result = new SocketConnector(this, name, remoteEndPoint, proxyData, encryptType, compressionType, cryptoService, reconnectAttempts, reconnectAttemptInterval, localEndPoint);
-                result.AddCreator();
+                result = new SocketConnector(Context);
+                AddCreator(result);
             }
 
             return result;

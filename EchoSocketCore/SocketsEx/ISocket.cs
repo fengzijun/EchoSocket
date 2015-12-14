@@ -5,7 +5,7 @@ using System.Text;
 
 namespace EchoSocketCore.SocketsEx
 {
-    public interface ISocketConnectionInfo
+    public interface ISocket
     {
         SocketContext Context { get; set; }
     }

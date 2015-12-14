@@ -7,16 +7,15 @@ namespace EchoSocketCore.SocketsEx
     /// </summary>
     internal class ClientSocketConnection : BaseSocketConnection, IClientSocketConnection
     {
-        #region Constructor
+       
 
-        internal ClientSocketConnection(BaseSocketProvider host, BaseSocketConnectionCreator creator, Socket socket)
-            : base(host, creator, socket)
+        internal ClientSocketConnection(SocketContext context)
+            : base(context)
         {
         }
 
-        #endregion Constructor
 
-        #region ISocketConnection Members
+
 
         public override IClientSocketConnection AsClientConnection()
         {
@@ -28,9 +27,8 @@ namespace EchoSocketCore.SocketsEx
             return null;
         }
 
-        #endregion ISocketConnection Members
 
-        #region IClientSocketConnection Members
+      
 
         public ProxyInfo ProxyInfo
         {
@@ -45,6 +43,6 @@ namespace EchoSocketCore.SocketsEx
             Context.Host.BeginReconnect(this);
         }
 
-        #endregion IClientSocketConnection Members
+
     }
 }

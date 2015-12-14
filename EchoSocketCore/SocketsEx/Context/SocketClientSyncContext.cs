@@ -1,190 +1,190 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Text;
+﻿//using System;
+//using System.Collections.Generic;
+//using System.Linq;
+//using System.Net;
+//using System.Text;
 
-namespace EchoSocketCore.SocketsEx.Context
-{
-    public class SocketClientSyncContext:BaseDisposable
-    {
-        //----- EndPoints!
-        private IPEndPoint FLocalEndPoint;
+//namespace EchoSocketCore.SocketsEx.Context
+//{
+//    public class SocketClientSyncContext:BaseDisposable
+//    {
+//        //----- EndPoints!
+//        private IPEndPoint FLocalEndPoint;
 
-        private IPEndPoint FRemoteEndPoint;
+//        private IPEndPoint FRemoteEndPoint;
 
-        //----- Message Types!
-        private EncryptType FEncryptType;
+//        //----- Message Types!
+//        private EncryptType FEncryptType;
 
-        private CompressionType FCompressionType;
-        private DelimiterType FDelimiterType;
+//        private CompressionType FCompressionType;
+//        private DelimiterType FDelimiterType;
 
-        //----- Proxy!
-        private ProxyInfo FProxyInfo;
+//        //----- Proxy!
+//        private ProxyInfo FProxyInfo;
 
-        //----- Socket delimiter and buffer size!
-        private byte[] FDelimiter;
+//        //----- Socket delimiter and buffer size!
+//        private byte[] FDelimiter;
 
-        private int FMessageBufferSize;
-        private int FSocketBufferSize;
+//        private int FMessageBufferSize;
+//        private int FSocketBufferSize;
 
-        private ISocketConnection FSocketConnection;
-        private SocketClientProvider FSocketClient;
-        private SocketClientSyncSocketService FSocketClientEvents;
-        private SocketClientSyncCryptService FCryptClientEvents;
+//        private ISocketConnection FSocketConnection;
+//        private SocketClientProvider FSocketClient;
+//        private SocketClientSyncSocketService FSocketClientEvents;
+//        private SocketClientSyncCryptService FCryptClientEvents;
 
-        private int FConnectTimeout;
-        private bool FConnected;
-        private object FConnectedSync;
+//        private int FConnectTimeout;
+//        private bool FConnected;
+//        private object FConnectedSync;
 
-        private int FSentTimeout;
+//        private int FSentTimeout;
 
-        private Queue<string> FReceivedQueue;
+//        private Queue<string> FReceivedQueue;
 
-        public SocketClientProvider SocketClient
-        {
-            get { return FSocketClient; }
-            set { FSocketClient = value; }
-        }
+//        public SocketClientProvider SocketClient
+//        {
+//            get { return FSocketClient; }
+//            set { FSocketClient = value; }
+//        }
 
-        public SocketClientSyncSocketService SocketClientEvents
-        {
-            get { return FSocketClientEvents; }
-            set { FSocketClientEvents = value; }
-        }
+//        public SocketClientSyncSocketService SocketClientEvents
+//        {
+//            get { return FSocketClientEvents; }
+//            set { FSocketClientEvents = value; }
+//        }
 
-        public SocketClientSyncCryptService CryptClientEvents
-        {
-            get { return FCryptClientEvents; }
-            set { FCryptClientEvents = value; }
-        }
+//        public SocketClientSyncCryptService CryptClientEvents
+//        {
+//            get { return FCryptClientEvents; }
+//            set { FCryptClientEvents = value; }
+//        }
 
-        public object ConnectedSync
-        {
-            get { return FConnectedSync; }
-            set { FConnectedSync = value; }
-        }
+//        public object ConnectedSync
+//        {
+//            get { return FConnectedSync; }
+//            set { FConnectedSync = value; }
+//        }
 
-        public int SentTimeout
-        {
-            get { return FSentTimeout; }
-            set { FSentTimeout = value; }
-        }
+//        public int SentTimeout
+//        {
+//            get { return FSentTimeout; }
+//            set { FSentTimeout = value; }
+//        }
 
-        public int ConnectTimeout
-        {
-            get { return FConnectTimeout; }
-            set { FConnectTimeout = value; }
-        }
+//        public int ConnectTimeout
+//        {
+//            get { return FConnectTimeout; }
+//            set { FConnectTimeout = value; }
+//        }
 
-        public Queue<string> ReceivedQueue
-        {
-            get { return FReceivedQueue; }
-            set { FReceivedQueue = value; }
-        }
+//        public Queue<string> ReceivedQueue
+//        {
+//            get { return FReceivedQueue; }
+//            set { FReceivedQueue = value; }
+//        }
 
-        public IPEndPoint RemoteEndPoint
-        {
-            get { return FRemoteEndPoint; }
-            set { FRemoteEndPoint = value; }
-        }
+//        public IPEndPoint RemoteEndPoint
+//        {
+//            get { return FRemoteEndPoint; }
+//            set { FRemoteEndPoint = value; }
+//        }
 
-        public IPEndPoint LocalEndPoint
-        {
-            get { return FLocalEndPoint; }
-            set { FLocalEndPoint = value; }
-        }
+//        public IPEndPoint LocalEndPoint
+//        {
+//            get { return FLocalEndPoint; }
+//            set { FLocalEndPoint = value; }
+//        }
 
-        public DelimiterType DelimiterType
-        {
-            get { return FDelimiterType; }
-            set { FDelimiterType = value; }
-        }
+//        public DelimiterType DelimiterType
+//        {
+//            get { return FDelimiterType; }
+//            set { FDelimiterType = value; }
+//        }
 
-        public EncryptType EncryptType
-        {
-            get { return FEncryptType; }
-            set { FEncryptType = value; }
-        }
+//        public EncryptType EncryptType
+//        {
+//            get { return FEncryptType; }
+//            set { FEncryptType = value; }
+//        }
 
-        public CompressionType CompressionType
-        {
-            get { return FCompressionType; }
-            set { FCompressionType = value; }
-        }
+//        public CompressionType CompressionType
+//        {
+//            get { return FCompressionType; }
+//            set { FCompressionType = value; }
+//        }
 
-        public byte[] Delimiter
-        {
-            get { return FDelimiter; }
-            set { FDelimiter = value; }
-        }
+//        public byte[] Delimiter
+//        {
+//            get { return FDelimiter; }
+//            set { FDelimiter = value; }
+//        }
 
-        public ProxyInfo ProxyInfo
-        {
-            get { return FProxyInfo; }
-            set { FProxyInfo = value; }
-        }
+//        public ProxyInfo ProxyInfo
+//        {
+//            get { return FProxyInfo; }
+//            set { FProxyInfo = value; }
+//        }
 
-        public int MessageBufferSize
-        {
-            get { return FMessageBufferSize; }
-            set { FMessageBufferSize = value; }
-        }
+//        public int MessageBufferSize
+//        {
+//            get { return FMessageBufferSize; }
+//            set { FMessageBufferSize = value; }
+//        }
 
-        public int SocketBufferSize
-        {
-            get { return FSocketBufferSize; }
-            set { FSocketBufferSize = value; }
-        }
+//        public int SocketBufferSize
+//        {
+//            get { return FSocketBufferSize; }
+//            set { FSocketBufferSize = value; }
+//        }
 
-        internal ISocketConnection SocketConnection
-        {
-            get
-            {
-                return FSocketConnection;
-            }
+//        internal ISocketConnection SocketConnection
+//        {
+//            get
+//            {
+//                return FSocketConnection;
+//            }
 
-            set
-            {
-                FSocketConnection = value;
-            }
-        }
+//            set
+//            {
+//                FSocketConnection = value;
+//            }
+//        }
 
-        public bool Connected
-        {
-            get
-            {
-                bool connected = false;
+//        public bool Connected
+//        {
+//            get
+//            {
+//                bool connected = false;
 
-                lock (FConnectedSync)
-                {
-                    connected = FConnected;
-                }
+//                lock (FConnectedSync)
+//                {
+//                    connected = FConnected;
+//                }
 
-                return connected;
-            }
+//                return connected;
+//            }
 
-            internal set
-            {
-                lock (FConnectedSync)
-                {
-                    FConnected = value;
-                }
-            }
-        }
+//            internal set
+//            {
+//                lock (FConnectedSync)
+//                {
+//                    FConnected = value;
+//                }
+//            }
+//        }
 
 
-        public override void Free(bool canAccessFinalizable)
-        {
-            FSocketClientEvents = null;
-            CryptClientEvents = null;
-            ReceivedQueue = null;
-            SocketConnection = null;
-            ProxyInfo = null;
-            SocketClient = null;
+//        public override void Free(bool canAccessFinalizable)
+//        {
+//            FSocketClientEvents = null;
+//            CryptClientEvents = null;
+//            ReceivedQueue = null;
+//            SocketConnection = null;
+//            ProxyInfo = null;
+//            SocketClient = null;
 
-            base.Free(canAccessFinalizable);
-        }
+//            base.Free(canAccessFinalizable);
+//        }
 
-    }
-}
+//    }
+//}

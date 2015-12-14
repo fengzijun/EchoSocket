@@ -14,8 +14,8 @@ namespace ChatServer
         {
             SocketServerProvider chatServer = new SocketServerProvider(CallbackThreadType.ctWorkerThread, new ChatSocketService.ChatSocketService());
 
-            chatServer.Context.Delimiter = new byte[] { 0xAA, 0xFF, 0xAA };
-            chatServer.Context.DelimiterType = DelimiterType.dtMessageTailExcludeOnReceive;
+            chatServer.Context.DelimiterUserEncrypt = new byte[] { 0xAA, 0xFF, 0xAA };
+            chatServer.Context.DelimiterUserType = DelimiterType.dtMessageTailExcludeOnReceive;
 
             chatServer.Context.SocketBufferSize = 1024;
             chatServer.Context.MessageBufferSize = 512;
@@ -61,12 +61,12 @@ namespace ChatServer
 
                 if (key.Equals("C"))
                 {
-                    ISocketConnectionInfo[] infos = chatServer.GetConnections();
+                    ISocket[] infos = chatServer.GetConnections();
 
                     Console.WriteLine("\r\n--------------------------------------");
                     Console.WriteLine(" " + infos.Length.ToString() + " user(s)!\r\n");
 
-                    foreach (ISocketConnectionInfo info in infos)
+                    foreach (ISocket info in infos)
                     {
                         Console.WriteLine(" Connection Id " + info.Context.ConnectionId.ToString());
                         Console.WriteLine(" User Name " + ((ConnectionData)info.Context.UserData).UserName);

@@ -32,7 +32,7 @@
   <Class Name="EchoSocketCore.SocketsEx.BaseSocketConnection" Collapsed="true">
     <Position X="6.75" Y="1.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>YAICQAAgAgJAiQAAAgIAIDAgIAAAAAQkAAhIAAAAIAI=</HashCode>
+      <HashCode>AAICQAAgAgJAiQAAAgIAICAgIAAAAAQgAAhAAAAAIAI=</HashCode>
       <FileName>SocketsEx\Connection\BaseSocketConnection.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
@@ -40,7 +40,7 @@
   <Class Name="EchoSocketCore.SocketsEx.BaseSocketConnectionCreator" Collapsed="true">
     <Position X="11.25" Y="1.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAiAACAAAAAAAAAAAAAAAAAAAIAAAAAAAAAI=</HashCode>
+      <HashCode>AAACAAAAAiAACAAAAAAAAAAAAAAAAAAAIAAAAAAAAAI=</HashCode>
       <FileName>SocketsEx\Creator\BaseSocketConnectionCreator.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
@@ -48,7 +48,7 @@
   <Class Name="EchoSocketCore.SocketsEx.BaseSocketProvider" Collapsed="true">
     <Position X="15.75" Y="1.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>YRRCUgAAImAABQggICoSICIJkAAAAAJhIAgAAQiAIAI=</HashCode>
+      <HashCode>YRRCUiAAImAAJQggICoSIDIJkAAAAAZlIAgIAQiAIAI=</HashCode>
       <FileName>SocketsEx\Provider\BaseSocketProvider.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
@@ -253,25 +253,11 @@
       <FileName>SocketsEx\Exception\Exceptions.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Interface Name="EchoSocketCore.SocketsEx.IBaseSocketConnectionCreator" Collapsed="true">
-    <Position X="19.5" Y="4.75" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>SocketsEx\Creator\IBaseSocketConnectionCreator.cs</FileName>
-    </TypeIdentifier>
-  </Interface>
-  <Interface Name="EchoSocketCore.SocketsEx.IBaseSocketProvider" Collapsed="true">
-    <Position X="21.25" Y="4.75" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>SocketsEx\Provider\IBaseSocketProvider.cs</FileName>
-    </TypeIdentifier>
-  </Interface>
-  <Interface Name="EchoSocketCore.SocketsEx.ISocketConnectionInfo" Collapsed="true">
+  <Interface Name="EchoSocketCore.SocketsEx.ISocket" Collapsed="true">
     <Position X="1.75" Y="3.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>SocketsEx\Connection\ISocketConnectionInfo.cs</FileName>
+      <FileName>SocketsEx\ISocket.cs</FileName>
     </TypeIdentifier>
   </Interface>
   <Interface Name="EchoSocketCore.SocketsEx.ISocketConnection" Collapsed="true">

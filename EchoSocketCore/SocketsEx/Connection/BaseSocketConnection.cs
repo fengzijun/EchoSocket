@@ -17,9 +17,6 @@ namespace EchoSocketCore.SocketsEx
 
         private SocketContext context;
 
-        private ManualResetEvent fWaitConnectionsDisposing;
-
-        private ReaderWriterLockSlim fSocketConnectionsSync;
 
         internal SocketAsyncEventArgs WriteOV
         {
@@ -61,46 +58,20 @@ namespace EchoSocketCore.SocketsEx
             set { context = value; }
         }
 
-        public BaseSocketConnection(BaseSocketProvider host, Socket socket)
-            : this(host, host.Context.SocketCreators[0], socket)
-        {
-        }
 
-        public BaseSocketConnection(BaseSocketConnectionCreator creator, Socket socket)
-            : this(creator.Context.Host, creator, socket)
+        public BaseSocketConnection(SocketContext context)
         {
-        }
-
-        public BaseSocketConnection(BaseSocketProvider host, BaseSocketConnectionCreator creator, Socket socket)
-        {
-            context = new SocketContext
-            {
-                ConnectionId = host.Context.GenerateConnectionId(),
-                SyncData = new object(),
-                Host = host,
-                Creator = creator,
-                SocketHandle = socket,
-                SyncActive = new object(),
-                Active = false,
-                WriteQueue = new Queue<MessageBuffer>(),
-                WriteQueueHasItems = false,
-                SyncReadPending = new object(),
-                ReadPending = false,
-                SyncEventProcessing = new object(),
-                EventProcessing = EventProcessing.epNone,
-                LastAction = DateTime.Now,
-            };
-
+           
+            this.context = context;
             FWriteOV = new SocketAsyncEventArgs();
             FReadOV = new SocketAsyncEventArgs();
 
-            fWaitConnectionsDisposing = new ManualResetEvent(false);
-            fSocketConnectionsSync = new ReaderWriterLockSlim();
+         
         }
 
         public virtual void Initialize()
         {
-            AddSocketConnection();
+            context.Host.AddSocketConnection(this);
             Active = true;
             InitializeConnection();
         }
@@ -132,13 +103,7 @@ namespace EchoSocketCore.SocketsEx
                 FWriteOV = null;
             }
 
-            if (fWaitConnectionsDisposing != null)
-            {
-                fWaitConnectionsDisposing.Set();
-                fWaitConnectionsDisposing.Close();
-                fWaitConnectionsDisposing = null;
-            }
-
+       
             Context.Free(canAccessFinalizable);
 
             base.Free(canAccessFinalizable);
@@ -309,9 +274,9 @@ namespace EchoSocketCore.SocketsEx
             if (Disposed)
                 return result;
 
-            ICryptoService cryptService = context.Creator.Context.CryptoService;
+            ICryptoService cryptService = context.CryptoService;
 
-            if ((cryptService != null) && (context.Creator.Context.EncryptType != EncryptType.etNone))
+            if ((cryptService != null) && (context.EncryptType != EncryptType.etNone))
             {
                 context.EventProcessing = EventProcessing.epEncrypt;
                 result = true;
@@ -320,97 +285,6 @@ namespace EchoSocketCore.SocketsEx
             return result;
         }
 
-        internal virtual void AddSocketConnection()
-        {
-            if (Disposed)
-                return;
-
-            fSocketConnectionsSync.EnterWriteLock();
-
-            try
-            {
-                var socketConnections = context.Host.Context.SocketConnections;
-                socketConnections.Add(context.ConnectionId, this);
-
-                WriteOV.Completed += new EventHandler<SocketAsyncEventArgs>(context.Host.BeginSendCallbackAsync);
-                ReadOV.Completed += new EventHandler<SocketAsyncEventArgs>(context.Host.BeginReadCallbackAsync);
-            }
-            finally
-            {
-                fSocketConnectionsSync.ExitWriteLock();
-            }
-        }
-
-        internal virtual void RemoveSocketConnection()
-        {
-            if (Disposed || this == null)
-                return;
-
-            fSocketConnectionsSync.EnterWriteLock();
-            var socketConnections = Context.Host.Context.SocketConnections;
-
-            try
-            {
-                socketConnections.Remove(context.ConnectionId);
-            }
-            finally
-            {
-                if (socketConnections.Count <= 0)
-                {
-                    fWaitConnectionsDisposing.Set();
-                }
-
-                fSocketConnectionsSync.ExitWriteLock();
-            }
-        }
-
-        internal virtual void DisposeConnection()
-        {
-            if (Disposed || this == null)
-                return;
-
-            if (WriteOV != null)
-            {
-                if (WriteOV.Buffer != null)
-                {
-                    context.Host.Context.BufferManager.ReturnBuffer(WriteOV.Buffer);
-                }
-            }
-
-            if (ReadOV != null)
-            {
-                if (ReadOV.Buffer != null)
-                {
-                    context.Host.Context.BufferManager.ReturnBuffer(ReadOV.Buffer);
-                }
-            }
-
-            Dispose();
-        }
-
-        internal virtual void CloseConnection()
-        {
-            if (Disposed)
-                return;
-
-            Active = false;
-            Context.SocketHandle.Shutdown(SocketShutdown.Send);
-
-            lock (Context.WriteQueue)
-            {
-                if (Context.WriteQueue.Count > 0)
-                {
-                    for (int i = 1; i <= Context.WriteQueue.Count; i++)
-                    {
-                        MessageBuffer message = Context.WriteQueue.Dequeue();
-
-                        if (message != null)
-                        {
-                            context.Host.Context.BufferManager.ReturnBuffer(message.Buffer);
-                        }
-                    }
-                }
-            }
-        }
+   
     }
 }

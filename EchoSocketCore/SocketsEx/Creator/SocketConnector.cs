@@ -10,8 +10,6 @@ namespace EchoSocketCore.SocketsEx
     /// </summary>
     public class SocketConnector : BaseSocketConnectionCreator
     {
-        #region Fields
-
         private Socket FSocket;
 
         private Timer FReconnectTimer;
@@ -21,26 +19,11 @@ namespace EchoSocketCore.SocketsEx
 
         private ProxyInfo FProxyInfo;
 
-        #endregion Fields
-
-        #region Constructor
-
-        public SocketConnector(BaseSocketProvider host, string name, IPEndPoint remoteEndPoint, ProxyInfo proxyData, EncryptType encryptType, CompressionType compressionType, ICryptoService cryptoService, int reconnectAttempts, int reconnectAttemptInterval, IPEndPoint localEndPoint)
-            : base(host, name, localEndPoint, encryptType, compressionType, cryptoService, remoteEndPoint)
+        public SocketConnector(SocketContext context)
+            : base(context)
         {
-            FReconnectTimer = new Timer(new TimerCallback(ReconnectConnectionTimerCallBack));
-
-            FReconnectAttempts = reconnectAttempts;
-            FReconnectAttemptInterval = reconnectAttemptInterval;
-
-            FReconnectAttempted = 0;
-
-            FProxyInfo = proxyData;
+            
         }
-
-        #endregion Constructor
-
-        #region Destructor
 
         public override void Free(bool canAccessFinalizable)
         {
@@ -61,12 +44,6 @@ namespace EchoSocketCore.SocketsEx
             base.Free(canAccessFinalizable);
         }
 
-        #endregion Destructor
-
-        #region Methods
-
-        #region Start
-
         public override void Start()
         {
             if (!Disposed)
@@ -75,18 +52,10 @@ namespace EchoSocketCore.SocketsEx
             }
         }
 
-        #endregion Start
-
-        #region Stop
-
         public override void Stop()
         {
             Dispose();
         }
-
-        #endregion Stop
-
-        #region BeginConnect
 
         /// <summary>
         /// Begin the connection with host.
@@ -98,8 +67,8 @@ namespace EchoSocketCore.SocketsEx
                 //----- Create Socket!
                 FSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
                 FSocket.Bind(Context.LocalEndPoint);
-                FSocket.ReceiveBufferSize = Context.Host.Context.SocketBufferSize;
-                FSocket.SendBufferSize = Context.Host.Context.SocketBufferSize;
+                FSocket.ReceiveBufferSize = Context.SocketBufferSize;
+                FSocket.SendBufferSize = Context.SocketBufferSize;
 
                 FReconnectTimer.Change(Timeout.Infinite, Timeout.Infinite);
 
@@ -109,7 +78,7 @@ namespace EchoSocketCore.SocketsEx
 
                 if (FProxyInfo == null)
                 {
-                    e.RemoteEndPoint = Context.RemotEndPoint;
+                    e.RemoteEndPoint = Context.RemoteEndPoint;
                 }
                 else
                 {
@@ -125,10 +94,6 @@ namespace EchoSocketCore.SocketsEx
                 }
             }
         }
-
-        #endregion BeginConnect
-
-        #region BeginAcceptCallbackAsync
 
         /// <summary>
         /// Connect callback!
@@ -148,15 +113,17 @@ namespace EchoSocketCore.SocketsEx
                     {
                         connector = (SocketConnector)e.UserToken;
 
-                        connection = new ClientSocketConnection(Context.Host, connector, connector.Socket);
+                        Context.Creator = connector;
+                        Context.SocketHandle = connector.Socket;
+
+                        connection = new ClientSocketConnection(Context);
 
                         //----- Adjust buffer size!
-                        connector.Socket.ReceiveBufferSize = Context.Host.Context.SocketBufferSize;
-                        connector.Socket.SendBufferSize = Context.Host.Context.SocketBufferSize; ;
+                        connector.Socket.ReceiveBufferSize = Context.SocketBufferSize;
+                        connector.Socket.SendBufferSize = Context.SocketBufferSize; ;
 
                         //----- Initialize!
                         connection.Initialize();
-                      
                     }
                     catch (Exception ex)
                     {
@@ -164,8 +131,8 @@ namespace EchoSocketCore.SocketsEx
 
                         if (connection != null)
                         {
-                            connection.DisposeConnection();
-                            connection.RemoveSocketConnection();
+                            connection.Context.Host.DisposeConnection(connection);
+                            connection.Context.Host.RemoveSocketConnection(connection);
 
                             connection = null;
                         }
@@ -187,10 +154,6 @@ namespace EchoSocketCore.SocketsEx
             e.Dispose();
             e = null;
         }
-
-        #endregion BeginAcceptCallbackAsync
-
-        #region ReconnectConnection
 
         internal void ReconnectConnection(bool resetAttempts, Exception ex)
         {
@@ -225,10 +188,6 @@ namespace EchoSocketCore.SocketsEx
             }
         }
 
-        #endregion ReconnectConnection
-
-        #region ReconnectConnectionTimerCallBack
-
         private void ReconnectConnectionTimerCallBack(Object stateInfo)
         {
             if (!Disposed)
@@ -237,12 +196,6 @@ namespace EchoSocketCore.SocketsEx
                 BeginConnect();
             }
         }
-
-        #endregion ReconnectConnectionTimerCallBack
-
-        #endregion Methods
-
-        #region Properties
 
         public int ReconnectAttempts
         {
@@ -256,8 +209,6 @@ namespace EchoSocketCore.SocketsEx
             set { FReconnectAttemptInterval = value; }
         }
 
-   
-
         public ProxyInfo ProxyInfo
         {
             get { return FProxyInfo; }
@@ -268,7 +219,5 @@ namespace EchoSocketCore.SocketsEx
         {
             get { return FSocket; }
         }
-
-        #endregion Properties
     }
 }

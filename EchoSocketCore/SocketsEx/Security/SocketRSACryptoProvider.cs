@@ -32,10 +32,10 @@ namespace EchoSocketCore.SocketsEx
 
             //----- Get the server public key
             RSACryptoServiceProvider serverPublicKey;
-            connection.Context.Creator.Context.CryptoService.OnSymmetricAuthenticate(connection, out serverPublicKey);
+            connection.Context.CryptoService.OnSymmetricAuthenticate(connection, out serverPublicKey);
 
             //----- Generates symmetric algoritm
-            SymmetricAlgorithm sa = CryptUtils.CreateSymmetricAlgoritm(connection.Context.Creator.Context.EncryptType);
+            SymmetricAlgorithm sa = CryptUtils.CreateSymmetricAlgoritm(connection.Context.EncryptType);
 
             //----- Adjust connection cryptors
             connection.Context.Encryptor = sa.CreateEncryptor();
@@ -92,9 +92,9 @@ namespace EchoSocketCore.SocketsEx
                 throw new SymmetricAuthenticationException("Symmetric sign error.");
 
             RSACryptoServiceProvider serverPrivateKey;
-            connection.Context.Creator.Context.CryptoService.OnSymmetricAuthenticate(connection, out serverPrivateKey);
+            connection.Context.CryptoService.OnSymmetricAuthenticate(connection, out serverPrivateKey);
 
-            SymmetricAlgorithm sa = CryptUtils.CreateSymmetricAlgoritm(connection.Context.Creator.Context.EncryptType);
+            SymmetricAlgorithm sa = CryptUtils.CreateSymmetricAlgoritm(connection.Context.EncryptType);
             sa.Key = serverPrivateKey.Decrypt(am.SessionKey, true);
             sa.IV = serverPrivateKey.Decrypt(am.SessionIV, true);
 

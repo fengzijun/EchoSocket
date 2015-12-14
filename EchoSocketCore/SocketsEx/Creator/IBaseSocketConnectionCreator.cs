@@ -5,8 +5,8 @@ using System.Text;
 
 namespace EchoSocketCore.SocketsEx
 {
-    public interface IBaseSocketConnectionCreator
-    {
-        SocketCreatorContext Context { get; set; }
-    }
+    //public interface IBaseSocketConnectionCreator
+    //{
+    //    SocketContext Context { get; set; }
+    //}
 }

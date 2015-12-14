@@ -23,8 +23,8 @@ namespace EchoSocketCore.SocketsEx
         #region Constructor
 
         
-        public SocketListener(BaseSocketProvider host, string name, IPEndPoint localEndPoint, EncryptType encryptType, CompressionType compressionType, ICryptoService cryptoService, byte backLog, byte acceptThreads)
-            : base(host, name, localEndPoint, encryptType, compressionType, cryptoService)
+        public SocketListener(SocketContext context, byte backLog, byte acceptThreads)
+            : base(context)
         {
             FBackLog = backLog;
             FAcceptThreads = acceptThreads;
@@ -112,10 +112,12 @@ namespace EchoSocketCore.SocketsEx
                     acceptedSocket = e.AcceptSocket;
 
                     //----- Adjust buffer size!
-                    acceptedSocket.ReceiveBufferSize = Context.Host.Context.SocketBufferSize;
-                    acceptedSocket.SendBufferSize = Context.Host.Context.SocketBufferSize;
+                    acceptedSocket.ReceiveBufferSize = Context.SocketBufferSize;
+                    acceptedSocket.SendBufferSize = Context.SocketBufferSize;
+                    Context.Creator = listener;
+                    Context.SocketHandle = acceptedSocket;
 
-                    connection = new ServerSocketConnection(Context.Host, listener, acceptedSocket);
+                    connection = new ServerSocketConnection(Context);
 
                     //----- Initialize!
                     connection.Initialize();
@@ -126,8 +128,8 @@ namespace EchoSocketCore.SocketsEx
                     {
                         if (Context.Host != null)
                         {
-                            connection.DisposeConnection();
-                            connection.RemoveSocketConnection();
+                            connection.Context.Host.DisposeConnection(connection);
+                            connection.Context.Host.RemoveSocketConnection(connection);
                         }
 
                         connection = null;
