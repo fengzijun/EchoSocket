@@ -12,6 +12,7 @@ namespace EchoSocketCore.SocketsEx
     {
         private SocketContext context;
 
+     
 
         public BaseSocketConnectionCreator(SocketContext context)
         {

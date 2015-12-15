@@ -8,6 +8,7 @@ namespace EchoSocketCore.SocketsEx
 {
     public interface ISocketConnection:ISocket
     {
+        long ConnectionId { get; set; }
         /// <summary>
         /// Set Socket Time To Live option
         /// </summary>

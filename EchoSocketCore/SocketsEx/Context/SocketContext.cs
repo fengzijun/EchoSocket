@@ -13,7 +13,6 @@ namespace EchoSocketCore.SocketsEx
     {
         public SocketContext()
         {
-            connectionId = 1000;
             SyncActive = new object();
             Active = false;
             WriteQueue = new Queue<MessageBuffer>();
@@ -27,18 +26,17 @@ namespace EchoSocketCore.SocketsEx
             SocketCreators = new List<BaseSocketConnectionCreator>();
             SocketConnections = new Dictionary<long, BaseSocketConnection>();
             DelimiterEncrypt = new byte[] { 0xFE, 0xDC, 0xBA, 0x98, 0xBA, 0xDC, 0xFE };
-              ReceivedQueue = new Queue<string>();
-                ConnectTimeout = 10000;
-                SentTimeout = 10000;
-                ConnectedSync = new object();
-                Connected = false;
+            ReceivedQueue = new Queue<string>();
+            ConnectTimeout = 10000;
+            SentTimeout = 10000;
+            ConnectedSync = new object();
+            Connected = false;
 
-              CompressionType = CompressionType.ctNone;
-                DelimiterUserType = DelimiterType.dtNone;
-                MessageBufferSize = 4096;
-                SocketBufferSize = 2048;
-                EncryptType = EncryptType.etNone;
-
+            CompressionType = CompressionType.ctNone;
+            DelimiterUserType = DelimiterType.dtNone;
+            MessageBufferSize = 4096;
+            SocketBufferSize = 2048;
+            EncryptType = EncryptType.etNone;
         }
 
         public int IdleCheckInterval { get; set; }
@@ -52,16 +50,12 @@ namespace EchoSocketCore.SocketsEx
         /// </summary>
         public object UserData { get; set; }
 
-        private long connectionId;
+
 
         /// <summary>
         /// Connection Session Id.
         /// </summary>
-        public long ConnectionId
-        {
-            get { return connectionId; }
-            set { connectionId = value; }
-        }
+
 
         /// <summary>
         /// Connection Creator object.
@@ -304,12 +298,6 @@ namespace EchoSocketCore.SocketsEx
             }
         }
 
-        public long CurrentConnectionId { get { return connectionId; } }
-
-        public long GenerateConnectionId()
-        {
-            return Interlocked.Increment(ref connectionId);
-        }
 
         public override void Free(bool canAccessFinalizable)
         {
@@ -335,7 +323,6 @@ namespace EchoSocketCore.SocketsEx
 
             if (SocketService != null)
                 SocketService = null;
-
 
             base.Free(canAccessFinalizable);
         }

@@ -121,6 +121,12 @@ namespace EchoSocketCore.SocketsEx
 
             if (!Disposed)
             {
+                Context.Name = name;
+                Context.EncryptType = encryptType;
+                Context.CryptoService = cryptoService;
+                Context.CompressionType = compressionType;
+                Context.LocalEndPoint = localEndPoint;
+                
                 listener = new SocketListener(Context, backLog, acceptThreads);
                 AddCreator(listener);
             }

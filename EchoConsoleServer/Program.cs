@@ -16,28 +16,28 @@ namespace Main
             //----- Socket Server!
             OnEventDelegate FEvent = new OnEventDelegate(Event);
 
-            SocketServerProvider echoServer = new SocketServerProvider(CallbackThreadType.ctWorkerThread, new EchoSocketService.EchoSocketService(FEvent));
+            SocketServerProvider echoServerProvider = new SocketServerProvider(CallbackThreadType.ctWorkerThread, new EchoSocketService.EchoSocketService(FEvent));
 
-            echoServer.Context.DelimiterUserEncrypt = new byte[] { 0xFF, 0x00, 0xFE, 0x01, 0xFD, 0x02 };
-            echoServer.Context.DelimiterUserType = DelimiterType.dtMessageTailExcludeOnReceive;
+            echoServerProvider.Context.DelimiterUserEncrypt = new byte[] { 0xFF, 0x00, 0xFE, 0x01, 0xFD, 0x02 };
+            echoServerProvider.Context.DelimiterUserType = DelimiterType.dtMessageTailExcludeOnReceive;
 
-            echoServer.Context.SocketBufferSize = 1024;
-            echoServer.Context.MessageBufferSize = 2048;
+            echoServerProvider.Context.SocketBufferSize = 1024;
+            echoServerProvider.Context.MessageBufferSize = 2048;
 
-            echoServer.Context.IdleCheckInterval = 60000;
-            echoServer.Context.IdleTimeOutValue = 120000;
+            echoServerProvider.Context.IdleCheckInterval = 60000;
+            echoServerProvider.Context.IdleTimeOutValue = 120000;
 
             //----- Socket Listener!
-            SocketListener listener = echoServer.AddListener("Commom Port - 8090", new IPEndPoint(IPAddress.Any, 8090));
+            SocketListener listener = echoServerProvider.AddListener("Commom Port - 8090", new IPEndPoint(IPAddress.Any, 8090));
 
             listener.AcceptThreads = 3;
             listener.BackLog = 100;
-
+            listener.Context.Host = echoServerProvider;
             listener.Context.EncryptType = EncryptType.etNone;
             listener.Context.CompressionType = CompressionType.ctNone;
             listener.Context.CryptoService = new EchoCryptService.EchoCryptService();
 
-            echoServer.Start();
+            echoServerProvider.Start();
 
             Console.WriteLine("Started!");
             Console.WriteLine("----------------------");
@@ -65,15 +65,15 @@ namespace Main
 
             try
             {
-                echoServer.Stop();
-                echoServer.Dispose();
+                echoServerProvider.Stop();
+                echoServerProvider.Dispose();
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
             }
 
-            echoServer = null;
+            echoServerProvider = null;
 
             Console.WriteLine("Stopped!");
             Console.WriteLine("----------------------");

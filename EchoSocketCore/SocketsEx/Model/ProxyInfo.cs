@@ -6,12 +6,12 @@ namespace EchoSocketCore.SocketsEx
     {
         #region Fields
 
-        private ProxyType FProxyType;
-        private IPEndPoint FProxyEndPoint;
-        private NetworkCredential FProxyCredential;
-        private SOCKS5Phase FSOCKS5Phase;
-        private SOCKS5AuthMode FSOCKS5Authentication;
-        private bool FCompleted;
+        private ProxyType fProxyType;
+        private IPEndPoint fProxyEndPoint;
+        private NetworkCredential fProxyCredential;
+        private SOCKS5Phase fSOCKS5Phase;
+        private SOCKS5AuthMode fSOCKS5Authentication;
+        private bool fCompleted;
 
         #endregion Fields
 
@@ -19,10 +19,10 @@ namespace EchoSocketCore.SocketsEx
 
         public ProxyInfo(ProxyType proxyType, IPEndPoint proxyEndPoint, NetworkCredential proxyCredential)
         {
-            FProxyType = proxyType;
-            FProxyEndPoint = proxyEndPoint;
-            FProxyCredential = proxyCredential;
-            FSOCKS5Phase = SOCKS5Phase.spIdle;
+            fProxyType = proxyType;
+            fProxyEndPoint = proxyEndPoint;
+            fProxyCredential = proxyCredential;
+            fSOCKS5Phase = SOCKS5Phase.spIdle;
         }
 
         #endregion Constructor
@@ -31,35 +31,35 @@ namespace EchoSocketCore.SocketsEx
 
         public NetworkCredential ProxyCredential
         {
-            get { return FProxyCredential; }
+            get { return fProxyCredential; }
         }
 
         public IPEndPoint ProxyEndPoint
         {
-            get { return FProxyEndPoint; }
+            get { return fProxyEndPoint; }
         }
 
         public ProxyType ProxyType
         {
-            get { return FProxyType; }
+            get { return fProxyType; }
         }
 
         internal SOCKS5Phase SOCKS5Phase
         {
-            get { return FSOCKS5Phase; }
-            set { FSOCKS5Phase = value; }
+            get { return fSOCKS5Phase; }
+            set { fSOCKS5Phase = value; }
         }
 
         internal SOCKS5AuthMode SOCKS5Authentication
         {
-            get { return FSOCKS5Authentication; }
-            set { FSOCKS5Authentication = value; }
+            get { return fSOCKS5Authentication; }
+            set { fSOCKS5Authentication = value; }
         }
 
         internal bool Completed
         {
-            get { return FCompleted; }
-            set { FCompleted = value; }
+            get { return fCompleted; }
+            set { fCompleted = value; }
         }
 
         #endregion Properties

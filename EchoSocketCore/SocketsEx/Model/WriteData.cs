@@ -4,8 +4,8 @@ namespace EchoSocketCore.SocketsEx
     {
         #region Fields
 
-        private BaseSocketConnection FConnection;
-        private bool FSentByServer;
+        private BaseSocketConnection fConnection;
+        private bool fSentByServer;
 
         #endregion Fields
 
@@ -13,8 +13,8 @@ namespace EchoSocketCore.SocketsEx
 
         public WriteData(BaseSocketConnection connection, bool sentByServer)
         {
-            FConnection = connection;
-            FSentByServer = sentByServer;
+            fConnection = connection;
+            fSentByServer = sentByServer;
         }
 
         #endregion Constructor
@@ -23,13 +23,13 @@ namespace EchoSocketCore.SocketsEx
 
         public BaseSocketConnection Connection
         {
-            get { return FConnection; }
-            set { FConnection = value; }
+            get { return fConnection; }
+            set { fConnection = value; }
         }
 
         public bool SentByServer
         {
-            get { return FSentByServer; }
+            get { return fSentByServer; }
         }
 
         #endregion Properties

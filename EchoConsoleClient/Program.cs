@@ -15,7 +15,7 @@ namespace Main
             EncryptType et = EncryptType.etNone;
             CompressionType ct = CompressionType.ctNone;
             int port = 8090;
-            int connections = 50;
+            int connections = 10;
 
             if (args.Length >= 1)
             {
@@ -35,24 +35,24 @@ namespace Main
             //----- Socket Client!
             OnEventDelegate FEvent = new OnEventDelegate(Event);
 
-            SocketClientProvider echoClient = new SocketClientProvider(CallbackThreadType.ctWorkerThread, new EchoSocketService.EchoSocketService(FEvent));
+            SocketClientProvider echoClientProvider = new SocketClientProvider(CallbackThreadType.ctWorkerThread, new EchoSocketService.EchoSocketService(FEvent));
 
-            echoClient.Context.DelimiterUserEncrypt = new byte[] { 0xFF, 0x00, 0xFE, 0x01, 0xFD, 0x02 };
-            echoClient.Context.DelimiterUserType = DelimiterType.dtMessageTailExcludeOnReceive;
+            echoClientProvider.Context.DelimiterUserEncrypt = new byte[] { 0xFF, 0x00, 0xFE, 0x01, 0xFD, 0x02 };
+            echoClientProvider.Context.DelimiterUserType = DelimiterType.dtMessageTailExcludeOnReceive;
 
-            echoClient.Context.SocketBufferSize = 1024;
-            echoClient.Context.MessageBufferSize = 2048;
+            echoClientProvider.Context.SocketBufferSize = 1024;
+            echoClientProvider.Context.MessageBufferSize = 2048;
 
-            echoClient.Context.IdleCheckInterval = 60000;
-            echoClient.Context.IdleTimeOutValue = 120000;
+            echoClientProvider.Context.IdleCheckInterval = 60000;
+            echoClientProvider.Context.IdleTimeOutValue = 120000;
 
             //----- Socket Connectors!
             SocketConnector connector = null;
 
             for (int i = 0; i < connections; i++)
             {
-                connector = echoClient.AddConnector("Connector " + i.ToString(), new IPEndPoint(IPAddress.Loopback, 8090));
-
+                connector = echoClientProvider.AddConnector("Connector " + i.ToString(), new IPEndPoint(IPAddress.Loopback, 8090));
+                connector.Context.Host = echoClientProvider;
                 /*
                 connector.ProxyInfo = new ProxyInfo(
                     ProxyType.ptHTTP,
@@ -70,7 +70,7 @@ namespace Main
 
             Console.Title = "EchoConsoleClient / " + connections.ToString() + " Connections / " + Enum.GetName(typeof(EncryptType), et) + " / " + Enum.GetName(typeof(CompressionType), ct);
 
-            echoClient.Start();
+            echoClientProvider.Start();
 
             Console.WriteLine("Started!");
             Console.WriteLine("----------------------");
@@ -79,15 +79,15 @@ namespace Main
 
             try
             {
-                echoClient.Stop();
-                echoClient.Dispose();
+                echoClientProvider.Stop();
+                echoClientProvider.Dispose();
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
             }
 
-            echoClient = null;
+            echoClientProvider = null;
 
             Console.WriteLine("Stopped!");
             Console.WriteLine("----------------------");

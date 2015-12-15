@@ -150,7 +150,7 @@ namespace EchoSocketCore.SocketsEx
             connector.Context.EncryptType = context.EncryptType;
             connector.Context.CompressionType = context.CompressionType;
             connector.Context.CryptoService = context.CryptoService;
-            connector.ProxyInfo = context.ProxyInfo;
+  
 
             WaitHandle[] wait = new WaitHandle[] { fConnectEvent, fExceptionEvent };
             clientProvider.Start();

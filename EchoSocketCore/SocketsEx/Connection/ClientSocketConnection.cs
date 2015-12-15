@@ -12,6 +12,7 @@ namespace EchoSocketCore.SocketsEx
         internal ClientSocketConnection(SocketContext context)
             : base(context)
         {
+
         }
 
 
@@ -34,7 +35,7 @@ namespace EchoSocketCore.SocketsEx
         {
             get
             {
-                return ((SocketConnector)Context.Creator).ProxyInfo;
+                return Context.ProxyInfo;
             }
         }
 

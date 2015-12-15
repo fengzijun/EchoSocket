@@ -92,7 +92,7 @@ namespace EchoSocketService
             StringBuilder s = new StringBuilder();
 
             s.Append("------------------------------------------------" + "\r\n");
-            s.Append("Connected - " + e.Connection.Context.ConnectionId + "\r\n");
+            s.Append("Connected - " + e.Connection.ConnectionId + "\r\n");
             s.Append(e.Connection.Context.HostType.ToString() + "\r\n");
             s.Append(e.Connection.Context.Name + "\r\n");
             s.Append(e.Connection.Context.EncryptType.ToString() + "\r\n");
@@ -127,7 +127,7 @@ namespace EchoSocketService
                 StringBuilder s = new StringBuilder();
 
                 s.Append("------------------------------------------------" + "\r\n");
-                s.Append("Sent - " + e.Connection.Context.ConnectionId + "\r\n");
+                s.Append("Sent - " + e.Connection.ConnectionId + "\r\n");
                 s.Append("Sent Bytes - " + e.Connection.Context.WriteBytes.ToString() + "\r\n");
                 s.Append("------------------------------------------------" + "\r\n");
 
@@ -158,7 +158,7 @@ namespace EchoSocketService
             StringBuilder s = new StringBuilder();
 
             s.Append("------------------------------------------------" + "\r\n");
-            s.Append("Received - " + e.Connection.Context.ConnectionId + "\r\n");
+            s.Append("Received - " + e.Connection.ConnectionId + "\r\n");
             s.Append("Received Bytes - " + e.Connection.Context.ReadBytes.ToString() + "\r\n");
             s.Append("------------------------------------------------" + "\r\n");
 
@@ -187,7 +187,7 @@ namespace EchoSocketService
             StringBuilder s = new StringBuilder();
 
             s.Append("------------------------------------------------" + "\r\n");
-            s.Append("Disconnected - " + e.Connection.Context.ConnectionId + "\r\n");
+            s.Append("Disconnected - " + e.Connection.ConnectionId + "\r\n");
             s.Append("------------------------------------------------" + "\r\n");
 
             Event(s.ToString());
@@ -199,7 +199,7 @@ namespace EchoSocketService
             }
             else
             {
-                e.Connection.AsClientConnection().BeginReconnect();
+                //e.Connection.AsClientConnection().BeginReconnect();
             }
         }
 

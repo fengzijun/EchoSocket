@@ -61,14 +61,14 @@ namespace ChatServer
 
                 if (key.Equals("C"))
                 {
-                    ISocket[] infos = chatServer.GetConnections();
+                    ISocketConnection[] infos = chatServer.GetConnections();
 
                     Console.WriteLine("\r\n--------------------------------------");
                     Console.WriteLine(" " + infos.Length.ToString() + " user(s)!\r\n");
 
-                    foreach (ISocket info in infos)
+                    foreach (ISocketConnection info in infos)
                     {
-                        Console.WriteLine(" Connection Id " + info.Context.ConnectionId.ToString());
+                        Console.WriteLine(" Connection Id " + info.ConnectionId.ToString());
                         Console.WriteLine(" User Name " + ((ConnectionData)info.Context.UserData).UserName);
                         Console.WriteLine(" Ip Address " + info.Context.RemoteEndPoint.Address.ToString());
 

@@ -32,7 +32,7 @@
   <Class Name="EchoSocketCore.SocketsEx.BaseSocketConnection" Collapsed="true">
     <Position X="6.75" Y="1.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAICQAAgAgJAiQAAAgIAICAgIAAAAAQgAAhAAAAAIAI=</HashCode>
+      <HashCode>AAACQAAgAgJACQAgAAIAICAgIAAAAAQgAAhAAAAAIAI=</HashCode>
       <FileName>SocketsEx\Connection\BaseSocketConnection.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
@@ -40,7 +40,7 @@
   <Class Name="EchoSocketCore.SocketsEx.BaseSocketConnectionCreator" Collapsed="true">
     <Position X="11.25" Y="1.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAACAAAAAiAACAAAAAAAAAAAAAAAAAAAIAAAAAAAAAI=</HashCode>
+      <HashCode>AAACAAAAAiAACAAgAAAAAAAAAAAAAAAAIAAAAAAAAAI=</HashCode>
       <FileName>SocketsEx\Creator\BaseSocketConnectionCreator.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
@@ -48,7 +48,7 @@
   <Class Name="EchoSocketCore.SocketsEx.BaseSocketProvider" Collapsed="true">
     <Position X="15.75" Y="1.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>YRRCUiAAImAAJQggICoSIDIJkAAAAAZlIAgIAQiAIAI=</HashCode>
+      <HashCode>YRZCUiAAImAApQggIioSIDIJkAAAAAZlIAgIAQiAIAI=</HashCode>
       <FileName>SocketsEx\Provider\BaseSocketProvider.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
@@ -106,7 +106,7 @@
   <Class Name="EchoSocketCore.SocketsEx.ProxyInfo" Collapsed="true">
     <Position X="26.5" Y="1.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAEBACAAAMAAABAAAAAAAAACAICAAAAAAYAAAA=</HashCode>
+      <HashCode>AAAAAIAEIAACAAMAAAAAAAAARAAAAAACAAAAAAQAAAA=</HashCode>
       <FileName>SocketsEx\Model\ProxyInfo.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -149,7 +149,7 @@
   <Class Name="EchoSocketCore.SocketsEx.SocketConnector">
     <Position X="10.25" Y="3.25" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAASAEAAgAAAgECqAAAIAAARAAICABAAAAAAI=</HashCode>
+      <HashCode>AAAAAAAAASAEAAgIAAAEACAAAACAARCAIAABAAAgAAI=</HashCode>
       <FileName>SocketsEx\Creator\SocketConnector.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -193,7 +193,7 @@
   <Class Name="EchoSocketCore.SocketsEx.WriteData" Collapsed="true">
     <Position X="21.25" Y="3.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAggAAAAEAAAAAAAAAAAAgAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AACAAAAAAgAAAAEAAAAAACAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>SocketsEx\Model\WriteData.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -214,7 +214,7 @@
   <Class Name="EchoSocketCore.SocketsEx.ReconnectAttemptException" Collapsed="true">
     <Position X="21.25" Y="2.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAgAAAAAAAAAAAAEABAAAAAAAAAAAAEAAAAAAAQQA=</HashCode>
+      <HashCode>AAAAgAAAAAAAAAEAAAAAAABAAAAAAAAAEAABAAAAQAA=</HashCode>
       <FileName>SocketsEx\Exception\Exceptions.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -256,7 +256,7 @@
   <Interface Name="EchoSocketCore.SocketsEx.ISocket" Collapsed="true">
     <Position X="1.75" Y="3.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAAgAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>SocketsEx\ISocket.cs</FileName>
     </TypeIdentifier>
   </Interface>
@@ -298,7 +298,7 @@
   <Enum Name="EchoSocketCore.SocketsEx.CallbackThreadType" Collapsed="true">
     <Position X="19.5" Y="5.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAgAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAAgAAAAAAAAAAAAAAAAEAAAAAAgAAAAAAAAA=</HashCode>
       <FileName>SocketsEx\Model\SocketsExTypes.cs</FileName>
     </TypeIdentifier>
   </Enum>

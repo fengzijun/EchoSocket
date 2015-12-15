@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Security;
@@ -40,14 +39,15 @@ namespace EchoSocketCore.SocketsEx
 
         private SocketContext context;
 
-        public SocketContext Context {
-            get{return context;}
+        public SocketContext Context
+        {
+            get { return context; }
             set { context = value; }
         }
 
-        protected Timer CheckTimeOutTimer
-        {
-            get { return CheckTimeOutTimer; }
+        protected Timer CheckTimeOutTimer { 
+            get { return fIdleTimer; } 
+            set { fIdleTimer = value; }
         }
 
         public bool Active
@@ -74,6 +74,7 @@ namespace EchoSocketCore.SocketsEx
             }
         }
 
+   
         public BaseSocketProvider(HostType hostType, CallbackThreadType callbackThreadtype, ISocketService socketService, DelimiterType delimiterType, byte[] delimiter, int socketBufferSize, int messageBufferSize, int idleCheckInterval, int idleTimeOutValue)
         {
             context = new SocketContext
@@ -89,6 +90,8 @@ namespace EchoSocketCore.SocketsEx
                 SocketBufferSize = socketBufferSize,
                 HostType = hostType
             };
+
+            //context.ConnectionId = context.GenerateConnectionId();
 
             fSocketConnectionsSync = new ReaderWriterLockSlim();
             fWaitCreatorsDisposing = new ManualResetEvent(false);
@@ -234,17 +237,15 @@ namespace EchoSocketCore.SocketsEx
 
             try
             {
-                Context.SocketConnections.Add(socketConnection.Context.ConnectionId, socketConnection);
-               
+                Context.SocketConnections.Add(socketConnection.ConnectionId, socketConnection);
+
                 socketConnection.WriteOV.Completed += new EventHandler<SocketAsyncEventArgs>(BeginSendCallbackAsync);
                 socketConnection.ReadOV.Completed += new EventHandler<SocketAsyncEventArgs>(BeginReadCallbackAsync);
-
             }
             finally
             {
                 FSocketConnectionsSync.ExitWriteLock();
             }
-
         }
 
         internal virtual void RemoveSocketConnection(BaseSocketConnection socketConnection)
@@ -257,7 +258,7 @@ namespace EchoSocketCore.SocketsEx
 
             try
             {
-                socketConnections.Remove(socketConnection.Context.ConnectionId);
+                socketConnections.Remove(socketConnection.ConnectionId);
             }
             finally
             {
@@ -1330,16 +1331,16 @@ namespace EchoSocketCore.SocketsEx
 
                 lock (connection.Context.SyncActive)
                 {
-                    connection.Context.Host.CloseConnection(connection);
+                    CloseConnection(connection);
                     FireOnDisconnected(connection);
                 }
             }
             finally
             {
-                Console.WriteLine(connection.Context.ConnectionId + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff"));
-                connection.Context.Host.DisposeConnection(connection);
-                connection.Context.Host.RemoveSocketConnection(connection);
-                connection = null;
+                Console.WriteLine(connection.ConnectionId + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff"));
+                DisposeConnection(connection);
+                RemoveSocketConnection(connection);
+                
             }
         }
 
@@ -1394,20 +1395,13 @@ namespace EchoSocketCore.SocketsEx
 
                                 if (connection.Context.HostType == HostType.htClient)
                                 {
-                                    
-
                                     ISocketSecurityProvider socketSecurityProvider = new SocketRSACryptoProvider(connection, null);
                                     MemoryStream m = socketSecurityProvider.EcryptForClient();
                                     connection.BeginSend(m.ToArray());
-
-                        
                                 }
                                 else
                                 {
-
-
                                     connection.BeginReceive();
-
                                 }
 
                                 break;
@@ -1416,8 +1410,6 @@ namespace EchoSocketCore.SocketsEx
 
                                 if (connection.Context.HostType == HostType.htClient)
                                 {
-                                    
-
                                     //----- Get SSL items
                                     X509Certificate2Collection certs = null;
                                     string serverName = null;
@@ -1436,13 +1428,9 @@ namespace EchoSocketCore.SocketsEx
                                     {
                                         ssl.BeginAuthenticateAsClient(serverName, certs, System.Security.Authentication.SslProtocols.Tls, checkRevocation, new AsyncCallback(SslAuthenticateCallback), new AuthenticateCallbackData(connection, ssl, HostType.htClient));
                                     }
-
-                                   
                                 }
                                 else
                                 {
-                                   
-
                                     //----- Get SSL items!
                                     X509Certificate2 cert = null;
                                     bool clientAuthenticate = false;
@@ -1453,8 +1441,6 @@ namespace EchoSocketCore.SocketsEx
                                     //----- Authneticate SSL!
                                     SslStream ssl = new SslStream(new NetworkStream(connection.Context.SocketHandle));
                                     ssl.BeginAuthenticateAsServer(cert, clientAuthenticate, System.Security.Authentication.SslProtocols.Default, checkRevocation, new AsyncCallback(SslAuthenticateCallback), new AuthenticateCallbackData(connection, ssl, HostType.htServer));
-
-                             
                                 }
 
                                 break;
@@ -1464,8 +1450,8 @@ namespace EchoSocketCore.SocketsEx
 
                     case EventProcessing.epProxy:
 
-                        ProxyInfo proxyInfo = ((SocketConnector)connection.Context.Creator).ProxyInfo;
-                        IPEndPoint endPoint = ((SocketConnector)connection.Context.Creator).Context.RemoteEndPoint;
+                        ProxyInfo proxyInfo = context.ProxyInfo;
+                        IPEndPoint endPoint = context.RemoteEndPoint;
                         byte[] proxyBuffer = ProxyUtils.GetProxyRequestData(proxyInfo, endPoint);
 
                         connection.BeginSend(proxyBuffer);
@@ -1559,12 +1545,12 @@ namespace EchoSocketCore.SocketsEx
 
                     case EventProcessing.epProxy:
 
-                        ProxyInfo proxyInfo = ((SocketConnector)connection.Context.Creator).ProxyInfo;
+                        ProxyInfo proxyInfo = context.ProxyInfo;
                         ProxyUtils.GetProxyResponseStatus(proxyInfo, buffer);
 
                         if (proxyInfo.Completed)
                         {
-                            connection.InitializeConnection();
+                            connection.Context.Host.InitializeConnection(connection);
                         }
                         else
                         {
@@ -1635,6 +1621,92 @@ namespace EchoSocketCore.SocketsEx
             }
         }
 
+        internal virtual void InitializeConnection(BaseSocketConnection connnection)
+        {
+            if (Disposed)
+                return;
 
+            switch (context.EventProcessing)
+            {
+                case EventProcessing.epNone:
+
+                    if (InitializeConnectionProxy(connnection))
+                    {
+                        context.Host.FireOnConnected(connnection);
+                    }
+                    else
+                    {
+                        if (InitializeConnectionEncrypt(connnection))
+                        {
+                            context.Host.FireOnConnected(connnection);
+                        }
+                        else
+                        {
+                            context.EventProcessing = EventProcessing.epUser;
+                            context.Host.FireOnConnected(connnection);
+                        }
+                    }
+
+                    break;
+
+                case EventProcessing.epProxy:
+
+                    if (InitializeConnectionEncrypt(connnection))
+                    {
+                        context.Host.FireOnConnected(connnection);
+                    }
+                    else
+                    {
+                        context.EventProcessing = EventProcessing.epUser;
+                        context.Host.FireOnConnected(connnection);
+                    }
+
+                    break;
+
+                case EventProcessing.epEncrypt:
+
+                    context.EventProcessing = EventProcessing.epUser;
+                    context.Host.FireOnConnected(connnection);
+
+                    break;
+            }
+        }
+
+        internal virtual bool InitializeConnectionProxy(BaseSocketConnection connnection)
+        {
+            bool result = false;
+
+            if (Disposed)
+                return result;
+
+            if (context.Creator is SocketConnector)
+            {
+                if (connnection.Context.ProxyInfo != null)
+                {
+                    context.EventProcessing = EventProcessing.epProxy;
+                    result = true;
+                }
+            }
+
+            return result;
+        }
+
+        internal virtual bool InitializeConnectionEncrypt(BaseSocketConnection connnection)
+        {
+            bool result = false;
+
+            if (Disposed)
+                return result;
+
+            ICryptoService cryptService = connnection.Context.CryptoService;
+
+            if ((cryptService != null) && (connnection.Context.EncryptType != EncryptType.etNone))
+            {
+                context.EventProcessing = EventProcessing.epEncrypt;
+                result = true;
+            }
+
+            return result;
+        }
     }
 }

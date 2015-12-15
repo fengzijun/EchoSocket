@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Net.Sockets;
 using System.Reflection;
 using System.Threading;
+using EchoSocketCore.SocketsEx.Model;
 
 namespace EchoSocketCore.SocketsEx
 {
@@ -16,6 +17,13 @@ namespace EchoSocketCore.SocketsEx
         private SocketAsyncEventArgs FReadOV;
 
         private SocketContext context;
+
+        private long connectionId;
+
+        public long ConnectionId { 
+            get { return connectionId; }
+            set { connectionId = value; }
+        }
 
 
         internal SocketAsyncEventArgs WriteOV
@@ -61,20 +69,13 @@ namespace EchoSocketCore.SocketsEx
 
         public BaseSocketConnection(SocketContext context)
         {
-           
             this.context = context;
+            this.connectionId = IdProvider.GetConnectionId();
             FWriteOV = new SocketAsyncEventArgs();
             FReadOV = new SocketAsyncEventArgs();
-
-         
         }
 
-        public virtual void Initialize()
-        {
-            context.Host.AddSocketConnection(this);
-            Active = true;
-            InitializeConnection();
-        }
+
 
         public override void Free(bool canAccessFinalizable)
         {
@@ -197,93 +198,7 @@ namespace EchoSocketCore.SocketsEx
             }
         }
 
-        internal virtual void InitializeConnection()
-        {
-            if (Disposed)
-                return;
-
-            switch (context.EventProcessing)
-            {
-                case EventProcessing.epNone:
-
-                    if (InitializeConnectionProxy())
-                    {
-                        context.Host.FireOnConnected(this);
-                    }
-                    else
-                    {
-                        if (InitializeConnectionEncrypt())
-                        {
-                            context.Host.FireOnConnected(this);
-                        }
-                        else
-                        {
-                            context.EventProcessing = EventProcessing.epUser;
-                            context.Host.FireOnConnected(this);
-                        }
-                    }
-
-                    break;
-
-                case EventProcessing.epProxy:
-
-                    if (InitializeConnectionEncrypt())
-                    {
-                        context.Host.FireOnConnected(this);
-                    }
-                    else
-                    {
-                        context.EventProcessing = EventProcessing.epUser;
-                        context.Host.FireOnConnected(this);
-                    }
-
-                    break;
-
-                case EventProcessing.epEncrypt:
-
-                    context.EventProcessing = EventProcessing.epUser;
-                    context.Host.FireOnConnected(this);
-
-                    break;
-            }
-        }
-
-        internal virtual bool InitializeConnectionProxy()
-        {
-            bool result = false;
-
-            if (Disposed)
-                return result;
-
-            if (context.Creator is SocketConnector)
-            {
-                if (((SocketConnector)context.Creator).ProxyInfo != null)
-                {
-                    context.EventProcessing = EventProcessing.epProxy;
-                    result = true;
-                }
-            }
-
-            return result;
-        }
-
-        internal virtual bool InitializeConnectionEncrypt()
-        {
-            bool result = false;
-
-            if (Disposed)
-                return result;
-
-            ICryptoService cryptService = context.CryptoService;
-
-            if ((cryptService != null) && (context.EncryptType != EncryptType.etNone))
-            {
-                context.EventProcessing = EventProcessing.epEncrypt;
-                result = true;
-            }
-
-            return result;
-        }
+      
 
    
     }

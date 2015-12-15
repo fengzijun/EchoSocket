@@ -118,9 +118,10 @@ namespace EchoSocketCore.SocketsEx
                     Context.SocketHandle = acceptedSocket;
 
                     connection = new ServerSocketConnection(Context);
-
                     //----- Initialize!
-                    connection.Initialize();
+                    Context.Host.AddSocketConnection(connection);
+                    Context.Active = true;
+                    Context.Host.InitializeConnection(connection);
                 }
                 catch
                 {
@@ -128,8 +129,8 @@ namespace EchoSocketCore.SocketsEx
                     {
                         if (Context.Host != null)
                         {
-                            connection.Context.Host.DisposeConnection(connection);
-                            connection.Context.Host.RemoveSocketConnection(connection);
+                            Context.Host.DisposeConnection(connection);
+                            Context.Host.RemoveSocketConnection(connection);
                         }
 
                         connection = null;

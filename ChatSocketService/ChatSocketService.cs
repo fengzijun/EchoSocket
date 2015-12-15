@@ -73,7 +73,7 @@ namespace ChatSocketService
 
             s.Append("\r\n------------------------------------------------\r\n");
             s.Append("New Client\r\n");
-            s.Append(" Connection Id " + e.Connection.Context.ConnectionId + "\r\n");
+            s.Append(" Connection Id " + e.Connection.ConnectionId + "\r\n");
             s.Append(" Ip Address " + e.Connection.Context.RemoteEndPoint.Address + "\r\n");
             s.Append(" Tcp Port " + e.Connection.Context.RemoteEndPoint.Port + "\r\n");
 
@@ -111,7 +111,7 @@ namespace ChatSocketService
                     ((ConnectionData)e.Connection.Context.UserData).ConnectionState = ConnectionState.csAuthenticated;
                     ((ConnectionData)e.Connection.Context.UserData).UserName = msg.UserInfo[0].UserName;
 
-                    msg.UserInfo[0].UserId = e.Connection.Context.ConnectionId;
+                    msg.UserInfo[0].UserId = e.Connection.ConnectionId;
                     e.Connection.BeginSend(SerializeMessage(msg));
 
                     msg.MessageType = MessageType.mtAuthenticated;
@@ -131,7 +131,7 @@ namespace ChatSocketService
                             if (cnns[i] != e.Connection)
                             {
                                 msg.UserInfo[i].UserName = ((ConnectionData)cnns[i].Context.UserData).UserName;
-                                msg.UserInfo[i].UserId = cnns[i].Context.ConnectionId;
+                                msg.UserInfo[i].UserId = cnns[i].ConnectionId;
                                 send = true;
                             }
                         }
@@ -169,7 +169,7 @@ namespace ChatSocketService
 
             s.Append("------------------------------------------------" + "\r\n");
             s.Append("Client Disconnected\r\n");
-            s.Append(" Connection Id " + e.Connection.Context.ConnectionId + "\r\n");
+            s.Append(" Connection Id " + e.Connection.ConnectionId + "\r\n");
 
             e.Connection.Context.UserData = null;
 

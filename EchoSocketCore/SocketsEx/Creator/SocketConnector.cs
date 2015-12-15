@@ -12,25 +12,28 @@ namespace EchoSocketCore.SocketsEx
     {
         private Socket FSocket;
 
-        private Timer FReconnectTimer;
-        private int FReconnectAttempts;
-        private int FReconnectAttemptInterval;
-        private int FReconnectAttempted;
+        private Timer fReconnectTimer;
+        private int fReconnectAttempts;
+        private int fReconnectAttemptInterval;
+        private int fReconnectAttempted;
 
-        private ProxyInfo FProxyInfo;
 
-        public SocketConnector(SocketContext context)
+        public SocketConnector(SocketContext context, int reconnectAttempts, int reconnectAttemptInterval)
             : base(context)
         {
-            
+            fReconnectAttempts = reconnectAttempts;
+            fReconnectAttemptInterval = reconnectAttemptInterval;
+            fReconnectAttempted = 0;
+
+            fReconnectTimer = new Timer(new TimerCallback(ReconnectConnectionTimerCallBack));
         }
 
         public override void Free(bool canAccessFinalizable)
         {
-            if (FReconnectTimer != null)
+            if (fReconnectTimer != null)
             {
-                FReconnectTimer.Dispose();
-                FReconnectTimer = null;
+                fReconnectTimer.Dispose();
+                fReconnectTimer = null;
             }
 
             if (FSocket != null)
@@ -39,7 +42,7 @@ namespace EchoSocketCore.SocketsEx
                 FSocket = null;
             }
 
-            FProxyInfo = null;
+            Context.Free(canAccessFinalizable);
 
             base.Free(canAccessFinalizable);
         }
@@ -70,22 +73,22 @@ namespace EchoSocketCore.SocketsEx
                 FSocket.ReceiveBufferSize = Context.SocketBufferSize;
                 FSocket.SendBufferSize = Context.SocketBufferSize;
 
-                FReconnectTimer.Change(Timeout.Infinite, Timeout.Infinite);
+                fReconnectTimer.Change(Timeout.Infinite, Timeout.Infinite);
 
                 SocketAsyncEventArgs e = new SocketAsyncEventArgs();
                 e.Completed += new EventHandler<SocketAsyncEventArgs>(BeginConnectCallbackAsync);
                 e.UserToken = this;
 
-                if (FProxyInfo == null)
+                if (Context.ProxyInfo == null)
                 {
                     e.RemoteEndPoint = Context.RemoteEndPoint;
                 }
                 else
                 {
-                    FProxyInfo.Completed = false;
-                    FProxyInfo.SOCKS5Phase = SOCKS5Phase.spIdle;
+                    Context.ProxyInfo.Completed = false;
+                    Context.ProxyInfo.SOCKS5Phase = SOCKS5Phase.spIdle;
 
-                    e.RemoteEndPoint = FProxyInfo.ProxyEndPoint;
+                    e.RemoteEndPoint = Context.ProxyInfo.ProxyEndPoint;
                 }
 
                 if (!FSocket.ConnectAsync(e))
@@ -123,7 +126,9 @@ namespace EchoSocketCore.SocketsEx
                         connector.Socket.SendBufferSize = Context.SocketBufferSize; ;
 
                         //----- Initialize!
-                        connection.Initialize();
+                        Context.Host.AddSocketConnection(connection);
+                        Context.Active = true;
+                        Context.Host.InitializeConnection(connection);
                     }
                     catch (Exception ex)
                     {
@@ -131,8 +136,9 @@ namespace EchoSocketCore.SocketsEx
 
                         if (connection != null)
                         {
-                            connection.Context.Host.DisposeConnection(connection);
-                            connection.Context.Host.RemoveSocketConnection(connection);
+                            Context.Host.DisposeConnection(connection);
+                          
+                            Context.Host.RemoveSocketConnection(connection);
 
                             connection = null;
                         }
@@ -145,7 +151,7 @@ namespace EchoSocketCore.SocketsEx
 
                 if (exception != null)
                 {
-                    FReconnectAttempted++;
+                    fReconnectAttempted++;
                     ReconnectConnection(false, exception);
                 }
             }
@@ -162,27 +168,27 @@ namespace EchoSocketCore.SocketsEx
                 if (resetAttempts)
                 {
                     //----- Reset counter and start new connect!
-                    FReconnectAttempted = 0;
-                    FReconnectTimer.Change(FReconnectAttemptInterval, FReconnectAttemptInterval);
+                    fReconnectAttempted = 0;
+                    fReconnectTimer.Change(fReconnectAttemptInterval, fReconnectAttemptInterval);
                 }
                 else
                 {
                     //----- Check attempt count!
-                    if (FReconnectAttempts > 0)
+                    if (fReconnectAttempts > 0)
                     {
-                        if (FReconnectAttempted < FReconnectAttempts)
+                        if (fReconnectAttempted < fReconnectAttempts)
                         {
-                            Context.Host.FireOnException(null, new ReconnectAttemptException("Reconnect attempt", this, ex, FReconnectAttempted, false));
-                            FReconnectTimer.Change(FReconnectAttemptInterval, FReconnectAttemptInterval);
+                            Context.Host.FireOnException(null, new ReconnectAttemptException("Reconnect attempt", this, ex, fReconnectAttempted, false));
+                            fReconnectTimer.Change(fReconnectAttemptInterval, fReconnectAttemptInterval);
                         }
                         else
                         {
-                            Context.Host.FireOnException(null, new ReconnectAttemptException("Reconnect attempt", this, ex, FReconnectAttempted, true));
+                            Context.Host.FireOnException(null, new ReconnectAttemptException("Reconnect attempt", this, ex, fReconnectAttempted, true));
                         }
                     }
                     else
                     {
-                        Context.Host.FireOnException(null, new ReconnectAttemptException("Reconnect attempt", this, ex, FReconnectAttempted, true));
+                        Context.Host.FireOnException(null, new ReconnectAttemptException("Reconnect attempt", this, ex, fReconnectAttempted, true));
                     }
                 }
             }
@@ -192,29 +198,24 @@ namespace EchoSocketCore.SocketsEx
         {
             if (!Disposed)
             {
-                FReconnectTimer.Change(Timeout.Infinite, Timeout.Infinite);
+                fReconnectTimer.Change(Timeout.Infinite, Timeout.Infinite);
                 BeginConnect();
             }
         }
 
         public int ReconnectAttempts
         {
-            get { return FReconnectAttempts; }
-            set { FReconnectAttempts = value; }
+            get { return fReconnectAttempts; }
+            set { fReconnectAttempts = value; }
         }
 
         public int ReconnectAttemptInterval
         {
-            get { return FReconnectAttemptInterval; }
-            set { FReconnectAttemptInterval = value; }
+            get { return fReconnectAttemptInterval; }
+            set { fReconnectAttemptInterval = value; }
         }
 
-        public ProxyInfo ProxyInfo
-        {
-            get { return FProxyInfo; }
-            set { FProxyInfo = value; }
-        }
-
+      
         internal Socket Socket
         {
             get { return FSocket; }

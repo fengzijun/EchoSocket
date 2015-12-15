@@ -45,7 +45,8 @@ namespace EchoSocketCore.SocketsEx
     public enum CallbackThreadType
     {
         ctWorkerThread,
-        ctIOThread
+        ctIOThread,
+        cttask
     }
 
     #endregion CallbackThreadType

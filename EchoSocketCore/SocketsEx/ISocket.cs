@@ -7,6 +7,7 @@ namespace EchoSocketCore.SocketsEx
 {
     public interface ISocket
     {
+      
         SocketContext Context { get; set; }
     }
 }

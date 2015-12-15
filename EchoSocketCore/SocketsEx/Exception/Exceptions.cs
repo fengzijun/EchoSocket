@@ -13,31 +13,31 @@ namespace EchoSocketCore.SocketsEx
     /// </summary>
     public class ReconnectAttemptException : Exception
     {
-        private int FAttempt;
-        private bool FMaxReached;
-        private ISocket FCreator;
+        private int fAttempt;
+        private bool fMaxReached;
+        private ISocket fCreator;
 
        public ReconnectAttemptException(string message, ISocket creator, Exception innerException, int attempt, bool maxReached)
             : base(message, innerException)
         {
-            FAttempt = attempt;
-            FMaxReached = maxReached;
-            FCreator = creator;
+            fAttempt = attempt;
+            fMaxReached = maxReached;
+            fCreator = creator;
         }
 
         public int Attempt
         {
-            get { return FAttempt; }
+            get { return fAttempt; }
         }
 
         public bool MaxReached
         {
-            get { return FMaxReached; }
+            get { return fMaxReached; }
         }
 
         public ISocket Creator
         {
-            get { return FCreator; }
+            get { return fCreator; }
         }
     }
 
