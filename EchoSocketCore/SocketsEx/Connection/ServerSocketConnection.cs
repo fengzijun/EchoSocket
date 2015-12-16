@@ -7,13 +7,28 @@ namespace EchoSocketCore.SocketsEx
     /// </summary>
     internal class ServerSocketConnection : BaseSocketConnection, IServerSocketConnection
     {
-   
-        public ServerSocketConnection(SocketContext context):base(context)
+        #region Constructor
+        public ServerSocketConnection(BaseSocketConnectionCreator creator, Socket socket)
+            : base(creator, socket)
         {
-         
+            //-----
         }
 
+        public ServerSocketConnection(BaseSocketConnectionHost host, Socket socket)
+            : base(host, socket)
+        {
+            //-----
+        }
 
+        public ServerSocketConnection(BaseSocketConnectionHost host, BaseSocketConnectionCreator creator, Socket socket)
+            : base(host, creator, socket)
+        {
+            //-----
+        }
+
+        #endregion Constructor
+
+        #region ISocketConnection Members
 
         public override IClientSocketConnection AsClientConnection()
         {
@@ -25,9 +40,9 @@ namespace EchoSocketCore.SocketsEx
             return (this as IServerSocketConnection);
         }
 
+        #endregion ISocketConnection Members
 
-
-    
+        #region IServerSocketConnection Members
 
         public void BeginSendToAll(byte[] buffer, bool includeMe)
         {
@@ -39,6 +54,6 @@ namespace EchoSocketCore.SocketsEx
             Context.Host.BeginSendTo((BaseSocketConnection)connection, buffer);
         }
 
-
+        #endregion IServerSocketConnection Members
     }
 }

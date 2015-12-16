@@ -35,10 +35,10 @@ namespace Main
             //----- Socket Client!
             OnEventDelegate FEvent = new OnEventDelegate(Event);
 
-            SocketClientProvider echoClientProvider = new SocketClientProvider(CallbackThreadType.ctWorkerThread, new EchoSocketService.EchoSocketService(FEvent));
+            SocketClient echoClientProvider = new SocketClient(CallbackThreadType.ctWorkerThread, new EchoSocketService.EchoSocketService(FEvent));
 
-            echoClientProvider.Context.DelimiterUserEncrypt = new byte[] { 0xFF, 0x00, 0xFE, 0x01, 0xFD, 0x02 };
-            echoClientProvider.Context.DelimiterUserType = DelimiterType.dtMessageTailExcludeOnReceive;
+            echoClientProvider.Context.DelimiterEncrypt = new byte[] { 0xFF, 0x00, 0xFE, 0x01, 0xFD, 0x02 };
+            echoClientProvider.Context.DelimiterType = DelimiterType.dtMessageTailExcludeOnReceive;
 
             echoClientProvider.Context.SocketBufferSize = 1024;
             echoClientProvider.Context.MessageBufferSize = 2048;

@@ -6,9 +6,8 @@ using System.Text;
 
 namespace EchoSocketCore.SocketsEx
 {
-    public interface ISocketConnection:ISocket
+    public interface ISocketConnection
     {
-        long ConnectionId { get; set; }
         /// <summary>
         /// Set Socket Time To Live option
         /// </summary>
@@ -80,5 +79,7 @@ namespace EchoSocketCore.SocketsEx
         /// Begin disconnect the connection.
         /// </summary>
         void BeginDisconnect();
+
+        SocketContext Context { get; set; }
     }
 }

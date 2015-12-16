@@ -19,7 +19,7 @@ namespace EchoSocketCore.SocketsEx
                     //----- No Delimiter!
                     bufferSize = buffer.Length;
 
-                    result = connection.Context.BufferManager.TakeBuffer(bufferSize);
+                    result = connection.Context.Host.Context.BufferManager.TakeBuffer(bufferSize);
                     Buffer.BlockCopy(buffer, 0, result, 0, buffer.Length);
 
                     break;
@@ -32,7 +32,7 @@ namespace EchoSocketCore.SocketsEx
                         //----- Need delimiter!
                         bufferSize = buffer.Length + connection.Context.Delimiter.Length;
 
-                        result = connection.Context.BufferManager.TakeBuffer(bufferSize);
+                        result = connection.Context.Host.Context.BufferManager.TakeBuffer(bufferSize);
                         Buffer.BlockCopy(buffer, 0, result, 0, buffer.Length);
                         Buffer.BlockCopy(connection.Context.Delimiter, 0, result, buffer.Length, connection.Context.Delimiter.Length);
                     }
@@ -40,7 +40,7 @@ namespace EchoSocketCore.SocketsEx
                     {
                         bufferSize = buffer.Length;
 
-                        result = connection.Context.BufferManager.TakeBuffer(bufferSize);
+                        result = connection.Context.Host.Context.BufferManager.TakeBuffer(bufferSize);
                         Buffer.BlockCopy(buffer, 0, result, 0, buffer.Length);
                     }
 

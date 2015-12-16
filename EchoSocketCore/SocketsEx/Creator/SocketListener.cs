@@ -22,9 +22,9 @@ namespace EchoSocketCore.SocketsEx
 
         #region Constructor
 
-        
-        public SocketListener(SocketContext context, byte backLog, byte acceptThreads)
-            : base(context)
+
+        public SocketListener(BaseSocketConnectionHost host, string name, IPEndPoint localEndPoint, EncryptType encryptType, CompressionType compressionType, ICryptoService cryptoService, byte backLog, byte acceptThreads)
+            : base(host, name, localEndPoint, encryptType, compressionType, cryptoService)
         {
             FBackLog = backLog;
             FAcceptThreads = acceptThreads;
@@ -88,6 +88,8 @@ namespace EchoSocketCore.SocketsEx
             ThreadPool.QueueUserWorkItem(new WaitCallback(BeginAcceptCallback), e);
         }
 
+      
+
         /// <summary>
         /// Accept callback!
         /// </summary>
@@ -112,15 +114,15 @@ namespace EchoSocketCore.SocketsEx
                     acceptedSocket = e.AcceptSocket;
 
                     //----- Adjust buffer size!
-                    acceptedSocket.ReceiveBufferSize = Context.SocketBufferSize;
-                    acceptedSocket.SendBufferSize = Context.SocketBufferSize;
-                    Context.Creator = listener;
-                    Context.SocketHandle = acceptedSocket;
+                    acceptedSocket.ReceiveBufferSize = Context.Host.Context.SocketBufferSize;
+                    acceptedSocket.SendBufferSize = Context.Host.Context.SocketBufferSize;
 
-                    connection = new ServerSocketConnection(Context);
+                    connection = new ServerSocketConnection(Context.Host, listener, acceptedSocket);
+
                     //----- Initialize!
                     Context.Host.AddSocketConnection(connection);
-                    Context.Active = true;
+                    connection.Active = true;
+
                     Context.Host.InitializeConnection(connection);
                 }
                 catch

@@ -12,10 +12,10 @@ namespace ChatServer
         [STAThread]
         private static void Main(string[] args)
         {
-            SocketServerProvider chatServer = new SocketServerProvider(CallbackThreadType.ctWorkerThread, new ChatSocketService.ChatSocketService());
+            SocketServer chatServer = new SocketServer(CallbackThreadType.ctWorkerThread, new ChatSocketService.ChatSocketService());
 
-            chatServer.Context.DelimiterUserEncrypt = new byte[] { 0xAA, 0xFF, 0xAA };
-            chatServer.Context.DelimiterUserType = DelimiterType.dtMessageTailExcludeOnReceive;
+            chatServer.Context.DelimiterEncrypt = new byte[] { 0xAA, 0xFF, 0xAA };
+            chatServer.Context.DelimiterType = DelimiterType.dtMessageTailExcludeOnReceive;
 
             chatServer.Context.SocketBufferSize = 1024;
             chatServer.Context.MessageBufferSize = 512;
@@ -68,7 +68,7 @@ namespace ChatServer
 
                     foreach (ISocketConnection info in infos)
                     {
-                        Console.WriteLine(" Connection Id " + info.ConnectionId.ToString());
+                        Console.WriteLine(" Connection Id " + info.Context.ConnectionId.ToString());
                         Console.WriteLine(" User Name " + ((ConnectionData)info.Context.UserData).UserName);
                         Console.WriteLine(" Ip Address " + info.Context.RemoteEndPoint.Address.ToString());
 

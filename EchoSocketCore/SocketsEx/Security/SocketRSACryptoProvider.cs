@@ -18,7 +18,7 @@ namespace EchoSocketCore.SocketsEx
             this.buffer = buffer;
         }
 
-       
+
 
         public MemoryStream EcryptForClient()
         {
@@ -32,10 +32,10 @@ namespace EchoSocketCore.SocketsEx
 
             //----- Get the server public key
             RSACryptoServiceProvider serverPublicKey;
-            connection.Context.CryptoService.OnSymmetricAuthenticate(connection, out serverPublicKey);
+            connection.Context.Creator.Context.CryptoService.OnSymmetricAuthenticate(connection, out serverPublicKey);
 
             //----- Generates symmetric algoritm
-            SymmetricAlgorithm sa = CryptUtils.CreateSymmetricAlgoritm(connection.Context.EncryptType);
+            SymmetricAlgorithm sa = CryptUtils.CreateSymmetricAlgoritm(connection.Context.Creator.Context.EncryptType);
 
             //----- Adjust connection cryptors
             connection.Context.Encryptor = sa.CreateEncryptor();
@@ -88,13 +88,13 @@ namespace EchoSocketCore.SocketsEx
 
             AuthMessage am = (AuthMessage)b.Deserialize(m);
 
-            if(am == null)
+            if (am == null)
                 throw new SymmetricAuthenticationException("Symmetric sign error.");
 
             RSACryptoServiceProvider serverPrivateKey;
-            connection.Context.CryptoService.OnSymmetricAuthenticate(connection, out serverPrivateKey);
+            connection.Context.Creator.Context.CryptoService.OnSymmetricAuthenticate(connection, out serverPrivateKey);
 
-            SymmetricAlgorithm sa = CryptUtils.CreateSymmetricAlgoritm(connection.Context.EncryptType);
+            SymmetricAlgorithm sa = CryptUtils.CreateSymmetricAlgoritm(connection.Context.Creator.Context.EncryptType);
             sa.Key = serverPrivateKey.Decrypt(am.SessionKey, true);
             sa.IV = serverPrivateKey.Decrypt(am.SessionIV, true);
 
@@ -146,7 +146,7 @@ namespace EchoSocketCore.SocketsEx
             BinaryFormatter b = new BinaryFormatter();
             AuthMessage am = (AuthMessage)b.Deserialize(m);
 
-            if(am == null)
+            if (am == null)
                 throw new SymmetricAuthenticationException("Symmetric sign error.");
 
             RSACryptoServiceProvider serverPublicKey;
@@ -173,6 +173,6 @@ namespace EchoSocketCore.SocketsEx
             return am;
         }
 
-       
+
     }
 }

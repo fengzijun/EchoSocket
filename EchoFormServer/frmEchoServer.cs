@@ -7,7 +7,7 @@ namespace EchoFormServer
 {
     public partial class frmEchoServer : EchoFormTemplate.frmEchoForm
     {
-        private SocketServerProvider FEchoServer;
+        private SocketServer FEchoServer;
 
         public frmEchoServer()
         {
@@ -16,7 +16,7 @@ namespace EchoFormServer
 
         private void frmEchoServer_Load(object sender, EventArgs e)
         {
-            FEchoServer = new SocketServerProvider(CallbackThreadType.ctWorkerThread, new EchoSocketService.EchoSocketService(FEvent), DelimiterType.dtMessageTailExcludeOnReceive, Encoding.GetEncoding(1252).GetBytes("ALAZ"), 1024 * 2, 1024 * 16);
+            FEchoServer = new SocketServer(CallbackThreadType.ctWorkerThread, new EchoSocketService.EchoSocketService(FEvent), DelimiterType.dtMessageTailExcludeOnReceive, Encoding.GetEncoding(1252).GetBytes("ALAZ"), 1024 * 2, 1024 * 16);
         }
 
         private void AddListener()

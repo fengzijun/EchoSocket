@@ -42,7 +42,7 @@ namespace ClientSynch
             SocketClientSync client = (SocketClientSync)data;
             string read = null;
 
-            while (client.Context.Connected)
+            while (client.Connected)
             {
                 read = client.Read(500);
 
@@ -68,27 +68,27 @@ namespace ClientSynch
 
         private void button1_Click(object sender, EventArgs e)
         {
-            if (!client.Context.Connected)
+            if (!client.Connected)
             {
-                client.Context.RemoteEndPoint = new IPEndPoint(IPAddress.Parse(txtHost.Text), Convert.ToInt32(txtPort.Text));
+                client.RemoteEndPoint = new IPEndPoint(IPAddress.Parse(txtHost.Text), Convert.ToInt32(txtPort.Text));
 
-                client.Context.DelimiterUserType = (DelimiterType)Enum.Parse(typeof(DelimiterType), cboDelimiter.Text);
+                client.DelimiterType = (DelimiterType)Enum.Parse(typeof(DelimiterType), cboDelimiter.Text);
                 //client.Delimiter = Encoding.ASCII.GetBytes(txtDelimiter.Text);
-                client.Context.DelimiterUserEncrypt = new byte[] { 0xFF, 0x00, 0xFE, 0x01, 0xFD, 0x02 };
+                client.Delimiter = new byte[] { 0xFF, 0x00, 0xFE, 0x01, 0xFD, 0x02 };
 
-                client.Context.EncryptType = (EncryptType)Enum.Parse(typeof(EncryptType), cboEncrypt.Text);
-                client.Context.CompressionType = (CompressionType)Enum.Parse(typeof(CompressionType), cboCompression.Text);
+                client.EncryptType = (EncryptType)Enum.Parse(typeof(EncryptType), cboEncrypt.Text);
+                client.CompressionType = (CompressionType)Enum.Parse(typeof(CompressionType), cboCompression.Text);
 
                 if (cboProxyType.SelectedIndex > -1)
                 {
-                    client.Context.ProxyInfo = new ProxyInfo((ProxyType)Enum.Parse(typeof(ProxyType), cboProxyType.Text),
+                    client.ProxyInfo = new ProxyInfo((ProxyType)Enum.Parse(typeof(ProxyType), cboProxyType.Text),
                                 new IPEndPoint(IPAddress.Parse(txtProxyHost.Text), Convert.ToInt32(txtProxyPort.Text)),
                                 new NetworkCredential(txtProxyUser.Text, txtProxyPass.Text, txtProxyDomain.Text));
                 }
 
                 client.Connect();
 
-                if (client.Context.Connected)
+                if (client.Connected)
                 {
                     UpdateList("Connected!");
 
@@ -113,8 +113,8 @@ namespace ClientSynch
 
             client = new SocketClientSync(null);
 
-            client.Context.SocketBufferSize = 1024;
-            client.Context.MessageBufferSize = 2048;
+            client.SocketBufferSize = 1024;
+            client.MessageBufferSize = 2048;
 
             client.OnSymmetricAuthenticate += new OnSymmetricAuthenticateEvent(client_OnSymmetricAuthenticate);
             client.OnSSLClientAuthenticate += new OnSSLClientAuthenticateEvent(client_OnSSLClientAuthenticate);
@@ -144,7 +144,7 @@ namespace ClientSynch
             serverKey = new RSACryptoServiceProvider();
 
             //----- Using string!
-            if (connection.Context.HostType == HostType.htClient)
+            if (connection.Context.Host.Context.HostType == HostType.htClient)
             {
                 serverKey.FromXmlString("<RSAKeyValue><Modulus>z2ksxSTLHSBjY4+IEz7TZU5EclOql5pphA9+xyNQ6c1rYW6VPAmXmiXZKmsza8N++YVLAGnzR95iYyr4oL+mBz8lbhjDH2iqyQL7utbW1s87WaDC2o+82dLnLvwEqBhWpnz4tC0v0kCKayH6Jj+30l3xLdgDwReWF7YEvp6yq6nGxHOeSiioPpTtJzNhWjKGnK6oSZqthfWHewlRl2hVIrewD+JbP5JYTp/7iYptOiCwNAUZEBxODR2743D56J1AeHNc8VpZNvE3ZozIoRFhnxZw0ZpvMbgPliKPyjPeOvOFeqZUJ2zkQ7sH+gnqt67QzkOzznfuFPmTpBo0tMheyw==</Modulus><Exponent>AQAB</Exponent></RSAKeyValue>");
             }
@@ -156,11 +156,11 @@ namespace ClientSynch
 
         private void button2_Click(object sender, EventArgs e)
         {
-            if (client.Context.Connected)
+            if (client.Connected)
             {
                 client.Disconnect();
 
-                if (!client.Context.Connected)
+                if (!client.Connected)
                 {
                     UpdateList("Disconnected!");
                 }
@@ -181,7 +181,7 @@ namespace ClientSynch
 
         private void button3_Click_1(object sender, EventArgs e)
         {
-            if (client.Context.Connected)
+            if (client.Connected)
             {
                 client.Write(txtMessage.Text);
 

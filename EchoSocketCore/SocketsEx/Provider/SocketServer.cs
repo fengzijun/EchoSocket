@@ -8,44 +8,47 @@ namespace EchoSocketCore.SocketsEx
     /// <summary>
     /// Server connection host.
     /// </summary>
-    public class SocketServerProvider : BaseSocketProvider
+    public class SocketServer : BaseSocketConnectionHost
     {
-    
+        #region Constructor
 
-        public SocketServerProvider(CallbackThreadType callbackThreadType, ISocketService socketService)
+        public SocketServer(CallbackThreadType callbackThreadType, ISocketService socketService)
             : base(HostType.htServer, callbackThreadType, socketService, DelimiterType.dtNone, null, 2048, 2048, 0, 0)
         {
             //-----
         }
 
-        public SocketServerProvider(CallbackThreadType callbackThreadType, ISocketService socketService, DelimiterType delimiterType, byte[] delimiter)
+        public SocketServer(CallbackThreadType callbackThreadType, ISocketService socketService, DelimiterType delimiterType, byte[] delimiter)
             : base(HostType.htServer, callbackThreadType, socketService, delimiterType, delimiter, 2048, 2048, 0, 0)
         {
             //-----
         }
 
-        public SocketServerProvider(CallbackThreadType callbackThreadType, ISocketService socketService, DelimiterType delimiterType, byte[] delimiter, int socketBufferSize, int messageBufferSize)
+        public SocketServer(CallbackThreadType callbackThreadType, ISocketService socketService, DelimiterType delimiterType, byte[] delimiter, int socketBufferSize, int messageBufferSize)
             : base(HostType.htServer, callbackThreadType, socketService, delimiterType, delimiter, socketBufferSize, messageBufferSize, 0, 0)
         {
             //-----
         }
 
-        public SocketServerProvider(CallbackThreadType callbackThreadType, ISocketService socketService, DelimiterType delimiterType, byte[] delimiter, int socketBufferSize, int messageBufferSize, int idleCheckInterval, int idleTimeOutValue)
+        public SocketServer(CallbackThreadType callbackThreadType, ISocketService socketService, DelimiterType delimiterType, byte[] delimiter, int socketBufferSize, int messageBufferSize, int idleCheckInterval, int idleTimeOutValue)
             : base(HostType.htServer, callbackThreadType, socketService, delimiterType, delimiter, socketBufferSize, messageBufferSize, idleCheckInterval, idleTimeOutValue)
         {
             //-----
         }
 
+        #endregion Constructor
 
+        #region Methods
 
-
-
-
+        #region BeginReconnect
 
         internal override void BeginReconnect(ClientSocketConnection connection)
         {
         }
 
+        #endregion BeginReconnect
+
+        #region BeginSendToAll
 
         internal override void BeginSendToAll(ServerSocketConnection connection, byte[] buffer, bool includeMe)
         {
@@ -83,9 +86,9 @@ namespace EchoSocketCore.SocketsEx
             }
         }
 
+        #endregion BeginSendToAll
 
-
-
+        #region BeginSendTo
 
         internal override void BeginSendTo(BaseSocketConnection connection, byte[] buffer)
         {
@@ -95,11 +98,11 @@ namespace EchoSocketCore.SocketsEx
             }
         }
 
+        #endregion BeginSendTo
 
+        #endregion Methods
 
-
-
-
+        #region AddListener
 
         /// <summary>
         /// Add the server connector (SocketListener).
@@ -121,22 +124,17 @@ namespace EchoSocketCore.SocketsEx
 
             if (!Disposed)
             {
-                Context.Name = name;
-                Context.EncryptType = encryptType;
-                Context.CryptoService = cryptoService;
-                Context.CompressionType = compressionType;
-                Context.LocalEndPoint = localEndPoint;
-                
-                listener = new SocketListener(Context, backLog, acceptThreads);
-                AddCreator(listener);
+                listener = new SocketListener(this, name, localEndPoint, encryptType, compressionType, cryptoService, backLog, acceptThreads);
+                listener.AddCreator();
             }
 
             return listener;
         }
 
+        #endregion AddListener
 
+        #region Stop
 
-     
         public override void Stop()
         {
             if (!Disposed)
@@ -148,6 +146,6 @@ namespace EchoSocketCore.SocketsEx
             base.Stop();
         }
 
-       
+        #endregion Stop
     }
 }

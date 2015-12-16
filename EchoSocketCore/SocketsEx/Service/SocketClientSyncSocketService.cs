@@ -10,7 +10,7 @@ namespace EchoSocketCore.SocketsEx
     {
         #region Fields
 
-        private SocketClientSync fSocketClient;
+        private SocketClientSync FSocketClient;
 
         #endregion Fields
 
@@ -18,7 +18,7 @@ namespace EchoSocketCore.SocketsEx
 
         public SocketClientSyncSocketService(SocketClientSync client)
         {
-            fSocketClient = client;
+            FSocketClient = client;
         }
 
         #endregion Constructor
@@ -27,31 +27,31 @@ namespace EchoSocketCore.SocketsEx
 
         public override void OnConnected(ConnectionEventArgs e)
         {
-            fSocketClient.Context.SocketConnection = e.Connection;
-            fSocketClient.Context.SocketConnection.BeginReceive();
-            fSocketClient.ConnectEvent.Set();
+            FSocketClient.SocketConnection = e.Connection;
+            FSocketClient.SocketConnection.BeginReceive();
+            FSocketClient.ConnectEvent.Set();
         }
 
         public override void OnException(ExceptionEventArgs e)
         {
-            fSocketClient.LastException = e.Exception;
-            fSocketClient.ExceptionEvent.Set();
+            FSocketClient.LastException = e.Exception;
+            FSocketClient.ExceptionEvent.Set();
         }
 
         public override void OnSent(MessageEventArgs e)
         {
-            fSocketClient.SentEvent.Set();
+            FSocketClient.SentEvent.Set();
         }
 
         public override void OnReceived(MessageEventArgs e)
         {
-            fSocketClient.Enqueue(Encoding.GetEncoding(1252).GetString(e.Buffer));
-            fSocketClient.Context.SocketConnection.BeginReceive();
+            FSocketClient.Enqueue(Encoding.GetEncoding(1252).GetString(e.Buffer));
+            FSocketClient.SocketConnection.BeginReceive();
         }
 
         public override void OnDisconnected(ConnectionEventArgs e)
         {
-            fSocketClient.DisconnectEvent.Set();
+            FSocketClient.DisconnectEvent.Set();
         }
 
         #endregion Methods

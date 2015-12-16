@@ -1,29 +1,105 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Net;
 using System.Net.Sockets;
 using System.Reflection;
-using System.Threading;
-using EchoSocketCore.SocketsEx.Model;
+using System.Security.Cryptography;
 
 namespace EchoSocketCore.SocketsEx
 {
     /// <summary>
-    /// connection data
+    /// Base socket connection
     /// </summary>
     public abstract class BaseSocketConnection : BaseDisposable, ISocketConnection
     {
+        #region Fields
+
         private SocketAsyncEventArgs FWriteOV;
 
         private SocketAsyncEventArgs FReadOV;
 
-        private SocketContext context;
+        #endregion Fields
 
-        private long connectionId;
+        #region Constructor
 
-        public long ConnectionId { 
-            get { return connectionId; }
-            set { connectionId = value; }
+        public BaseSocketConnection(BaseSocketConnectionHost host, Socket socket)
+            : this(host, host.Context.SocketCreators[0], socket)
+        {
+
         }
+
+        public BaseSocketConnection(BaseSocketConnectionCreator creator, Socket socket)
+            : this(creator.Context.Host, creator, socket)
+        {
+
+        }
+
+        public BaseSocketConnection(BaseSocketConnectionHost host, BaseSocketConnectionCreator creator, Socket socket)
+        {
+            Context = new SocketContext
+            {
+                ConnectionId = host.Context.GenerateConnectionId(),
+                SyncData = new object(),
+                Host = host,
+                Creator = creator,
+                SocketHandle = socket,
+                SyncActive = new object(),
+                Active = false,
+                WriteQueue = new Queue<MessageBuffer>(),
+                WriteQueueHasItems = false,
+                SyncReadPending = new object(),
+                ReadPending = false,
+                SyncEventProcessing = new object(),
+                EventProcessing = EventProcessing.epNone,
+                LastAction = DateTime.Now,
+            };
+
+            FWriteOV = new SocketAsyncEventArgs();
+            FReadOV = new SocketAsyncEventArgs();
+
+
+        }
+
+        #endregion Constructor
+
+        #region Destructor
+
+        public override void Free(bool canAccessFinalizable)
+        {
+
+            if (FReadOV != null)
+            {
+                Type t = typeof(SocketAsyncEventArgs);
+
+                FieldInfo f = t.GetField("m_Completed", BindingFlags.Instance | BindingFlags.NonPublic);
+                f.SetValue(FReadOV, null);
+
+                FReadOV.SetBuffer(null, 0, 0);
+                FReadOV.Dispose();
+                FReadOV = null;
+            }
+
+            if (FWriteOV != null)
+            {
+                Type t = typeof(SocketAsyncEventArgs);
+
+                FieldInfo f = t.GetField("m_Completed", BindingFlags.Instance | BindingFlags.NonPublic);
+                f.SetValue(FWriteOV, null);
+
+                FWriteOV.SetBuffer(null, 0, 0);
+                FWriteOV.Dispose();
+                FWriteOV = null;
+            }
+
+            Context.Free(canAccessFinalizable);
+
+            base.Free(canAccessFinalizable);
+        }
+
+        #endregion Destructor
+
+        #region Properties
 
 
         internal SocketAsyncEventArgs WriteOV
@@ -45,70 +121,24 @@ namespace EchoSocketCore.SocketsEx
                     return false;
                 }
 
-                lock (context.SyncActive)
+                lock (Context.SyncActive)
                 {
-                    return context.Active;
+                    return Context.Active;
                 }
             }
 
             set
             {
-                lock (context.SyncActive)
+                lock (Context.SyncActive)
                 {
-                    context.Active = value;
+                    Context.Active = value;
                 }
             }
         }
 
-        public SocketContext Context
-        {
-            get { return context; }
-            set { context = value; }
-        }
+        #endregion Properties
 
-
-        public BaseSocketConnection(SocketContext context)
-        {
-            this.context = context;
-            this.connectionId = IdProvider.GetConnectionId();
-            FWriteOV = new SocketAsyncEventArgs();
-            FReadOV = new SocketAsyncEventArgs();
-        }
-
-
-
-        public override void Free(bool canAccessFinalizable)
-        {
-            if (FReadOV != null)
-            {
-                Type t = typeof(SocketAsyncEventArgs);
-
-                FieldInfo f = t.GetField("m_Completed", BindingFlags.Instance | BindingFlags.NonPublic);
-                f.SetValue(FReadOV, null);
-
-                //FReadOV.SetBuffer(null, 0, 0);
-                FReadOV.Dispose();
-                FReadOV = null;
-            }
-
-            if (FWriteOV != null)
-            {
-                Type t = typeof(SocketAsyncEventArgs);
-
-                FieldInfo f = t.GetField("m_Completed", BindingFlags.Instance | BindingFlags.NonPublic);
-                f.SetValue(FWriteOV, null);
-
-                //FWriteOV.SetBuffer(null, 0, 0);
-
-                FWriteOV.Dispose();
-                FWriteOV = null;
-            }
-
-       
-            Context.Free(canAccessFinalizable);
-
-            base.Free(canAccessFinalizable);
-        }
+        #region Methods
 
         internal void SetConnectionData(int readBytes, int writeBytes)
         {
@@ -131,66 +161,102 @@ namespace EchoSocketCore.SocketsEx
             }
         }
 
+        #endregion Methods
+
+        #region ISocketConnection Members
+
+        #region Properties
+
+        public SocketContext Context { get; set; }
+
+        #endregion Properties
+
+        #region Socket Options
+
         public void SetTTL(short value)
         {
-            context.SocketHandle.Ttl = value;
+            Context.SocketHandle.Ttl = value;
         }
 
         public void SetLinger(LingerOption lo)
         {
-            context.SocketHandle.LingerState = lo;
+            Context.SocketHandle.LingerState = lo;
         }
 
         public void SetNagle(bool value)
         {
-            context.SocketHandle.NoDelay = value;
+            Context.SocketHandle.NoDelay = value;
         }
+
+        #endregion Socket Options
+
+        #region Abstract Methods
 
         public abstract IClientSocketConnection AsClientConnection();
 
         public abstract IServerSocketConnection AsServerConnection();
 
+        #endregion Abstract Methods
+
+        #region BeginSend
+
         public void BeginSend(byte[] buffer)
         {
             if (!Disposed)
             {
-                context.Host.BeginSend(this, buffer, false);
+                Context.Host.BeginSend(this, buffer, false);
             }
         }
+
+        #endregion BeginSend
+
+        #region BeginReceive
 
         public void BeginReceive()
         {
             if (!Disposed)
             {
-                context.Host.BeginReceive(this);
+                Context.Host.BeginReceive(this);
             }
         }
+
+        #endregion BeginReceive
+
+        #region BeginDisconnect
 
         public void BeginDisconnect()
         {
             if (!Disposed)
             {
-                context.Host.BeginDisconnect(this);
+                Context.Host.BeginDisconnect(this);
             }
         }
+
+        #endregion BeginDisconnect
+
+        #region GetConnections
 
         public ISocketConnection[] GetConnections()
         {
             if (!Disposed)
             {
-                return context.Host.GetConnections();
+                return Context.Host.GetConnections();
             }
             else
             {
                 return null;
             }
         }
+
+        #endregion GetConnections
+
+        #region GetConnectionById
 
         public ISocketConnection GetConnectionById(long id)
         {
             if (!Disposed)
             {
-                return context.Host.GetSocketConnectionById(id);
+                return Context.Host.GetSocketConnectionById(id);
             }
             else
             {
@@ -198,8 +264,8 @@ namespace EchoSocketCore.SocketsEx
             }
         }
 
-      
+        #endregion GetConnectionById
 
-   
+        #endregion ISocketConnection Members
     }
 }

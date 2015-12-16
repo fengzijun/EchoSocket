@@ -1,61 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Security.Cryptography;
-using System.ServiceModel.Channels;
-using System.Threading;
+using System.Text;
 
 namespace EchoSocketCore.SocketsEx
 {
     public class SocketContext : BaseDisposable
     {
-        public SocketContext()
-        {
-            SyncActive = new object();
-            Active = false;
-            WriteQueue = new Queue<MessageBuffer>();
-            WriteQueueHasItems = false;
-            SyncReadPending = new object();
-            ReadPending = false;
-            SyncEventProcessing = new object();
-            EventProcessing = EventProcessing.epNone;
-            LastAction = DateTime.Now;
-            SyncData = new object();
-            SocketCreators = new List<BaseSocketConnectionCreator>();
-            SocketConnections = new Dictionary<long, BaseSocketConnection>();
-            DelimiterEncrypt = new byte[] { 0xFE, 0xDC, 0xBA, 0x98, 0xBA, 0xDC, 0xFE };
-            ReceivedQueue = new Queue<string>();
-            ConnectTimeout = 10000;
-            SentTimeout = 10000;
-            ConnectedSync = new object();
-            Connected = false;
-
-            CompressionType = CompressionType.ctNone;
-            DelimiterUserType = DelimiterType.dtNone;
-            MessageBufferSize = 4096;
-            SocketBufferSize = 2048;
-            EncryptType = EncryptType.etNone;
-        }
-
-        public int IdleCheckInterval { get; set; }
-
-        public int IdleTimeOutValue { get; set; }
-
-        public HostType HostType { get; set; }
-
         /// <summary>
         /// Connection user data.
         /// </summary>
         public object UserData { get; set; }
 
-
-
         /// <summary>
         /// Connection Session Id.
         /// </summary>
-
+        public long ConnectionId { get; set; }
 
         /// <summary>
         /// Connection Creator object.
@@ -65,7 +29,7 @@ namespace EchoSocketCore.SocketsEx
         /// <summary>
         /// Connection Host object.
         /// </summary>
-        public BaseSocketProvider Host { get; set; }
+        public BaseSocketConnectionHost Host { get; set; }
 
         /// <summary>
         /// Handle of the OS Socket.
@@ -98,14 +62,6 @@ namespace EchoSocketCore.SocketsEx
 
         public object SyncActive { get; set; }
 
-        public CallbackThreadType CallbackThreadType { get; set; }
-
-        public Dictionary<long, BaseSocketConnection> SocketConnections { get; set; }
-
-        public BufferManager BufferManager { get; set; }
-
-        public List<BaseSocketConnectionCreator> SocketCreators { get; set; }
-
         public bool Active { get; set; }
 
         public object SyncEventProcessing { get; set; }
@@ -119,7 +75,6 @@ namespace EchoSocketCore.SocketsEx
         public bool ReadPending { get; set; }
 
         private EventProcessing eventProcessing;
-
         public EventProcessing EventProcessing
         {
             get
@@ -139,12 +94,6 @@ namespace EchoSocketCore.SocketsEx
             }
         }
 
-        public byte[] DelimiterEncrypt { get; set; }
-
-        public ISocketService SocketService { get; set; }
-
-        public byte[] DelimiterUserEncrypt { get; set; }
-
         public byte[] Delimiter
         {
             get
@@ -153,11 +102,11 @@ namespace EchoSocketCore.SocketsEx
                 {
                     case EventProcessing.epUser:
 
-                        return DelimiterUserEncrypt;
+                        return Host.Context.Delimiter;
 
                     case EventProcessing.epEncrypt:
 
-                        return DelimiterEncrypt;
+                        return Host.Context.DelimiterEncrypt;
 
                     case EventProcessing.epProxy:
 
@@ -170,7 +119,6 @@ namespace EchoSocketCore.SocketsEx
             }
         }
 
-        public DelimiterType DelimiterUserType { get; set; }
 
         public DelimiterType DelimiterType
         {
@@ -180,7 +128,7 @@ namespace EchoSocketCore.SocketsEx
                 {
                     case EventProcessing.epUser:
 
-                        return DelimiterUserType;
+                        return Host.Context.DelimiterType;
 
                     case EventProcessing.epEncrypt:
 
@@ -197,108 +145,6 @@ namespace EchoSocketCore.SocketsEx
             }
         }
 
-        public string Name { get; set; }
-
-        public CompressionType CompressionType { get; set; }
-
-        public EncryptType EncryptType { get; set; }
-
-        public ICryptoService CryptoService { get; set; }
-
-        private ProxyInfo fProxyInfo;
-
-        public ProxyInfo ProxyInfo
-        {
-            get { return fProxyInfo; }
-            set { fProxyInfo = value; }
-        }
-
-        private int FMessageBufferSize;
-        private int FSocketBufferSize;
-
-        private ISocketConnection fSocketConnection;
-
-        private int FConnectTimeout;
-        private bool FConnected;
-        private object FConnectedSync;
-
-        private int FSentTimeout;
-
-        private Queue<string> FReceivedQueue;
-
-        public object ConnectedSync
-        {
-            get { return FConnectedSync; }
-            set { FConnectedSync = value; }
-        }
-
-        public int SentTimeout
-        {
-            get { return FSentTimeout; }
-            set { FSentTimeout = value; }
-        }
-
-        public int ConnectTimeout
-        {
-            get { return FConnectTimeout; }
-            set { FConnectTimeout = value; }
-        }
-
-        public Queue<string> ReceivedQueue
-        {
-            get { return FReceivedQueue; }
-            set { FReceivedQueue = value; }
-        }
-
-        public int MessageBufferSize
-        {
-            get { return FMessageBufferSize; }
-            set { FMessageBufferSize = value; }
-        }
-
-        public int SocketBufferSize
-        {
-            get { return FSocketBufferSize; }
-            set { FSocketBufferSize = value; }
-        }
-
-        internal ISocketConnection SocketConnection
-        {
-            get
-            {
-                return fSocketConnection;
-            }
-
-            set
-            {
-                fSocketConnection = value;
-            }
-        }
-
-        public bool Connected
-        {
-            get
-            {
-                bool connected = false;
-
-                lock (FConnectedSync)
-                {
-                    connected = FConnected;
-                }
-
-                return connected;
-            }
-
-            internal set
-            {
-                lock (FConnectedSync)
-                {
-                    FConnected = value;
-                }
-            }
-        }
-
-
         public override void Free(bool canAccessFinalizable)
         {
             SocketHandle = null;
@@ -306,23 +152,6 @@ namespace EchoSocketCore.SocketsEx
             Creator = null;
             Host = null;
             WriteQueue = null;
-            SocketService = null;
-            CryptoService = null;
-            ReceivedQueue = null;
-            SocketConnection = null;
-            ProxyInfo = null;
-
-            if (SocketConnections != null)
-                SocketConnections = null;
-
-            if (SocketCreators != null)
-                SocketCreators = null;
-
-            if (BufferManager != null)
-                BufferManager = null;
-
-            if (SocketService != null)
-                SocketService = null;
 
             base.Free(canAccessFinalizable);
         }
